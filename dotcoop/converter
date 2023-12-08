@@ -148,26 +148,28 @@ module DotCoop
     (street_address, city, region, post_code, country, country_id) =
       address.values_at('streetAddress', 'city', 'region', 'postCode', 'country', 'isoCountryCode')
 
-    # Compile all the tags into an index of the tag name to the tag value
+    # Compile all the tags into an index of the tag name an array of to the tag value(s)
     tag_index = tags.reduce({}) do |index, tag|
       id, name, value = tag.values_at('id', 'name','value')
-      if index.has_key? name
-        raise "duplicate tag name '#{name}' in org #{orgname} DeskproID #{dpid}"
-      end
-      index[name] = value
-
-      if index.has_key? id
-        raise "duplicate tag id '#{id}' in org #{orgname} DeskproID #{dpid}"
+      unless index.has_key? name
+        index[name] = []
       end
 
+      unless index.has_key? id
+        index[id] = []
+      end
+      
       if id !~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
         raise "non 8-4-4-4-12 uuid format tag '#{id}' in org #{orgname} DeskproID #{dpid}"
       end
       
+      index[name].push(value)
+      index[id].push(value)
+      
       index
     end
 
-    orgid = tag_index['OrgID']
+    orgid = tag_index['OrgID']&.first
     if orgid.to_s == ''
       raise "missing OrgID tag in org #{orgname} DeskproID #{dpid}"
     end
@@ -184,22 +186,24 @@ module DotCoop
       vocab = vocabs[sid+':']
       
       # We can only check cases with indexes
-      if vocab 
-        # Check the ID is valid. Is there a term in the "EN" language for it?
-        # (It's a shortcut, yes. We're biassed EN speakers!)
-        prefixed_value = "#{sid}:#{value}"
-        if !vocab.has_key?("EN") && vocab["EN"].has_key?(prefixed_value)
-          raise "tag '#{name} ID #{id} in org #{orgname} DeskproID #{dpid}"+
-                "has an invalid value '#{value}'"
-        end
+      if vocab
+        tag_index[name].map! do |index|
+          # Check the ID is valid. Is there a term in the "EN" language for it?
+          # (It's a shortcut, yes. We're biassed EN speakers!)
+          prefixed_value = "#{sid}:#{value}"
+          if !vocab.has_key?("EN") && vocab["EN"].has_key?(prefixed_value)
+            raise "tag '#{name} ID #{id} in org #{orgname} DeskproID #{dpid}"+
+                  "has an invalid value '#{value}'"
+          end
 
-        # rewrite the value to add the prefix
-        tag_index[name] = prefixed_value
+          # rewrite the value to add the prefix
+          prefixed_value
+        end
       end
     end
 
-    sector = tag_index['sector']
-    category = tag_index['category']
+    sector = tag_index['sector']&.first
+    category = tag_index['category']&.first
 
     addr =
       [
