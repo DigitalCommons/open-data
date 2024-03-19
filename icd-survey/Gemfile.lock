@@ -6,9 +6,9 @@ GEM
       tilt
     htmlentities (4.3.4)
     link_header (0.0.8)
-    nokogiri (1.15.2-x86_64-linux)
+    nokogiri (1.15.6-x86_64-linux)
       racc (~> 1.4)
-    racc (1.6.2)
+    racc (1.7.3)
     rdf (3.2.10)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (3.2.1)
