@@ -70,13 +70,13 @@ class EnvConfig
   # Throws an error if there is neither, unless suffixed with a question mark,
   # in which case return true if a value exists, false otherwise.
   def method_missing(symbol, *args)
-    slug = symbol.to_s.sub(/?$/, '').to_sym # strip any trailing ?
+    slug = symbol.to_s.sub(/[?]$/, '').to_sym # strip any trailing ?
     check_mode = slug != symbol # was there a ?
     throw 'invalid config value' unless slug =~ /^\w+$/
     name = "SEOD_#{slug.to_s.upcase}"
 
     if check_mode
-      return ENV.has_key? name or @defaults.has_key? slug
+      return ENV.has_key?(name) || @defaults.has_key?(slug)
     end
     
     if ENV.has_key? name
@@ -138,7 +138,7 @@ end
 # Note: username and home_dir must be supplied externally! Others are optional.
 c = EnvConfig.new(
   env_file: '.env',
-  run_at: '*-*-* *:0/10'.
+  run_at: '*-*-* *:0/10',
   service_name: 'se_open_data',
   working_dir: 'working',
   cpu_quota: '80%',
@@ -175,6 +175,7 @@ slice_file = File.join(service_path, "#{c.service_name}.slice")
 # Create mail .forward file for this user, if c.email defined
 if c.email?
   email_list = c.email
+                 .split
                  .map {|email| "#{email}\n" }
                  .join('')
   install_file "#{c.home_dir}/.forward",
@@ -242,7 +243,7 @@ set -o pipefail
 
 # If we get here, it wasn't success
 
-#{systemctl} status $1 | mail -s "FAILED ($SERVICE_RESULT/$EXIT_CODE): $1" #{c.email&.join(' ') || 'root'}
+#{systemctl} status $1 | mail -s "FAILED ($SERVICE_RESULT/$EXIT_CODE): $1" #{c.username}
 EOF
 
 # Install systemd se_open_data.service defining how to run our job
