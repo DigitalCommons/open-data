@@ -4,10 +4,10 @@ set -o errexit
 set -o pipefail
 set -vx
 
-: ${GIT_REPO:=https://github.com/DigitalCommons/open-data/}
-: ${GIT_BRANCH:=userland-deploy} # may need to be overriddeb
+: ${SEOD_GIT_REPO:=https://github.com/DigitalCommons/open-data/}
+: ${SEOD_GIT_BRANCH:=userland-deploy} # may need to be overriddeb
 
-DEPLOY_DIR=$HOME/working # scripts assume this working dir
+DEPLOY_DIR=$HOME/$SEOD_WORKING_DIR # scripts assume this working dir
 rm -rf $DEPLOY_DIR
 
 mkdir -p $DEPLOY_DIR
@@ -15,7 +15,7 @@ mkdir -p $DEPLOY_DIR
 (
   cd $DEPLOY_DIR
   git init
-  git remote add origin $GIT_REPO
-  git pull --depth=1 origin $GIT_BRANCH
+  git remote add origin $SEOD_GIT_REPO
+  git pull --depth=1 origin $SEOD_GIT_BRANCH
   ./tools/deploy/post-pull.rb
 )
