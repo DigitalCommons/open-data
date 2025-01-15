@@ -24,10 +24,9 @@
 # See the documentation on [`seod`]({SeOpenData::Cli}) for more
 # information.
 
-require 'se_open_data'
 require 'se_open_data/config'
-require 'se_open_data/csv/add_postcode_lat_long'
 require 'se_open_data/csv/schema'
+require 'se_open_data/csv/schemas'
 require 'se_open_data/csv/schema/types'
 require 'csv'
 require 'roo'
