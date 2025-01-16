@@ -1,10 +1,74 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-# See https://www.uk.coop/resources/open-data
-DATE=$(date +%F)
-URL=https://www.uk.coop/sites/default/files/2024-11/open_data_organisations_2024_11.csv
-FILE=original-data/$(basename $URL)
-curl $URL > $FILE
-ln -sfrn $FILE original-data/original.csv
+require "nokogiri"
+require "se_open_data/cli"
+
+
+module CliPlus
+  # Create a log instance
+  Log = SeOpenData::Utils::LogFactory.default
+
+  def directory_url
+    "https://www.uk.coop/resources/open-data"
+  end
+  
+  def get_dowload_url
+    html = fetch(directory_url)
+    doc = Nokogiri::HTML.parse(html)
+    download_url =
+      doc.xpath(".//a[contains(., 'Download')]")
+        .collect do |elem|
+      elem.attr("href").to_s
+    end.find do |link|
+      link =~ /open_data_organisations/
+    end
+    download_url
+  end
+  
+  # This mostly reimplements the SeOpenData::Cli#http_download method
+  # We should move it there...
+  def http_download(url)
+    # Find the config file...
+    config = load_config
+    url ||= config.DOWNLOAD_URL
+    
+    # Make the target directory if needed
+    FileUtils.mkdir_p config.SRC_CSV_DIR
+    
+    # Original src csv file
+    original_csv = File.join(config.SRC_CSV_DIR, config.ORIGINAL_CSV)
+    
+    # ETAG file store
+    etag_file = original_csv+'.etag'
+    etag = etag(url)
+    
+    if File.exist? etag_file
+      # Check if we should inhibit another download
+      # Note, an empty etag means there is no etag, so we should
+      # not inhibit the download in that case.
+      old_etag = IO.read(etag_file).strip
+      if old_etag != '' and old_etag == etag
+        Log.warn "No new data"
+        return 100
+      end
+    end
+    
+    # Download the data
+    IO.write etag_file, etag
+    download_file = File.basename(url)
+    download_path = File.join(config.SRC_CSV_DIR, download_file)
+    IO.write download_file, fetch(url)
+    File.unlink original_csv # removes existing symlinks
+    File.symlink download_file, original_csv
+    return true
+  end
+end
+
+cli = SeOpenData::Cli.new
+cli.extend(CliPlus)
+
+url = cli.get_dowload_url
+cli.http_download(url)
+
 
 
