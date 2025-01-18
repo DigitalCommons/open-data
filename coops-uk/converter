@@ -170,7 +170,7 @@ class Converter
              base_membership_type: base_membership_type,
              latitude: nil,
              longitude: nil,
-             geocontainer: nil,
+             geocontainer: geocoded&.osm_uri,
              geocontainer_lat: geocoded&.lat,
              geocontainer_lon: geocoded&.lng,
              geocontainer_confidence: geocoded&.confidence,
