@@ -261,7 +261,7 @@ class Converter
   #  SREG = "super-regions-ica/"
   
   # See https://github.com/SolidarityEconomyAssociation/open-data/issues/11#issuecomment-606719676
-  # And: https://vocabs.solidarityeconomy.coop/essglobal/V2a/html-content/essglobal.html#H6.1
+  # And: https://vocabs.digitalcommons.coop/essglobal/V2a/html-content/essglobal.html#H6.1
   # maps structure type to (map typology to essOrganisationalStructure) or essOrganisationalStructure
   #     "Structure Type" => {"Typology" => "Ess Global Organisational Structure"},
   #     "Structure Type" => "Ess Global Organisational Structure"

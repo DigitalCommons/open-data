@@ -112,9 +112,9 @@ fields:
     group"; OS220 "Government agency/body"; or OS240 "Cooperative of
     cooperatives / mutuals".
 
-    See https://github.com/SolidarityEconomyAssociation/open-data/issues/11#issuecomment-606719676
+    See https://github.com/DigitalCommons/open-data/issues/11#issuecomment-606719676
     
-    And: https://vocabs.solidarityeconomy.coop/essglobal/V2a/html-content/essglobal.html#H6.1
+    And: https://vocabs.digitalcommons.coop/essglobal/V2a/html-content/essglobal.html#H6.1
 - id: :primary_activity
   header: structure_and_status_economic_activity_primary_
   desc: |-
