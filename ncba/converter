@@ -83,7 +83,7 @@ class CsvLookup
         @index[nkey] = nval
       end
       if @index[key]
-        abort "Duplicate from #{from} in #{file}: #{key} (originally #{origkey})"
+        abort "Duplicate from #{from} in #{file}: #{key} (originally #{@index[key]}"
       end
       warn "map: #{key} -> #{val}"
     end

@@ -1,0 +1,14 @@
+id,header,description,comment,primary
+organisation_name,organisation name,,,FALSE
+street,street,,,FALSE
+number,number,,,FALSE
+extra_address,extra address,,,FALSE
+zip_code,zip code,,,FALSE
+city,city,,,FALSE
+state,state,,,FALSE
+country,country,,,FALSE
+map,map,,,FALSE
+website,website,,,FALSE
+primary_activity,primary activity,,,FALSE
+organisational_structure,organisational structure,,,FALSE
+typology,typology,,,FALSE
