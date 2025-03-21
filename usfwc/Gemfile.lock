@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/DigitalCommons/se-open-data.git
-  revision: 7ff5f4af87cd5ebf2037e5bb4eb66a1c58d2e8e0
-  tag: v2.3.0
+  revision: ce7ada29d9ae8585d076ed2d725e1547a1f543d6
+  tag: v2.4.0
   specs:
-    se_open_data (2.3.0)
+    se_open_data (2.4.0)
       geocoder (>= 1.8)
       httparty
       i18n
