@@ -151,7 +151,3 @@ fields:
   header: Geocoded Address
   desc: The address used for geocoding
   comment: ''
-- id: :domain
-  header: Domain
-  desc:
-  comment:

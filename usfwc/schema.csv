@@ -1,9 +1,7 @@
 id,header,description,comment,primary
 name,Name,"","",FALSE
 identifier,Identifier,"","",FALSE
-stripped_id,Stripped Id,"","",TRUE
 website,Website,"","",FALSE
-domain,Domain,"","",FALSE
 latitude,Latitude,"","",FALSE
 longitude,Longitude,"","",FALSE
 postcode,Postcode,"","",FALSE

@@ -72,9 +72,7 @@ class Observer < SeOpenData::CSV::Schema::Observer
         # These parameters match source schema field ids
         name:,
         identifier:,
-        stripped_id:,
         website:,
-        domain:,
         latitude:,
         longitude:,
         postcode:,
@@ -88,7 +86,8 @@ class Observer < SeOpenData::CSV::Schema::Observer
 
     country = NormalizeCountry(country, to: :short)
     addr = Types.normalise_addr(city, state_region, postcode, country)
-    warn "row #{stripped_id} #{addr}"
+    identifier.sub!(/usfwc-/, '') # strip this tag, added inconsistently
+    warn "row #{identifier} #{addr}"
 
     geocoded = @geocoder.call(addr)
     @ix += 1
@@ -96,7 +95,7 @@ class Observer < SeOpenData::CSV::Schema::Observer
     # Replace these with the actual values to write.
     # You may yield zero or many times if desired, and the equivalent number
     # of rows will be emitted.
-    yield id: stripped_id,
+    yield id: identifier,
           name: name,
           description: nil,
           organisational_structure: term("os", organisational_structure),
@@ -122,8 +121,7 @@ class Observer < SeOpenData::CSV::Schema::Observer
           geocontainer_lat: geocoded&.lat,
           geocontainer_lon: geocoded&.lng,
           geocontainer_confidence: geocoded&.confidence,
-          geocoded_addr: addr,
-          domain: domain
+          geocoded_addr: addr
       end
 
   # Called after all the rows have been processed
