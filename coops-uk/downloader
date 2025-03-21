@@ -57,7 +57,9 @@ module CliPlus
     IO.write etag_file, etag
     download_file = File.basename(url)
     download_path = File.join(config.SRC_CSV_DIR, download_file)
-    IO.write download_file, fetch(url)
+    warn "downloading #{download_path} from #{url}"
+    IO.write download_path, fetch(url)
+    warn "symlinking #{download_path} to #{original_csv}"
     File.unlink original_csv # removes existing symlinks
     File.symlink download_file, original_csv
     return true
