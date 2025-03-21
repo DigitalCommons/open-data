@@ -60,7 +60,9 @@ module CliPlus
     warn "downloading #{download_path} from #{url}"
     IO.write download_path, fetch(url)
     warn "symlinking #{download_path} to #{original_csv}"
-    File.unlink original_csv # removes existing symlinks
+    if File.exist? original_csv
+      File.unlink original_csv # removes existing symlinks
+    end
     File.symlink download_file, original_csv
     return true
   end
