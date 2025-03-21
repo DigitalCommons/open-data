@@ -26,82 +26,9 @@
 
 require 'se_open_data/setup'
 require 'se_open_data/csv/schema/types'
+require 'se_open_data/lookup'
 #require 'normalize_country'
 
-class CsvLookup
-  def initialize(dict = {}, default: nil, strict: false)
-    @index = dict
-    @default = default
-    @strict = !!strict
-  end
-
-  def get(key)
-    if key == nil || key == ''
-      return @default
-    end
-    nkey = @norm_key.call(key.to_s).to_s.strip if @norm_key
-    if @index.has_key? nkey
-      return @index.fetch(nkey)
-    else
-      if @strict
-        raise "no match for key '#{key}' (normalised: '#{nkey}'). #{@index.inspect}"
-      else
-        warn "warning: no match for key '#{key}' (normalised: '#{nkey}'), using #{@default.inspect}"
-      end
-      return @default
-    end
-    
-  end
-
-  def key(&block)
-    @norm_key = block
-    self
-  end
-
-  def val(&block)
-    @norm_val = block
-    self
-  end
-  
-  # Loads a CSV mapping file.
-  #
-  # A yield block can be used to transform the key and value entries.
-  # The block receives key and val parameters, and
-  # should return a new pair of values.
-  #
-  # Duplicate keys will raise an exception.
-  #
-  # The from: and to: named paramters can be used to name the columns
-  # to map. These default to mapping the first field to the second field
-  #
-  # Returns the object itself, to allow chaining.
-  def load_csv(file, from: 0, to: 1, &block)
-    @index = {}
-    CSV.foreach(file, headers: true) do |row|
-      key = nkey = row[from]
-      val = nval = row[to]
-      if val != nil and val != ''
-        nkey = @norm_key.call(key) if @norm_key
-        nval = @norm_val.call(val) if @norm_val
-
-        if @index[nkey]
-          abort "Duplicate key in column #{from} of #{file}: #{key} (un-normalised: #{nkey})"
-        end
-        
-        @index[nkey] = nval
-
-        warn "map: #{key} -> #{val}"
-      else
-        warn "skip: #{key} -> #{val}"
-      end
-    end
-    
-    self
-  end
-  
-  alias_method :[], :get
-  
-end
 
 
 # A class which defines callback methods #on_header, #on_row, and #on_end, 
@@ -120,13 +47,13 @@ class Observer < SeOpenData::CSV::Schema::Observer
     #raise "No vocab element in #{vocabs_file}" unless @vocabs
 
     # Define the field mappings
-    @ics_activity_to_ica_activity = CsvLookup.new
+    @ics_activity_to_ica_activity = SeOpenData::Lookup.new
                                       .key {|k| k.downcase }
                                       .load_csv('ics-primary-activity-to-id.csv')
-    @ics_orgstruct_to_ica_orgstruct = CsvLookup.new
+    @ics_orgstruct_to_ica_orgstruct = SeOpenData::Lookup.new
                                         .key {|k| k.downcase }
                                         .load_csv('ics-orgstruct-to-id.csv')
-    @ics_typology_to_ica_typology = CsvLookup.new
+    @ics_typology_to_ica_typology = SeOpenData::Lookup.new
                                       .key {|k| k.downcase }
                                       .load_csv('ics-typology-to-id.csv')
     
