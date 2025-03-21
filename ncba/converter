@@ -25,6 +25,7 @@
 # information.
 
 require 'se_open_data/config'
+require 'se_open_data/lookup'
 require 'se_open_data/csv/schema'
 require 'se_open_data/csv/schema/types'
 require 'se_open_data/geocoding'
@@ -33,67 +34,6 @@ require 'se_open_data/utils/password_store'
 require 'normalize_country'
 require 'csv'
 
-class CsvLookup
-  def initialize(dict = {}, default: nil)
-    @index = dict
-    @default = default
-  end
-
-  def get(key)
-    if key == nil || key == ''
-      return @default
-    end
-    nkey = @norm_key.call(key) if @norm_key
-    unless @index.has_key? nkey
-      raise "no match for key '#{key}' (normalised: '#{nkey}'). #{@index.inspect}"
-    end
-    @index.fetch(nkey)
-  end
-
-  def key(&block)
-    @norm_key = block
-    self
-  end
-
-  def val(&block)
-    @norm_val = block
-    self
-  end
-  
-  # Loads a CSV mapping file.
-  #
-  # A yield block can be used to transform the key and value entries.
-  # The block receives key and val parameters, and
-  # should return a new pair of values.
-  #
-  # Duplicate keys will raise an exception.
-  #
-  # The from: and to: named paramters can be used to name the columns
-  # to map. These default to mapping the first field to the second field
-  #
-  # Returns the object itself, to allow chaining.
-  def load_csv(file, from: 0, to: 1, &block)
-    @index = {}
-    CSV.foreach(file, headers: true) do |row|
-      key = nkey = row[from]
-      val = nval = row[to]
-      if val != nil and val != ''
-        nkey = @norm_key.call(key) if @norm_key
-        nval = @norm_val.call(val) if @norm_val
-        @index[nkey] = nval
-      end
-      if @index[key]
-        abort "Duplicate from #{from} in #{file}: #{key} (originally #{@index[key]}"
-      end
-      warn "map: #{key} -> #{val}"
-    end
-    
-    self
-  end
-  
-  alias_method :[], :get
-  
-end
 
 
 
@@ -111,6 +51,9 @@ module Converter
     # Deals with some special cases.
     #
     # Raises an exception if an invalid case is found.
+
+    raise "empty country" if country == nil
+    
     case (country.downcase)
     when "timor leste"
       "TL"
@@ -147,22 +90,22 @@ module Converter
         company_name:,
         company_domain:,
         member_year:,
+        street_address:,
         coop_sector:,
         industry:,
         created:,
         last_activity:,
         city:,
         state_region:,
-        country_region:,
-        postcode:
+        country_region:
         |
-        warn [company_name, postcode, country_region].inspect
+        warn [company_name, street_address, country_region].inspect
         country_id = country(country_region)
         addr =
           [
+            street_address,
             city,
             state_region,
-            postcode,
             NormalizeCountry(country_id, to: :short)
           ].compact
             # try to clean up funny addresses with extra commas etc.
@@ -178,10 +121,10 @@ module Converter
             organisational_structure: nil,
             primary_activity: @@industry_to_activity[industry],
             activities: nil,
-            street_address: nil,
+            street_address: street_address,
             locality: nil,
             region: nil,
-            postcode: postcode,
+            postcode: nil,
             country_id: country_id,
             territory_id: nil,
             homepage: Types.normalise_url(company_domain, default: nil, full_url: true),
@@ -244,17 +187,17 @@ module Converter
     converter = mk_converter(from_schema: schema, to_schema: OutSchema, geocode: geocode)
 
     # Define the field mappings
-    @@industry_to_activity = CsvLookup.new
+    @@industry_to_activity = SeOpenData::Lookup.new
                                .key {|k| k.downcase }
                                .val {|v| config.ESSGLOBAL_URI+'standard/activities-ica/'+v }
                                .load_csv('ncba-industry-to-ica-activity.csv')
     
-    @@industry_to_id = CsvLookup.new
+    @@industry_to_id = SeOpenData::Lookup.new
                          .key {|k| k.downcase }
                          .val {|v| config.ESSGLOBAL_URI.sub(%r{/essglobal.*},'/ncba/industry/')+v }
                          .load_csv('ncba-industry-term-to-id.csv')
     
-    @@sector_to_id = CsvLookup.new
+    @@sector_to_id = SeOpenData::Lookup.new
                        .key {|k| k.downcase }
                        .val {|v| config.ESSGLOBAL_URI.sub(%r{/essglobal.*},'/ncba/sector/')+v }
                        .load_csv('ncba-sector-term-to-id.csv',

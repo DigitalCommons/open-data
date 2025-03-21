@@ -11,11 +11,15 @@ fields:
   desc: A unique identifier for organisation
   comment: ''
 - id: :company_name
-  header: Company Name
+  header: Company name
   desc: ''
   comment: ''
 - id: :company_domain
   header: Company Domain Name
+  desc:
+  comment:
+- id: :street_address
+  header: Street Address
   desc:
   comment:
 - id: :member_year
@@ -48,9 +52,5 @@ fields:
   comment:
 - id: :country_region
   header: Country/Region
-  desc: ''
-  comment: ''
-- id: :postcode
-  header: Postal Code
   desc: ''
   comment: ''
