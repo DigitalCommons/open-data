@@ -107,5 +107,5 @@ class Observer < SeOpenData::CSV::Schema::Observer
 end
 
 SeOpenData::Setup
-  .new
+  .new(input_file_opts: 'r:windows-1252:utf-8') # read Windows-1252 into UTF-8
   .convert_with(observer: Observer)
