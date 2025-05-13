@@ -85,7 +85,7 @@ class Observer < SeOpenData::CSV::Schema::Observer
       )
 
     # Examples of common preliminary steps:
-    addr = Types.normalise_addr(address, postcode, "UK")
+    addr = Types.normalise_addr(address, postcode, "GB")
 
     # warn "row #{@ix} #{addr}"
     # country_id = NormalizeCountry(country)
@@ -105,7 +105,7 @@ class Observer < SeOpenData::CSV::Schema::Observer
           locality: locality,
           region: nil,
           postcode: postcode,
-          country_id: 'UK',
+          country_id: 'GB',
           territory_id: nil,
           homepage: url(homepage),
           phone: phone,
