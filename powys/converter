@@ -47,18 +47,55 @@ class Observer < SeOpenData::CSV::Schema::Observer
     # Define the field mappings
     @food_system_category = SeOpenData::Lookup.new
                               .key {|k| k.downcase }
-                              .load_csv('food-system-category.csv')
+                              # SUBID is the raw identifier, use that as ID is inferred
+                              .load_csv('food-system-category.csv', from: 'SUBID', to: 'fsc-short')
+    @food_system_subcategory = SeOpenData::Lookup.new
+                                 .key {|k| k.downcase }
+                                 # ditto
+                                 .load_csv('food-system-category.csv', from: 'SUBID', to: 'fsc')
     @locality = SeOpenData::Lookup.new
                   .key {|k| k.downcase }
-                  .load_csv('locality.csv')
+                  .load_csv('locality.csv', from: 'ID', to: 'loc')
     
   end
 
-  def url(text)
+  def to_url(text)
     return if text == '' || text == nil
-    Types.normalise_url(text, throw: true)
+    Types.normalise_url(text.strip, throw: true)
   end
 
+  def to_email(text)
+    return if text == '' || text == nil
+    Types.normalise_email(text.strip, throw: true)
+  end
+
+  def strip(text)
+    return if text == '' || text == nil
+    return text.strip
+  end    
+
+  # Get the first top-level food system category uris
+  def primary_food_system_category_id(text)
+    # Careful! the input data can have spaces in them.
+    val = Types.multivalue_split(text).first.to_s.strip # get the first item, if any
+    return @food_system_category[val] # map it
+  end
+
+  # Get all the uris, including the implicit top-level 
+  def food_system_category_ids(text)
+    # Careful! the input data can have spaces in them.
+    vals = Types.multivalue_split(text.gsub(' ', ''))
+    toplevel_ids = vals.map { |it| @food_system_category[it] }
+    other_ids = vals.map { |it| @food_system_subcategory[it] }
+    
+    return Types.multivalue_join(toplevel_ids.concat(other_ids).uniq)
+  end
+  
+  def locality_id(text)
+    return if text == '' || text == nil
+    @locality[text]
+  end
+  
   # Called with an array of header fields, and a field_map, which
   # is an array of integers denoting the schema index for each header
   def on_header(header:, field_map:)
@@ -67,12 +104,17 @@ class Observer < SeOpenData::CSV::Schema::Observer
   
   def on_row(
         # These parameters match source schema field ids
-        title:,
-        food_system_category_name:,
+        id:,
+        title_en:,
+        title_cy:,
         locality:,
-        food_system_category:,
-        food_system_subcategory:,
-        popup_text:,
+        locality_id:,
+        food_system_category_names:,
+        food_system_categories:,
+        food_system_subcategory_names:,
+        food_system_subcategories:,
+        popup_text_en:,
+        popup_text_cy:,
         address:,
         postcode:,
         contact_name:,
@@ -83,33 +125,41 @@ class Observer < SeOpenData::CSV::Schema::Observer
         notes:,
         update_contact:
       )
-
-    # Examples of common preliminary steps:
-    addr = Types.normalise_addr(address, postcode, "GB")
-
-    # warn "row #{@ix} #{addr}"
-    # country_id = NormalizeCountry(country)
-    geocoded = @geocoder.call(addr)
     @ix += 1
+    
+    # Normalise the ID and skip rows with an empty id
+    id = id.to_s.strip
+    return if id == "" 
+
+    # Normalise the address
+    addr = if address.to_s.strip == ''
+             nil
+           else
+             Types.normalise_addr(address, postcode, "GB")
+           end
+
+    warn "row #{@ix}: #{id}, #{addr}"
+    # country_id = NormalizeCountry(country)
+    geocoded = @geocoder.call(addr) if addr != nil
 
     # Replace these with the actual values to write.
     # You may yield zero or many times if desired, and the equivalent number
     # of rows will be emitted.
-    yield id: @ix,
-          name: title,
-          description: popup_text,
+    yield id: id,
+          name: strip(title_en),
+          description: strip(popup_text_en),
           organisational_structure: nil,
           primary_activity: nil,
           activities: nil,
-          street_address: address,
-          locality: locality,
+          street_address: strip(address),
+          locality: strip(locality),
           region: nil,
-          postcode: postcode,
+          postcode: strip(postcode),
           country_id: 'GB',
           territory_id: nil,
-          homepage: url(homepage),
-          phone: phone,
-          email: email,
+          homepage: to_url(homepage),
+          phone: strip(phone),
+          email: to_email(email),
           twitter: nil,
           facebook: nil,
           companies_house_number: nil,
@@ -122,8 +172,11 @@ class Observer < SeOpenData::CSV::Schema::Observer
           geocontainer_lon: geocoded&.lng,
           geocontainer_confidence: geocoded&.confidence,
           geocoded_addr: addr,
-          food_system_category_id: @food_system_category[food_system_subcategory],
-          locality_id: @locality[locality]
+          name_cy: strip(title_cy),
+          description_cy: strip(popup_text_cy),
+          primary_food_system_category_id: primary_food_system_category_id(food_system_subcategories),
+          food_system_category_ids: food_system_category_ids(food_system_subcategories),
+          locality_id: locality_id(locality_id)
 
   end
   
