@@ -1,0 +1,15 @@
+id,header,description,comment,primary
+id,ID,,,true
+name,Name,,,false
+website,website,,,false
+latitude,Latitude,,,false
+longitude,Longitude,,,false
+address,Address,,,false
+postcode,Postcode,,,false
+city,City,,,false
+state_region,State/Region,,,false
+country_id,Country ID,,,false
+org_structure,Org Structure,,,false
+membership_type,Membership Type,,,false
+activities_ica,Activities-ica,,,false
+description,Description,,,false
