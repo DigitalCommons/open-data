@@ -1,0 +1,21 @@
+id,header,description,comment,primary
+id,ID,,,TRUE
+title_en,Title_Eng,,,FALSE
+title_cy,Title_Cym,,,FALSE
+locality,Town,,Assumed single-valued,FALSE
+locality_id,Locality ID,,Assumed single-valued,FALSE
+food_system_category_names,Category,,Assumed potentially multi-valued,FALSE
+food_system_categories,Category ID,,Assumed potentially multi-valued,FALSE
+food_system_subcategory_names,Subcategory,,Assumed potentially multi-valued,FALSE
+food_system_subcategories,Subcategory ID,,Assumed potentially multi-valued,FALSE
+popup_text_en,Text for popup,,,FALSE
+popup_text_cy,Text for popup_Cym,,,FALSE
+address,Address,,,FALSE
+postcode,Postcode,,,FALSE
+contact_name,Contact name,,,FALSE
+email,Email address,,,FALSE
+phone,Phone number,,,FALSE
+homepage,Link,,,FALSE
+on_lx,On Land Explorer?,,,FALSE
+notes,Notes,,,FALSE
+update_contact,Contact for update,,,FALSE

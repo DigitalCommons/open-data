@@ -1,0 +1,19 @@
+Food System Category,SUBID,ID,fsc-short,fsc
+Emergency food provision,1,1,ep,ep
+Community growing,2,2,,cg,cg
+Local food provider,3,3,,lp,lp
+Events,4,4,,ev,ev
+Food bank,5,1,ep,ep-fb
+Community fridge,6,1,ep,ep-cf
+Pay as you feel meals,7,1,ep,ep-pm
+Community food share,18,1,ep,ep-fs
+Incredible Edible,8,2,cg,cg-ie
+Community garden,9,2,cg,cg-ga
+Community orchard,10,2,cg,cg-or
+Allotments,11,2,cg,cg-al
+Farmer/grower,12,3,lp,lp-gr
+Cafe/restaurant,13,3,lp,lp-cr
+Market,14,3,lp,lp-mk
+Shop,15,3,lp,lp-sp
+Food festival,16,4,ev,ev-ff
+Cooking classes,17,4,ev,ev-cc
