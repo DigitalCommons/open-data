@@ -309,6 +309,9 @@ module DotCoop
       }
     }    
 
+    # Index of IDs
+    ids = {}
+    
     CSV.open(csv_file, 'w', headers: OutSchema.field_headers, write_headers: true) do |csv|
       organisations.each do |org|
         # Check it's a hash
@@ -318,6 +321,15 @@ module DotCoop
 
         # Parse it - also add the organisation to the vocabs
         row = parse_dotcoop_organisation(org, vocabs, orgs_vocab, geocode)
+
+        # Check the ID is unique - this avoids the map crashing when
+        # it finds a duplicate later
+        id = row['Identifier']
+        if ids.has_key? id
+          raise "Duplicate OrgID detected '#{id}' in row:\n#{row}"
+        else
+          ids[id] = true
+        end
 
         # Write it
         csv << row
