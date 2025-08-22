@@ -38,7 +38,11 @@ require 'fileutils'
 
 # Code related to the DotCoop SSE initiative data
 module DotCoop
-
+  # This was added to allow a certain number of errors to be swept
+  # under the carpet and updates to continue whilst DotCoop address
+  # the issue (which can be slow.)
+  # See https://github.com/DigitalCommons/dotcoop-project/issues/75#issuecomment-3187837742
+  @ERROR_THRESHOLD = 3
   
   PostcodeIndexSchema = SeOpenData::CSV::Schema.new(
     id: :postcode_index,
@@ -75,7 +79,7 @@ module DotCoop
   # to 28 bits, and re-encodes them as 5 URL-safe base64 characters (6
   # bits per char). Selected as a reasonable trade off in terms of ID
   # size to collision likelihood: a 1 in 2^28 chance of shortened tag
-  # ID collisions.
+  # ID collisions.~
   def self.uuid_to_sid(uuid)
     prefix = uuid[0,7]
     bin = [prefix].pack("H*")
@@ -277,8 +281,9 @@ module DotCoop
   end
   
   def self.dotcoop_import(json_file, csv_file, vocabs_file, geocode, dotcoop_tag_uri)
+    suppressed_error_count = 0
     json = IO.read(json_file)
-    data = JSON.parse(json)
+    data = JSON.parse(json)    
     
     # Check it's an object
     unless data.is_a? Hash
@@ -333,6 +338,13 @@ module DotCoop
 
         # Write it
         csv << row
+      rescue => e
+        if suppressed_error_count < @ERROR_THRESHOLD
+          suppressed_error_count += 1
+          warn "Suppressed error ##{suppressed_error_count}: #{e}"
+        else
+          raise e
+        end
       end
     end
 
