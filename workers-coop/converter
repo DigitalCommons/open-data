@@ -145,6 +145,18 @@ class Converter
              ].keep_if{|it| it&.match(/\S/)}.join(', ')
            
            geocoded = geocode.call(geocoded_addr)
+
+           if country.to_s.length == 0
+             warn "Empty country field for Identifier '#{contact_id}' (#{display_name})"
+           end
+           
+           if country_code.to_s.length != 2
+             guessed_id = NormalizeCountry(country, to: :alpha2) || "GB"
+             warn "Invalid country code field '#{country_code}' for "+
+                  "Identifier '#{contact_id}' (#{display_name}); guessing '#{guessed_id}'"
+             country_code = "GB"
+           end
+
            
            # A mapping to the target schema field ids
            {
