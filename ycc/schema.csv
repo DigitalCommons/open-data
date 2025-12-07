@@ -1,0 +1,6 @@
+id,header,description,comment,primary
+name,Cooperative Name,,,
+id,Identifier,,,true
+city,City,,,
+region,State/Region,,,
+address,Address,,,

@@ -1,0 +1,17 @@
+field,type,is_ascii,sum,min,max,range,sort_order,sortiness,min_length,max_length,sum_length,avg_length,stddev_length,variance_length,cv_length,mean,sem,geometric_mean,harmonic_mean,stddev,variance,cv,nullcount,max_precision,sparsity
+,Integer,,72390,1,380,379,Ascending,1,,,,,,,,190.5,5.6273,141.2323,58.2938,109.6962,12033.25,57.5833,20578,,0.9819
+,String,false,,(ARC) MAT-I FARMERS MULTI-PURPOSE COOPERATIVE (ARC- MAFAMPCO),th ready Reserve Infantry Battalion Credit Cooperative (1405th RRIBn Credit Cooperative),,Unsorted,0.0332,0,136,1003426,47.8779,14.5448,211.5514,0.3038,,,,,,,,4,,0.0002
+,String,true,,Identifier,Identifier,,Unsorted,0,0,10,10,0.0005,0.0691,0.0048,144.7653,,,,,,,,20957,,1
+,String,true,,Description,Description,,Unsorted,0,0,11,11,0.0005,0.076,0.0058,144.7653,,,,,,,,20957,,1
+,String,true,,Website,Website,,Unsorted,0,0,7,7,0.0003,0.0484,0.0023,144.7653,,,,,,,,20957,,1
+,String,true,,Latitude,Latitude,,Unsorted,0,0,8,8,0.0004,0.0553,0.0031,144.7653,,,,,,,,20957,,1
+,String,true,,Longitude,Longitude,,Unsorted,0,0,9,9,0.0004,0.0622,0.0039,144.7653,,,,,,,,20957,,1
+,String,true,,2600,Postcode,,Unsorted,0,0,8,24,0.0011,0.0781,0.0061,68.2373,,,,,,,,20953,,0.9998
+,String,false,,Aborlan,sILAng,,Unsorted,0.0175,0,132,536735,25.61,15.6645,245.3757,0.6117,,,,,,,,184,,0.0088
+,String,true,,(PCAECO-10) Region 10,and Provinces Transport Service Cooperative (PNCRPTSC) NCR Second District,,Unsorted,0.3477,0,147,140846,6.7204,4.8828,23.8414,0.7266,,,,,,,,3741,,0.1785
+,String,false,,"
+Quezon City Hall Compound, Diliman Central",ñozPhilippine Carabao Center Headquarters and National Genepool,,Unsorted,-0.0022,0,281,373203,17.8072,21.508,462.5919,1.2078,,,,,,,,7423,,0.3542
+,String,true,,Country ID,PH,,Ascending,1,2,10,41924,2.0004,0.0553,0.0031,0.0276,,,,,,,,0,,0
+,String,true,,Organisational Structure,Organisational Structure,,Unsorted,0,0,24,24,0.0011,0.1658,0.0275,144.7653,,,,,,,,20957,,1
+,String,true,,Base Membership Type,Base Membership Type,,Unsorted,0,0,20,20,0.001,0.1381,0.0191,144.7653,,,,,,,,20957,,1
+,String,true,,Activities ICA,Activities ICA,,Unsorted,0,0,14,14,0.0007,0.0967,0.0094,144.7653,,,,,,,,20957,,1
