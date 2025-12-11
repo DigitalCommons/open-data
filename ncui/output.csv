@@ -1,0 +1,37 @@
+id,header,description,comment,primary
+id,Identifier,A unique identifier for this initiative,"As a consequence of needing to name generated static files with these 
+identifiers, which will then be published by a web server, they must be
+both a) valid as a portion of a file-name on the (typically, Unix) 
+host's file system, and b) as a URI segment as defined by RFC3986 
+<https://tools.ietf.org/html/rfc3986#section-3.3>
+",true
+name,Name,"","",false
+description,Description,"","",false
+organisational_structure,Organisational Structure,"","This was known as legal_form. The allowed values are taken from the
+ESSGLOBAL specification.
+",false
+primary_activity,Primary Activity,"","",false
+activities,Activities,"","",false
+street_address,Street Address,"","",false
+locality,Locality,"","",false
+region,Region,"","",false
+postcode,Postcode,"","",false
+country_id,Country ID,"","",false
+territory_id,Territory ID,"","",false
+homepage,Website,"","",false
+phone,Phone,"","",false
+email,Email,"","",false
+twitter,Twitter,"","",false
+facebook,Facebook,"","",false
+companies_house_number,Companies House Number,"","",false
+qualifiers,Qualifiers,"Additional qualifiers on the initiative. Allowed values are zero or more
+term URIs from a relevant vocabulary, separated by semi-colons.","",false
+base_membership_type,Membership Type,"The membership type of the initiative. Allowed values are zero or one term
+URIs from a relevant vocabulary.","",false
+latitude,Latitude,"","",false
+longitude,Longitude,"","",false
+geocontainer,Geo Container,"","",false
+geocontainer_lat,Geo Container Latitude,"","",false
+geocontainer_lon,Geo Container Longitude,"","",false
+geocontainer_confidence,Geo Container Confidence,"","",false
+geocoded_addr,Geocoded Address,"","",false

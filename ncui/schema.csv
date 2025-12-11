@@ -1,0 +1,9 @@
+id,header,description,comment,primary
+id,Identifier,,,true
+name,Name,,,
+descr,Description,,,
+country_id,Country ID,,,
+addr,Geocoded Address,,,
+cwca,CWC Activities,,,
+cwcbmc,CWC Base Membership Type,,,
+ncui_cat,NCUI Category,,,
