@@ -1,0 +1,118 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+# A special case converter for Cooperar data
+
+require 'se_open_data/setup'
+require 'se_open_data/csv/schema/types'
+require 'se_open_data/lookup'
+require 'domain_extractor'
+#require 'normalize_country'
+
+
+
+# A class which defines callback methods #on_header, #on_row, and #on_end, 
+# that are called during the conversion process.
+class Observer < SeOpenData::CSV::Schema::Observer
+  Types = SeOpenData::CSV::Schema::Types
+
+  # Set up anything persistent you need here  
+  def initialize(setup:)
+    super()
+
+    # Create a geocoder
+    @geocoder = setup.geocoder
+  end
+
+  def url(text)
+    return if text == '' || text == nil
+    Types.normalise_url(text, throw: true)
+  end
+
+  # Called with an array of header fields, and a field_map, which
+  # is an array of integers denoting the schema index for each header
+  def on_header(header:, field_map:)
+    @ix = 0
+  end
+  
+  def on_row(
+        # These parameters match source schema field ids
+        id:,
+        name:,
+        rough_address:,
+        website:,
+        rough_activity:,
+        lat:,
+        lng:,
+        street:,
+        city:,
+        region:,
+        postcode:,
+        country_id:,
+        os:,
+        bmt:,
+        pa:
+      )
+
+    # Examples of common preliminary steps:
+    addr = Types.normalise_addr(street,city,region,postcode,"Argentina")
+    @ix += 1
+    raise "no name" unless name.to_s != "" # protect against absent names
+    
+    warn "row #{@ix} #{name}; #{addr}"
+    # country_id = NormalizeCountry(country)
+    geocoded = @geocoder.call(addr)
+
+    cc = geocoded&.original&.data&.dig("properties", "country_code")&.upcase
+    if cc != "AR"
+      warn "geocoding is not in Argentina, ignoring. #{[id, name, addr]}"
+      geocoded = nil
+    end
+
+    domain = if website && DomainExtractor.valid?(website)
+               DomainExtractor.parse(website)[:root_domain]
+             end
+        
+    # Replace these with the actual values to write.
+    # You may yield zero or many times if desired, and the equivalent number
+    # of rows will be emitted.
+    yield id: id,
+          name: name,
+          description: nil,
+          organisational_structure: nil,
+          primary_activity: nil,
+          activities: nil,
+          street_address: street,
+          locality: city,
+          region: region,
+          postcode: nil,
+          country_id: cc,
+          territory_id: nil,
+          homepage: website,
+          phone: nil,
+          email: nil,
+          twitter: nil,
+          facebook: nil,
+          companies_house_number: nil,
+          qualifiers: nil,
+          base_membership_type: nil,
+          latitude: nil,
+          longitude: nil,
+          geocontainer: geocoded&.osm_uri,
+          geocontainer_lat: geocoded&.lat,
+          geocontainer_lon: geocoded&.lng,
+          geocontainer_confidence: geocoded&.confidence,
+          geocoded_addr: addr,
+          domain: domain
+    
+  end
+  
+  # Called after all the rows have been processed
+  def on_end
+  end
+
+end
+
+SeOpenData::Setup
+  .new
+  .convert_with(observer: Observer)

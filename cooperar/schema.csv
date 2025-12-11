@@ -1,0 +1,16 @@
+id,header,description,comment,primary
+id,Identifier,,,true
+name,Name,,,
+rough_address,Rough Address,,,
+website,Website,,,
+rough_activity,Rough Activity,,,
+lat,Latitude,,,
+lng,Longitude,,,
+street,Street Address,,,
+city,City,,,
+region,State/Region,,,
+postcode,Postcode,,,
+country_id,Country ID,,,
+os,Organisational Structure,,,
+bmt,Base Membership Type,,,
+pa,Primary Activity,,,
