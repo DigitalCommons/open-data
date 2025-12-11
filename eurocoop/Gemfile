@@ -1,0 +1,3 @@
+source "https://rubygems.org"
+gem "se_open_data", :github => "DigitalCommons/se-open-data", :tag => "v2.5.1"
+gem "domain_extractor"

@@ -1,0 +1,11 @@
+id,header,description,comment,primary
+identifier,Identifier,,,true
+name,Name,,,
+country,Country,,,
+country_code,Country code,,,
+rough_address,Rough Address,,,
+street,Street,,,
+city,City,,,
+postcode,Postal Code,,,
+website,Website,,,
+bmt,Base Membership Type,,,
