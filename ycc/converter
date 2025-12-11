@@ -42,11 +42,33 @@ class Observer < SeOpenData::CSV::Schema::Observer
 
     # Create a geocoder
     @geocoder = setup.geocoder
+    # Center coordinates for the Philippines
+    @center_lat = 12.8797
+    @center_lon = 121.7740
   end
 
   def url(text)
     return if text == '' || text == nil
     Types.normalise_url(text, throw: true)
+  end
+
+  # This was generated using Duck.ai
+  #
+  # A radius calculated to include all of the Philippine archipelago is 1800km
+  def km_from_philippines(latitude, longitude)
+    
+    # Haversine formula to calculate distance
+    dlat = (latitude - @center_lat) * Math::PI / 180
+    dlon = (longitude - @center_lon) * Math::PI / 180
+
+    a = Math.sin(dlat / 2) ** 2 +
+        Math.cos(@center_lat * Math::PI / 180) * Math.cos(latitude * Math::PI / 180) * Math.sin(dlon / 2) ** 2
+    c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+    # Distance in kilometers
+    distance = 6371 * c
+
+    return distance
   end
 
   # Called with an array of header fields, and a field_map, which
@@ -67,10 +89,30 @@ class Observer < SeOpenData::CSV::Schema::Observer
     # Examples of common preliminary steps:
     addr = Types.normalise_addr(address,city,region,'Republic of the Philippines')
     @ix += 1
-    warn "row #{@ix} #{name}"
+    return unless name.to_s != "" # protect against empty names (they exist!)
+    
+    warn "row #{@ix} #{name}; #{addr}"
     # country_id = NormalizeCountry(country)
     geocoded = @geocoder.call(addr)
 
+    # Try to reverse-geocode the location we get, and check if it's in the Phillipines.
+    # If not, discard this location
+    if geocoded && geocoded&.lat && geocoded&.lng
+#      result = @geocoder.call([geocoded.lat, geocoded.lng])
+      cc = geocoded.original&.data.dig("properties", "country_code")
+      if cc != "ph"
+        warn "Geocoder returned Non-Phillipino location, "
+        +" ignoring. #{[cc, @ix, name]}"
+        geocoded = nil
+      end
+      # range = km_from_philippines(geocoded.lat, geocoded.lng)
+      # if range > 1800
+      #   warn "Geocoder returned Phillipino location outide geographic bounds circle,"
+      #   +" ignoring. #{[range, @ix, name]}"
+      #   geocoded = nil
+      # end
+    end
+    
     # Replace these with the actual values to write.
     # You may yield zero or many times if desired, and the equivalent number
     # of rows will be emitted.
