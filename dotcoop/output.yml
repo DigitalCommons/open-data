@@ -77,7 +77,17 @@ fields:
 - id: :homepage
   header: Website
   desc: An optional valid URL for the initiative's main web page
-  comment: ''
+  comment: |
+    This was historically abused for DotCoop data as a place to store
+    the .coop domains registered by an organisation. (Or going back
+    further, registrant, where registrant != organisation. Even now
+    some cases slip through the net upstream where registrants haven't
+    been identified as the same organisation)
+
+    There is now a Domains field for that added for the Coop World Map
+    project. Therefore this field should become empty once the DotCoop
+    map is updated to consume the Domains column below. But until
+    then, retain it here.
 - id: :phone
   header: Phone
   desc: An optional valid contact telephone number for the initiative
@@ -165,3 +175,7 @@ fields:
   header: Member Of
   desc: Parent organisations this organisations is a member of
   comment: Zero or more organisation IDs delimited with semi-colons
+- id: :domains
+  header: Domains
+  desc: .coop domains this organisation has registered
+  comment: Zero or more domain names delimited with semi-colons

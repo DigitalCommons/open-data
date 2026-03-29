@@ -248,7 +248,9 @@ module DotCoop
       postcode: post_code,
       country_id: country_id,
       territory_id: nil,
-      homepage: domain_urls.join(';'),
+      # This deserves to go empty once the DotCoop map is updated to consume the
+      # domains column below. Until then, retain it here.
+      homepage: domain_urls.join(';'), 
       phone: nil,
       email: nil,
       twitter: nil,
@@ -266,6 +268,7 @@ module DotCoop
       econ_sector_id: sector,
       org_category_id: category,
       member_of: member_of,
+      domains: domains.map { |domain| domain['name'].downcase.strip }.join(';'),
     }
 
     
