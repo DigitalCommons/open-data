@@ -100,7 +100,7 @@ module Converter
             postcode: zip,
             country_id: 'US',
             territory_id: nil,
-            homepage: website,
+            homepage: Types.normalise_url(website, full_url: true),
             phone: nil,
             email: nil,
             twitter: nil,
