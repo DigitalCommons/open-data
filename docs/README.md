@@ -1,366 +1,468 @@
-## Management
-[@ColmMassey](https://github.com/ColmMassey) is currently responsible for this repository. Create an issue tagging him, to get in touch.
+# Open Data
 
-## Generating and deploying Linked Open Data
+This repository contains the scripts used to fetch, normalise and
+publish third party datasets of varying quality, such that downstream
+users / processes can consume the data in a high-quality form:
+specifically [Five Star] grade [Linked Open Data][LOD]. (Also, three and
+four star data is generated en-route and published in addition.)
 
-There are four main parts to generating Linked Open Data for SEA projects.
+The main use to date is for publishing interactive maps of that data
+using the software [MykoMap v4.x][MykoMap] and [MykoMap v3.x].
 
-1. Converting data into standard format
-2. Generating RDF/TTL/HTML files from the standard format
-3. Deploying files to the server
-4. Populating the triplestore
+The normalisation processes herein at the time of writing all use the
+conversion framework defined in [se-open-data]. As such they are
+mostly intended for data consisting of lists of organisations in the
+[Social and Solidarity Economy][SSE]. See the [se-open-data]
+documentation for a more in-depth explanation than is warranted here.
 
-## Prerequisites
+> [!NOTE]
+> 
+> These usages are not intended to be a functional requirement of the
+> any of the software above, although they do inform many of the
+> assumptions.
 
-### Use a Unix/Linux environment (Mac, Ubuntu, etc)
+> [!NOTE]
+>
+> This is a Digital Commons Cooperative project. Please follow the
+> [contribution guidelines] if you wish to participate.
+> 
+> For questions or to get involved, please create an issue tagging 
+> [@ColmMassey](https://github.com/ColmMassey).
 
-Our processes heavily rely on [Gnu Make](https://www.gnu.org/software/make/) which requires a unix based operating system.
+> [!TIP]
+> 
+> Historically, you may find documents or issues referring to this
+> project as the "Sausage Machine" or the "Sausage Factory". We
+> generally use the term "data pipeline" for the wider process
+> (including the downstream steps), or "SE open data","open data" or
+> "normalisation pipeline" for this specific component.
 
-If you're running Windows 10 then [we recommend installing Ubuntu](https://www.microsoft.com/en-gb/p/ubuntu/9nblggh4msv6). Files on Windows can be accessed from within Ubuntu via the path `/mnt/c`
+## Inputs and outputs
 
-### Install required development tools
+See the description of input and output data in the [se-open-data]
+documentation.
 
-**macOS:**
+## Consumers of this data
 
-1. Open **Terminal** (it is located in `Applications/Utilities`)
-2. In the terminal window, run the command `xcode-select --install`
-3. In the windows that pops up, click **Install**, and agree to the _Terms of Service_.
+Current processes which consume the data output within Digital Commons
+are described below.
 
-macOS is Unix based so it's similar to Linux. It doesn't, however, come with a package manager. There are two popular options, [Homebrew](https://brew.sh/) and [MacPorts](https://www.macports.org/). Both are great and will do what you need but what you use will come down to personal preference. Personally I chose Homebrew due to its ease of use.
+### DotCoop, ICA, Workers.coop
 
-To install Homebrew, run the command
-`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+These datasets are used to publish maps on the respective membership
+organisations' websites. [MykoMap v3.x] maps could use the CSV files
+directly, [MykoMap] v4.x requires them to be converted into its own
+internal dataset format.
 
-**Ubuntu:**
+### Cooperative World-Map
 
-1. Run `sudo apt-get update` to make sure you have the most recent package version and dependency information
-2. Run `sudo apt-get install build-essential patch ruby-dev zlib1g-dev liblzma-dev git`
+Datasets which are lists of co-operative organisations are consumed by
+the [data pipelines] project.  That merges them into a single dataset,
+via further normalisations and unification of duplicate entries using
+various heuristics.
 
-### Get Required Secure Files
-To build the data you will need to have:
-- a file containing the original csv data we are importing (this is currently needed only for the dotcoop deployments), this is placed in the original-data folder in the data you want to publish (e.g. open-data/dotcoop/domains2019-10-03/original-data/DataFile.csv)
-- an API key. This is just a text file for the current version. File must be placed at open-data/APIs/key.txt (keep the name of the file given, the only key we are storing now is geoapifyAPI.txt)
-- a cache file containing cached api requests (this is currently needed only for the dotcoop deployments), this is placed in the top level directory of the data you want to publish (e.g. open-data/dotcoop/domains2019-10-03/thecachefile.json)
+This is then converted into a dataset (or datasets) suitable for
+[MykoMap] v4.x.
 
-To get these files you may request them from the repository manager. (See top of this page.)
+## Project Structure
 
-### Install Ruby and required packages (Gems)
+For the most part, each subdirectory is dedicated to a specific
+upstream dataset.
 
-**macOS:**
-macOS comes with Ruby preinstalled so you can skip this step – unless you want to install the latest stable version, in which case you can run the following:
-`brew install ruby`
+The directory name is typically an identifier used to represent that
+dataset.
 
-**Ubuntu:**
+Exceptions to this rule are:
 
-```
-sudo apt-get install ruby
-```
+- `docs/` - documentation files (such as this).
+- `tools/` - tools and scripts.
+- `tools/deploy/` - deployment scripts, see [Automated Use](#Automated Use).
+- `caches/` - a .gitignored folder, in which temporary files are
+  cached (notably geocoding data)
+- `.github/` - GitHub specific configuration files.
 
-The Ruby scripts for generating RDF/TTL files rely on a package called `linkeddata` which in turn depends on an HTML, XML, SAX, and Reader parser called [Nokogiri](https://nokogiri.org/). There are also some other dependencies you'll need. The commands for installing these are the same for macOS and Ubuntu.
+## Requirements
 
-```
-sudo gem install nokogiri
-sudo gem install linkeddata
-sudo gem install prawn
-sudo gem install prawn-table
-sudo gem install levenshtein
-sudo gem install opencage-geocoder
-```
+- Unix/Linux environment. Windows users are advised to use WSL.
+- Ruby and Bundler (requirements as for the [se-open-data] Gem)
 
-### Make a local clone the repository
+Optionally:
+- [ssh] access to any servers used for deployment
+- Passwords for any [Virtuoso] databases used for deployment
+- Passwords and API keys required for services used by specific datasets
 
-To make a local clone of the repository, run the following command in your terminal:
+[ssh] access is typically configured via the [ssh config] in your
+account, and will depend on the servers in question. Developers are
+assumed to know how to do this, and describing it is out of scope of
+this document.
 
-```
-git clone https://github.com/SolidarityEconomyAssociation/open-data.git
-```
+For interactive use, the passwords and API keys are typically assumed
+to be stored in an encrypted [Password Store] repository, such that
+they can be retrieved using the `pass` command.
 
+For non-interactive use, these secrets are typically assumed to be
+available in environment variables.
 
-### Access to the server and Virtuoso
+Both cases are described in more detail in the [se-open-data]
+documentation.
 
-In order to deploy the files to the web server you will need SSH access to the server. This will require you to generate an SSH Key and have someone with server access add the public key to ~/.ssh/authorised_keys for each account you need access to.
+## Manual or Automated use?
 
-If you already have access to the server, you can grant new machines access.
+The normalisation processes can be invoked:
 
-#### Generating SSH keys
+- Manually by the user. *(This is the typical case for datasets which
+  cannot be obtained online, needing to be downloaded / extracted and
+  potentially inspected before conversion)*
+- Automatically by a [cron-job][cron] or [systemd service][systemd]. 
+  *(This is the typical case for datasets which can be obtained online
+  in a high-quality form which does not need manual oversight to
+  process)*
 
-To generate SSH keys, follow these steps:
+Obviously the latter is preferable in most cases, but the former use
+is nevertheless useful for diagnostics and development, even were all
+the sources handled by the latter case.
 
-In macOS, enter the following command in the Terminal window.
+There is a script included which can automate the later case, and a
+deployment script to install it as a user-mode service. See
+[Deployment](#Deployment).
 
-```
-ssh-keygen -t rsa
-```
+For a more comprehensive explanation of the conversion process, see
+the documentation in the [se-open-data] Gem.
 
-In Ubuntu, enter the following command.
+## Manual Usage Synopsis
 
-```
-ssh-keygen
-```
+This is a short overview of the manual process, described more fully
+in the documentation for the [se-open-data] gem, but included here as
+a quick start reminder.
 
-This starts the key generation process. When you execute this command, the ssh-keygen utility prompts you to indicate where to store the key.
+It is a command-line process assumed to be run in a Linux Bash shell,
+and should be executed with the prescribed
+[requirements](#Requirements) in place.
 
-Press the ENTER key to accept the default location. The ssh-keygen utility prompts you for a passphrase.
+Assuming the project is defined by the variable `$PROJECT_NAME`, and
+the `password-store` project is checked out in the directory
+`$PASSWORD_STORE_WORKING_DIR`, then the steps are:
 
-Type in a passphrase. You can also hit the ENTER key to accept the default (no passphrase). However, this is not recommended.
-Warning! You will need to enter the passphrase a second time to continue.
+```bash
+# set environment for access to passwords/api keys in the password-store repo
+. $PASSWORD_STORE_WORKING_DIR/env-setup
 
-After you confirm the passphrase, the system generates the key pair.
+# Remember to update working directory if necessary
+git pull
 
-```
-Your identification has been saved in /Users/myname/.ssh/id_rsa.
-Your public key has been saved in /Users/myname/.ssh/id_rsa.pub.
-The key fingerprint is:
-ae:89:72:0b:85:da:5a:f4:7c:1f:c2:43:fd:c6:44:38 myname@mymac.local
-The key's randomart image is:
-+--[ RSA 2048]----+
-|                 |
-|         .       |
-|        E .      |
-|   .   . o       |
-|  o . . S .      |
-| + + o . +       |
-|. + o = o +      |
-| o...o * o       |
-|.  oo.o .        |
-+-----------------+
-Your private key is saved to the id_rsa file in the .ssh directory and is used to verify the public key you use belongs to the same account.
-```
+# navigate into the appropriate dataset project directory
+cd $PROJECT_NAME
 
-⚠️ Never share your **private** key with anyone!
+# install the dependencies
+bundle install
 
-Your public key is saved to the id_rsa.pub;file and is the key you upload to your Triton Compute Service account.
+# Get the original upstream data... This varies from dataset to dataset.
+# But if it is automated, you can do this:
+bundle exec seod download
 
-On macOS, you can save this key to the clipboard by running this:
-
-```
-pbcopy < ~/.ssh/id_rsa.pub
-```
-
-On Ubuntu, you will need to `cat` the key and copy it manually:
-
-```
-cat ~/.ssh/id_rsa.pub
-```
-
-#### Authorising keys on the remote server
-
-To be able to log into the remote server via `ssh` from a new machine, the machine needs to be whitelisted. This is done by adding the public key from the machine to a file called `authorized_keys` that's found in the .ssh folder in the home folder of the user account that you want access to (`/home/user/.ssh` or `~/.ssh` if you're currently logged in to that account).
-
-Assuming you still have the public key copied to your clipboard, run the following on the remote server:
-
-```
-nano ~/.ssh/authorized_keys
-```
-
-And paste the public key on a new line at the end of the file. You can add a space and an identifier to the end of the key if you like (anything after the space is ignored and can be used as a note).
-
-To be able to use the scripts in this document you'll need to do this on the accounts `joe` and `admin`.
-
-On the machine you're running the scripts from, add the following to a file called `config` in your local `.ssh` folder.
-
-```
-nano ~/.ssh/config
-```
-
-```
-Host sea-0-joe
- Hostname 51.15.116.30
- Port 22
- IdentityFile ~/.ssh/id_rsa
- HostbasedAuthentication yes
- PubkeyAuthentication yes
- PasswordAuthentication no
- User joe
-
-Host sea-0-admin
- Hostname 51.15.116.30
- Port 22
- IdentityFile ~/.ssh/id_rsa
- HostbasedAuthentication yes
- PubkeyAuthentication yes
- PasswordAuthentication no
- User admin
+# Run the conversion, data generation, and deployment steps in sequence.
+bundle exec run_all
 ```
 
-A username and password will also be required to access Virtuoso Conductor (the triplestore). I've put this on the wiki.
+> [!TIP]
+>
+> You can split that last step into sub-commands, see the
+> [se-open-data] documentation for details.
 
-## Converting data into standard format.
+## Automated Use
 
-This process involves taking a source CSV (the data about initiatives that's collected by the mapping project coordinators) and converting it into a CSV that adheres to a standard format ([read a description of what's happening](#converting-the-data))
+For automated use, this repository is typically deployed by `git
+clone`-ing it into a dedicated user account, with a user-mode
+[systemd] timer invoking the script `tools/deploy/cronjob`. (So named
+because previously a system [cron-job][cron] was used).
 
-To start the process, navigate into the folder for the project you're working on:
+Before running the `cronjob` itself, typically the git repository is
+pulled to get the latest version.
 
-```
-cd [project_name]/[project_version]/
-```
+This `cronjob` script requires certain configuration parameters to be
+supplied in environment variables. The deployment needs to set up the
+service such that these are correct, and schedule the job to be run
+periodically.
 
-Place your original data in the folder name 'original-data' and follow the naming convention of the files in there. You'll now need to make a change to the csv.mk file before running it to make sure it knows to use the new source data.
+All of this set-up is automated by a script, `deploy.sh`, described next.
 
-Open the file in a text editor and look for the line (the start and end may be slightly different to this)
+### Deployment
 
-```
-ORIGINAL_CSV := $(SRC_CSV_DIR)2019-09-17-original.csv
-```
+The typical installation process is automated by the script
+`deploy.sh`, which you will find in the directory `tools/deploy/`.
 
-Change the text after `$(SRC_CSV_DIR)` to match the filename of your new source data. Save and close the file.
+> [!NOTE]
+> 
+> There used to be an Ansible script which performed the preparation
+> and setup for installation, but this method supersedes that.
 
-Now run the csv.mk Makefile
+The script itself should be inspected, and includes detailed inline
+documentation. 
 
-```
-make -f csv.mk edition=experimental
-```
+Essentially you just set your requirements in the environment, and run
+the script within the user account dedicated for the purpose. It will
+preserve these settings in a file `~/.env`, which should be readable
+only by the hosting user account, and perform any other necessary
+installations or configuration.
 
-The -f flag tells make you want it to run a named Makefile, in this case csv.mk. The editions=experimental variable provides us with a way to work in multiple environments depending on our needs. We might, for instance, want to try something new out without overwriting existing data. The options for each edition are stored in `editions/[name].mk`.
+It uses the helper script, `post-pull.rb` to perform much of the
+setup. 
 
-Once run, `standard.csv` will be placed in the `generated-data/[edition]/` folder and `initiatives.csv` and `report.csv` will be placed in `generated-data/[edition]/csv/`. `initiatives.csv` is used as an intermediate when generating `standard.csv`. `report.csv` will contain any notes generated in the process – these will appear in the final column alongside the initiative the note relates to.
+This pair of scripts were designed such that:
 
-In the case of an error, you will need to manually remove these files to run the Makefile again:
+- `deploy.sh` performs the one-time setup for the initial
+  deployment. The administrator runs this once to deploy.
+- `post-pull.rb` performs the set-up which is needed whenever the
+  repository is updated. It is run by the service, prior to the
+  `cronjob` script.
 
-```
-rm -rf generated-data/[edition]/csv
-rm generated-data/[edition]/standard.csv
-rm generated-data/[edition]/www/doc/*.*
-```
+Note, a consequence of this is that the `.env` file created by
+`deploy.sh` process is the "source of truth", and modifications to
+other scripts or configuration files (e.g. `~/.forward`) will be
+overwritten the next time the service runs `post-pull.rb`.
 
-## Generate RDF/TTL/HTML files from standard CSV
+> [!WARNING]
+>
+> Make sure that `~/.env` remains readable *only to the hosting user
+> account* when you modify it.
 
-The following step is to generate the RDF, TTL, HTML representations of the data. From the same location, run the following command:
+### Diagnostics
 
-```
-make -f ../../tools/se_open_data/makefiles/generate.mk edition=experimental
-```
+Diagnostics and errors are assumed to be written to standard output /
+standard error (as `seod` does). When run as a systemd service, this
+will be persisted using the systemd journal.  This means it can be
+inspected using `journalctl`.
 
-The generated files will have been placed in the `generated-data/[edition]/www` folder. Like the CSV files, you may occasionally need to manually remove this folder to run the Makefile again.
+> [!TIP]
+>
+> You may also wish to enlarge the default journal size limit,
+> otherwise when you inspect the log the parts you are interested in
+> it may have been discarded.
+>
+> Check the systemd documentation for how to do that (which is outside
+> the scope of this document).
 
-## Deploy files to server
+Errors are also emailed to an email address used for this purpose. It
+is set as a parameter given to `deploy.sh`, and therefore persisted in
+`~/.env` - change it there if you need to modify it after initial
+deployment.
 
-(Requires server access)
+Emails include suspicious lines (those sent to standard error) and the
+current service status.This should be enough to determine whether a
+deeper investigation is warranted, which can be done by inspecting the
+journal logs, and any data files cached in `original-data/` or
+`generated-data/` directories within the checked-out `open-data`
+working directory.
 
-In order for the triplestore to be populated, the files need to be deployed to the webserver. To do this, run the command
-
-```
-make -f ../../tools/se_open_data/makefiles/deploy.mk edition=experimental --dry-run
-```
-
-Since running the script will delete live files, the `dry-run` flag allows you to make sure you're deploying to the correct location first. If you're happy, run the same script again without the `--dry-run` flag.
-
-```
-make -f ../../tools/se_open_data/makefiles/deploy.mk edition=experimental
-
-```
-
-
-### Known Issues: 
-When deploying a large number of files, the process which synchronises the local directory with the one on the remote server can hang, perhaps due to printing out large amounts of log information. If this is observed you may need to manually run the rsync command and disable the -v option. See [issue](https://github.com/SolidarityEconomyAssociation/open-data-and-maps/issues/174). 
-
-
-## Generate graph and upload to triplestore
-
-One the files are live, the triplestore needs to be populated. To do this, run the following command and look out for the message at the end - this is a multi-step process.
-
-```
-make -f ../../tools/se_open_data/makefiles/triplestore.mk edition=experimental
-```
-
-Once this is complete you should see the following message at the bottom of the output:
-
-```
-**** IMPORTANT! **** **** The final step is to load the data into Virtuoso with graph named https://w3id.solidarityeconomy.coop/sea-lod/[graph]/:
-**** Execute the following command, providing the password for the Virtuoso dba user:
-**** ssh sea-0-admin 'isql-vt localhost dba <password> /home/admin/Virtuoso/BulkLoading/Data/[some_numbers]/loaddata.sql'
-```
-
-Before you run the last command, you need to open up the [Graph view in Virtuoso Conductor](http://store1.solidarityeconomy.coop:8890/conductor/sparql_graph.vspx?sid=b1d624245c8092f7b246d8fa1da05743&realm=virtuoso_admin) (requires login) and remove the existing graph (beware - this is irreversible so make sure you remove the right one. The one you're looking for is listed in the message above after the text "\*\*\*\* The final step is to load the data into Virtuoso with graph named").
-
-Once you've deleted the graph, come back to your command line, copy and paste the line starting `ssh sea-0-admin` from the message. Now replace ,password. with the virtuoso password and run the command.
-
-```
-ssh sea-0-admin 'isql-vt localhost dba <password> /home/admin/Virtuoso/BulkLoading/Data/[some_numbers]/loaddata.sql'
-```
-
-### Known Issues: 
-1 You can probably ignore this Conductor logged [error message](https://github.com/SolidarityEconomyAssociation/open-data-and-maps/issues/172).  
-2 Don't use browser refresh to see if a graph has been deleted or uploaded to the triple store. It can be fatal. See [here](https://github.com/SolidarityEconomyAssociation/open-data-and-maps/issues/173).
-
-
-When this has finished, check that it has been added to the list of graphs in Virtuoso. Very occasionally it doesn't appear in the list and will need to be added again. In this situation, just run the last command in your terminal again.
-
-## Further reading/explanations
-
-### [Converting the data](#converting-the-data)
-
-This standard format is defined in the module [SeOpenData::CSV::Standard::V1](../tools/se_open_data/lib/se_open_data/csv/standard.rb). At the time of writing, this contains the following:
+For example:
 
 ```
-id: "Identifier",
-name: "Name",
-description: "Description",
-organisational_structure: "Organisational Structure",
-primary_activity: "Primary Activity",
-activities: "Activities",
-street_address: "Street Address",
-locality: "Locality",
-region: "Region",
-postcode: "Postcode",
-country_name: "Country Name",
-homepage: "Website",
-phone: "Phone",
-email: "Email",
-twitter: "Twitter",
-facebook: "Facebook",
-companies_house_number: "Companies House Number",
-latitude: "Latitude",
-longitude: "Longitude",
-geocontainer: "Geo Container",
-geocontainer_lat: "Geo Container Latitude",
-geocontainer_lon: "Geo Container Longitude"
+● se_open_data.service - Rebuilds the datasets in /home/carrot/gitworking
+     Loaded: loaded (/home/carrot/.config/systemd/user/se_open_data.service; disabled; vendor preset: enabled)
+     Active: deactivating (stop-post) (Result: exit-code) since Mon 2026-05-18 03:13:53 UTC; 9ms ago
+TriggeredBy: ● se_open_data.timer
+    Process: 3228287 ExecStart=bash -c . "$ASDF_DIR/asdf.sh" && "$SYNC_AND_RUN" (code=exited, status=1/FAILURE)
+   Main PID: 3228287 (code=exited, status=1/FAILURE); Control PID: 3231470 (post-sync)
+      Tasks: 3 (limit: 9239)
+     Memory: 271.4M
+        CPU: 2min 35.043s
+     CGroup: /user.slice/user-7003.slice/user@7003.service/app.slice/se_open_data.service
+             ├─3231470 /bin/bash /home/carrot/post-sync se_open_data.service
+             ├─3231471 systemctl --user status se_open_data.service
+             └─3231472 mail -s "FAILED (exit-code/exited): se_open_data.service" carrot
+
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     !         from /home/carrot/gitworking/caches/gems/se-open-data-7ff5f4af87cd/lib/se_open_data/cli.rb:1289:in `head'
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     !         from /home/carrot/gitworking/caches/gems/se-open-data-7ff5f4af87cd/lib/se_open_data/cli.rb:1309:in `etag'
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     !         from /home/carrot/gitworking/caches/gems/se-open-data-7ff5f4af87cd/lib/se_open_data/cli.rb:586:in `http_download'
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     !         from /home/carrot/gitworking/caches/gems/se-open-data-7ff5f4af87cd/lib/se_open_data/cli.rb:1202:in `method_missing'
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     !         from /home/carrot/gitworking/workers-coop/downloader:13:in `<main>'
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3231248]:     ! E, [2026-05-18T03:13:53.862251 #3231247] ERROR -- /home/carrot/gitworking/caches/gems/se-open-data-7ff5f4af87cd/lib/se_open_data/cli.rb: stopping, download failed
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3228549]: FAILED workers-coop (return code 1)
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3228549]: FINISHING with 1 failed: workers-coop
+May 18 03:13:53 dev-2.digitalcommons.coop bash[3228287]: ABORTING, script failed (return code 0): /home/carrot/gitworking/tools/deploy/cronjob
+May 18 03:13:53 dev-2.digitalcommons.coop systemd[1081]: se_open_data.service: Main process exited, code=exited, status=1/FAILURE
 ```
 
-The text to the left of the colon is the key or symbol that's used to reference the values internally – we'll get back to this. The text to the right of the colon is the name that will be used for each field in the standard CSV that's generated. For example, the CSV headers will appear like this, with each of the initiative's Identifiers appearing on the Identifier column, names in the Name column and so on:
+In the above example, the `workers-coop` dataset failed, or more
+specifically, its download script failed.
 
-```
-| Identifier | Name | Description | ... | Geo Container Latitude | Geo Container Longitude |
-```
+> [!TIP]
+> 
+> Lines labelled `FAILED &lt;dataset ID%gt;` are printed in the logs
+> for each failure.
+>
+> The penultimate line labelled `FINISHING` indicates which datasets failed
+> to process to completion - the directories (AKA dataset IDs) are listed.
+>
+> The email subject will have the form `FAILED (&lt;reason&gt;):
+> se_open_data.service`. The `&lt;reason&gt;` tag will be
+> `success/killed` of the service was interrupted, or
+> `exit-code/exited` if it failed of its own accord).
+>
 
-Within each project there is a script called `converter.rb`. These can be found in each of the `data/[project_name]/[project_version]/ folders.
+> [!TIP]
+>
+> The `seod` command can be run in the context of the checked-out
+> `open-data` repository, but you need to have the environment set up.
+>
+> Here are some suggested steps to run the conversion process:
+> - `ssh` into the server
+> - `sudo su - $SEOD_USERNAME` - where `$SEOD_USERNAME` is the user account it
+>   was installed within, typically `carrot`
+> - `cd $SEOD_WORKING_DIR` - where `$SEOD_WORKING_DIR` is the
+>   directory the `open-data` repository is checked out as, typically `gitworking`
+> - `cd $DATASET_ID` - where `$DATASET_ID` is the dataset directory you're
+>   interested in, e.g. `dotcoop`
+> - `bundle install` - if it hasn't been executed already
+> - `bundle exec $SHELL` - to get the Ruby environment set up
+> - `alias loadenv='while IFS="=" read -r a b; do export "$a"="$b" ;
+>   done'` - define this handy alias for loading a .env file - alternatively
+>   define it in the user's `~/.bashrc` file
+> - `loadenv <~/.env` - load the environment from `~/.env`
+> - `seod run_all` - finally! - or alternatively, whichever command you need.
 
-`converter.rb` takes the values from the input CSV and pipes them into the output CSV. The data can either be passed straight through to the output or it can be processed before passing it on.
+#### Systemd journalling
 
-To pass the data through just assign the header name to the symbol from the standard. For instance, if the files that we want to use as the Identifier is in a field called ID in the source data then `InputHeaders` should contain a key of id (the symbol for Identifier in the output) with a value of ID (the header of the field containing the Identifier in the source). E.g.:
+Assuming the service is called `se_open_data`, the status of the
+service can be checked with:
 
-```
-InputHeaders = {
-id: "ID",
-name: "Name",
-description: "Description"
-}
-```
+    systemctl --user statust se_open_data
 
-When the script is run, it will run through each row in the source CSV and place each item in the ID column in the Identifier column of the output, the Name fields in the Name output column and the Description fields in the Description column.
+This command can also be used to start and stop the service. Check the
+man page for `systemctl` for other useful options.
 
-If we need to change any of the source data or process it in some other way – checking for validity for instance - then we can define a method with the same name as the symbol we want to populate. The output of the method will then be passed to the output. For instance, if we want to combine several fields from the input into one in the output we can use the following:
+The journals for this service can be inspected like so:
 
-```
-InputHeaders = {
-id: "ID",
-name: "Name",
-description: "Description"
+    journalctl --user -u se_open_data
 
-# ... Other headers
+Check the man page for `journalctl` for useful options. Notably `-f`
+to watch the journal, and `-S $TIMESPECIFIER` to limit the amount of
+journals shown. `-S "1h ago"` will show the journal entries seen in
+the last hour.
 
-address1: "Address1",
-address2: "Address2",
-address3: "Address3"
-}
+> [!TIP]
+>
+> When searching the journal output, use `grep` to search for:
+> - Individual dataset statuses:
+>   - `PROCESSING`
+>   - `SUCCEEDED`
+>   - `NO CHANGES`
+>   - `FAILED`
+> - Overall dataset statuses:
+>   - `FINISHING` - if the script reached the end
+>   - `ABORTING` - if the script was interrupted
 
-def street_address
-[
-!address1.empty? ? address1 : nil,
-!address2.empty? ? address2 : nil,
-!address3.empty? ? address3 : nil
-].compact.join(OutputStandard::SubFieldSeparator)
-end
-```
+> [!TIP]
+>
+> You can adjust the log level by setting the `SEA_LOG_LEVEL` variable
+> in `~/.env`, as per the documentation in [se-open-data].
 
-This method returns a string made up of the three fields address1, address2 and address3 (if they're populated). Each of these fields have been added to the InputHeader map so they can be referenced in the method.
+## Development vs Production
+
+Historically, there were two deployments of this project: one for
+development data, one for production data. (And yet another would be
+the developer's working directory.)
+
+This was to allow for production to be running a "tried and tested
+version" of the code whilst also having a "development version" of it.
+
+However, because [Linked Open Data][LOD] uses self-resolving URIs for
+entity identifiers, and these resolve in the *global* context of the
+internet, if the two deployments shared the same URIs then changes to
+the SKOS schemas in *development* would potentially conflict with
+those in *production*.
+
+This can probably be dealt with in various ways, but the one in use
+was to define two sets of each vocabulary - the production one, and a
+development version, which used a host-name prefixed with the `dev.`
+subdomain. For instance:
+
+- https://lod.coop/some-vocab/ - the production version of a vocab
+- https://dev.lod.coop/some-vocab/ - the development version of a vocab
+
+This would mean that the production deployment of `open-data` would
+need to be configured to generate URIs of the first type, and the
+development version URIs of the latter.
+
+## Permanent URL redirection
+
+Another point: a common mechanism used for [linked data][LOD] URIs is
+to decouple the actual deployment URLs from the standard URIs, by
+using what's termed a "Permanent URL", or "PURL" redirection service.
+
+Put simply, the standard URIs need to be stable, but in practice the
+hosted location of the resolved data can change. So the standard URIs
+are handled by a host which can keep track of where the actual data
+is, and redirects queries to the current correct place.
+
+Historically, this was often done using services such as
+https://purl.org (now run by the Internet Archive) or https://w3id.org
+(hosted by the [W3ID community]).
+
+We used the latter initially, but later started to use our own, which
+we registered the domain `lod.coop` for.
+
+This redirection service is managed using the [lod.coop] project.
+
+And in practice, if you add a new `open-data` dataset, you need to
+tell the [lod.coop] redirecter project what the ID is and where that
+should go, and redeploy it on both `dev.lod.coop` and `lod.coop`.
+Details for this are in the project itself.
+
+Without this, the `lod.coop` or `dev.lod.coop` URIs in the data
+published will not redirect, and this can make navigation of the HTML
+versions difficult, whilst also the resolution of the machine-readable
+[RDF] data will fail.
+
+
+
+[CSV]: https://en.wikipedia.org/wiki/Comma-separated_values
+[Five Star]: https://en.wikipedia.org/wiki/Linked_data#5-star_linked_open_data
+[JSON]: https://en.wikipedia.org/wiki/JSON
+[LOD]: https://en.wikipedia.org/wiki/Linked_data
+[MykoMap v3.x]: https://github.com/DigitalCommons/mykomap
+[MykoMap]: https://github.com/DigitalCommons/mykomap-monolith
+[Mykomap data repository]: https://github.com/DigitalCommons/cwm-test-data
+[Password Store]: https://www.passwordstore.org/
+[RDF]: https://en.wikipedia.org/wiki/Resource_Description_Framework
+[Ruby Bundler]: https://bundler.io/
+[SPARQL]: https://en.wikipedia.org/wiki/SPARQL
+[SQL]: https://en.wikipedia.org/wiki/SQL
+[SSE]: https://en.wikipedia.org/wiki/Solidarity_economy
+[Semantic Web]: https://en.wikipedia.org/wiki/Semantic_Web
+[Virtuoso]: https://en.wikipedia.org/wiki/Virtuoso_Universal_Server
+[W3ID community]: https://www.w3.org/community/perma-id/
+[contribution guidelines]: https://github.com/DigitalCommons#-contributing
+[cron]: https://en.wikipedia.org/wiki/Cron
+[data pipelines]: https://github.com/DigitalCommons/data-pipelines
+[geocoding]: https://en.wikipedia.org/wiki/Address_geocoding
+[lod.coop]: https://github.com/digitalCommons/lod.coop
+[se-open-data inputs]: https://github.com/DigitalCommons/se-open-data/blob/handover-docs/README.md#input-data
+[se-open-data]: github.com/DigitalCommons/se-open-data/
+[ssh config]: https://www.ssh.com/academy/ssh/config
+[ssh]: https://en.wikipedia.org/wiki/Secure_Shell
+[systemd]: https://en.wikipedia.org/wiki/Systemd
+[technology-and-infrastructure]: https://github.com/DigitalCommons/technology-and-infrastructure
+[triple-store]: https://en.wikipedia.org/wiki/Triplestore
+
+<!-- for emacs
+Local Variables:
+mode: markdown
+eval: (flyspell-mode)
+eval: (auto-fill-mode)
+End:
+
+ LocalWords:  Triplestore CLI LimeSurvey TTL geolocation queriable JSON Murmurations
+ LocalWords:  APIs seod Bundler ESSGLOBAL RDF schemas Gemspec Gemfile api
+ LocalWords:  executables geocodable Curado RIPESS MykoMaps URI
+ LocalWords:  geolocated Ontologist geocode triplestore geocoder
+ LocalWords:  downloader geocontainer CSVs Downloaders ETAG env
+ LocalWords:  SeOpenData localisations GeoAPIfy gitignore SEA's
+ LocalWords:  bundler's bundler cronjob MykoMap URIs cronjob env
+ LocalWords:  gitignored SKOS SPARQL geocoding CSV Geocoding Makefiles 
+ LocalWords:  Allemang Hendler Makefile declaratively Javascript
+ LocalWords:  geocoded YAML Schemas config LimeSurvey LimeSurveyCore
+ LocalWords:  Rebase gemspec DotCoop ICA normalisations subdirectory
+ LocalWords:  WSL cron Ansible systemd Systemd journalling LOD MykoMap
+ LocalWords:  lod redirecter
+ -->
