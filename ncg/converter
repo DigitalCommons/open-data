@@ -92,7 +92,7 @@ module Converter
             name: store_name,
             description: nil,
             organisational_structure: nil,
-            primary_activity: 'ICA10', # Agriculture
+            primary_activity: 'ICA240', # Retail
             activities: nil,
             street_address: [address, address_2]. join(', '),
             locality: city,
