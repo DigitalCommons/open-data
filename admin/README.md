@@ -1,24 +1,57 @@
-# README
+# MykoMaps Data Admin
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Rails 8.1 admin interface for the open-data converter pipeline: per-source
+schedules, manual downloads and uploads, dated download archives with
+standard.csv output and diffs between downloads.
 
-Things you may want to cover:
+Default login: username `mykomaps`, password `admin`. A password change is
+forced on first sign-in.
 
-* Ruby version
+## How it works
 
-* System dependencies
+- Data sources are the project dirs in the repo root (dirs with a `converter`
+  script). `db:seed` registers new ones; sources found live on the servers at
+  transition time (see ../TRANSITION.md) are enabled on `*/10 * * * *`.
+- A Solid Queue recurring job (`ScheduleDispatchJob`, every minute) enqueues a
+  `DataSourceRunJob` for each enabled source whose cron schedule is due.
+- A run shells out to `bundle exec seod download` and `seod convert` in the
+  project dir (exit 100 = no new data), then archives
+  `original-data/` + `generated-data/standard.csv` + `meta.json` to
+  `<DOWNLOADS_ROOT>/<source>/<YYYY-MM-DD_HHMMSS>/` and records a diff
+  (added/removed/changed rows keyed on Identifier) against the previous
+  download in `diff.txt`.
+- Manual-upload sources take a file upload, which is copied into the project's
+  `original-data/` before converting.
 
-* Configuration
+Environment:
 
-* Database creation
+- `OPEN_DATA_ROOT` - repo root containing the project dirs (default `..`)
+- `DOWNLOADS_ROOT` - archive area (default `storage/downloads`)
+- `SEOD_WRAPPER` - prefix for seod invocations (default `bundle exec`)
 
-* Database initialization
+## Development
 
-* How to run the test suite
+```bash
+cd admin
+bundle install
+bin/rails db:prepare db:seed
+bin/dev
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+## Tests
 
-* Deployment instructions
+```bash
+cd admin
+bin/rails test
+bin/rubocop
+```
 
-* ...
+The suite stubs `seod` with `test/stub_bin/seod` and points `OPEN_DATA_ROOT`
+at a temp dir, so no network or real converters are needed.
+
+## Deployment
+
+Packaged for Cloudron from the repo root (Dockerfile, CloudronManifest.json,
+start.sh). At runtime the converter projects are synced to `/app/data/open-data`
+(downloads and generated data persist across updates), SQLite databases live
+in `/app/data/storage` and archives in `/app/data/downloads`.
