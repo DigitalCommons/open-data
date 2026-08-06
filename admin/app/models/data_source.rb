@@ -17,18 +17,32 @@ class DataSource < ApplicationRecord
   LEGACY_LIVE = %w[ ica newbridge mersey-green deep-adaptation dotcoop workers-coop ].freeze
   LEGACY_SCHEDULE = "*/10 * * * *".freeze
 
-  # Register any repo project directories not yet known. Existing records are
-  # left alone so edits made in the UI survive re-seeding.
-  def self.sync_from_repo!
+  # Curated origin/processing summaries, applied by sync_from_repo!.
+  DETAILS_FILE = "db/data_source_details.yml".freeze
+
+  def self.source_details
+    path = Rails.root.join(DETAILS_FILE)
+    path.file? ? YAML.load_file(path) : {}
+  end
+
+  # Register any repo project directories not yet known and fill in curated
+  # details. Existing records only gain description/download_url when blank,
+  # so edits made in the UI survive re-seeding (seeds run on every start).
+  def self.sync_from_repo!(details: source_details)
     OpenData.project_directories.each do |dir|
-      next if exists?(directory: dir)
-      create!(
-        directory: dir,
-        name: dir.tr("-", " ").split.map(&:capitalize).join(" "),
-        kind: (OpenData.root + dir + "downloader").file? ? :auto : :manual,
-        enabled: LEGACY_LIVE.include?(dir),
-        schedule: LEGACY_LIVE.include?(dir) ? LEGACY_SCHEDULE : nil
-      )
+      source = find_or_initialize_by(directory: dir)
+      if source.new_record?
+        source.assign_attributes(
+          name: dir.tr("-", " ").split.map(&:capitalize).join(" "),
+          kind: (OpenData.root + dir + "downloader").file? ? :auto : :manual,
+          enabled: LEGACY_LIVE.include?(dir),
+          schedule: LEGACY_LIVE.include?(dir) ? LEGACY_SCHEDULE : nil
+        )
+      end
+      info = details[dir] || {}
+      source.description = info["description"] if source.description.blank?
+      source.download_url = info["download_url"] if source.download_url.blank?
+      source.save! if source.new_record? || source.changed?
     end
   end
 

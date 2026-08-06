@@ -120,6 +120,37 @@ class DataSourceTest < ActiveSupport::TestCase
     assert_equal original_name, data_sources(:alpha).reload.name
   end
 
+  test "sync applies curated details on create and fills blanks on existing records" do
+    create_project("gamma")
+    create_project("alpha")
+    details = {
+      "gamma" => { "description" => "Gamma origin and processing.", "download_url" => "https://gamma.example.com/data.csv" },
+      "alpha" => { "description" => "Should not clobber", "download_url" => "https://alpha.example.com/new" }
+    }
+
+    alpha = data_sources(:alpha)
+    alpha.update!(download_url: nil)
+
+    DataSource.sync_from_repo!(details: details)
+
+    gamma = DataSource.find_by!(directory: "gamma")
+    assert_equal "Gamma origin and processing.", gamma.description
+    assert_equal "https://gamma.example.com/data.csv", gamma.download_url
+
+    alpha.reload
+    assert_equal "A scheduled source", alpha.description, "edited description must survive"
+    assert_equal "https://alpha.example.com/new", alpha.download_url, "blank url should be filled"
+  end
+
+  test "curated details file parses and covers only known directories" do
+    details = DataSource.source_details
+    assert_kind_of Hash, details
+    details.each do |dir, info|
+      assert_match(/\A[\w.-]+\z/, dir)
+      assert info["description"].present?, "#{dir} needs a description"
+    end
+  end
+
   test "legacy live sources are seeded enabled on the 10 minute schedule" do
     create_project("ica")
     File.write(OpenData.root + "ica/downloader", "#!/bin/sh\n")
