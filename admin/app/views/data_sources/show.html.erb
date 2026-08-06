@@ -82,12 +82,23 @@
   </div>
 </div>
 
-<div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
-  <div class="flex items-center justify-between px-6 py-4">
+<% latest_duplicate_id = @download_runs.find(&:no_changes?)&.id %>
+<% hidden_duplicates = @download_runs.count { |r| r.no_changes? && r.id != latest_duplicate_id } %>
+<div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" data-controller="run-history">
+  <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
     <h2 class="text-sm font-semibold text-slate-900">Run history</h2>
-    <% if latest = @data_source.last_succeeded_run %>
-      <p class="text-xs text-slate-500">Latest change: <%= latest.diff_summary.presence || "-" %></p>
-    <% end %>
+    <div class="flex items-center gap-4">
+      <% if hidden_duplicates.positive? %>
+        <label class="flex items-center gap-2 text-xs text-slate-600">
+          <input type="checkbox" data-run-history-target="toggle" data-action="run-history#toggle"
+                 class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600">
+          Show history for all duplicate logs (<%= hidden_duplicates %> hidden)
+        </label>
+      <% end %>
+      <% if latest = @data_source.last_succeeded_run %>
+        <p class="text-xs text-slate-500">Latest change: <%= latest.diff_summary.presence || "-" %></p>
+      <% end %>
+    </div>
   </div>
   <div class="overflow-x-auto">
     <table class="min-w-full divide-y divide-slate-200 text-sm">
@@ -103,7 +114,9 @@
       </thead>
       <tbody class="divide-y divide-slate-100">
         <% @download_runs.each do |run| %>
-          <tr class="hover:bg-slate-50">
+          <% duplicate_hidden = run.no_changes? && run.id != latest_duplicate_id %>
+          <tr class="hover:bg-slate-50 <%= "hidden duplicate-run" if duplicate_hidden %>"
+              <%= 'data-run-history-target="duplicate"'.html_safe if duplicate_hidden %>>
             <td class="px-4 py-3 text-slate-700" title="<%= run.started_at&.to_fs(:long) %>">
               <%= run.started_at ? "#{time_ago_in_words(run.started_at)} ago" : "queued" %>
             </td>

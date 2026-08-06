@@ -31,6 +31,25 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", /scheduled/
   end
 
+  test "show collapses all but the latest duplicate run behind a checkbox" do
+    source = data_sources(:alpha)
+    3.times do |i|
+      source.download_runs.create!(status: :no_changes, triggered_by: :scheduled,
+        started_at: (i + 1).hours.ago, finished_at: (i + 1).hours.ago, created_at: (i + 1).hours.ago)
+    end
+
+    get data_source_path(source)
+    assert_response :success
+    assert_select "tr.duplicate-run", count: 2
+    assert_select "input[data-run-history-target=toggle]", count: 1
+    assert_select "label", /Show history for all duplicate logs/
+  end
+
+  test "show has no duplicate checkbox when at most one no-change run" do
+    get data_source_path(data_sources(:alpha))
+    assert_select "input[data-run-history-target=toggle]", count: 0
+  end
+
   test "update changes schedule and details" do
     patch data_source_path(data_sources(:alpha)), params: {
       data_source: { schedule: "0 4 * * *", description: "Nightly" }

@@ -45,7 +45,17 @@ class DataSourceRunner
     end
 
     run.update!(archive_path: RunArchiver.new(run).call.to_s)
-    record_diff(previous_csv)
+    diff = record_diff(previous_csv)
+
+    # A download that converts to an identical standard.csv is a duplicate:
+    # keep the run line but not the files.
+    if previous_csv && diff && !run.changes?
+      FileUtils.remove_entry(run.archive_path)
+      run.update!(archive_path: nil)
+      run.append_log("Converted output identical to previous download; archive discarded.\n")
+      return finish(:no_changes)
+    end
+
     finish(:succeeded)
   rescue => e
     finish(:failed, "Error: #{e.class}: #{e.message}\n")
@@ -86,16 +96,25 @@ class DataSourceRunner
   end
 
   # The app runs under its own bundler; the project must resolve its own
-  # Gemfile, so strip bundler and ruby load-path leakage from the child env.
+  # Gemfile with the system bundler, so strip bundler and ruby load-path
+  # leakage from the child env, including the vendored-gem bin dirs bundler
+  # prepends to PATH (otherwise the child runs the app's bundler version).
   def subprocess_env
-    ENV.to_h.reject do |key, _|
-      key.start_with?("BUNDLE_", "GEM_") || key.in?(%w[ RUBYOPT RUBYLIB ])
+    env = ENV.to_h.reject do |key, _|
+      key.start_with?("BUNDLE_", "BUNDLER_", "GEM_") || key.in?(%w[ RUBYOPT RUBYLIB ])
     end
+    if defined?(Bundler) && env["PATH"]
+      bundle_root = Bundler.bundle_path.to_s
+      env["PATH"] = env["PATH"].split(File::PATH_SEPARATOR)
+        .reject { |dir| dir.start_with?(bundle_root) }
+        .join(File::PATH_SEPARATOR)
+    end
+    env
   end
 
   def record_diff(previous_csv)
     new_csv = run.standard_csv_path
-    return unless new_csv
+    return nil unless new_csv
 
     diff = CsvDiff.call(previous_csv, new_csv)
     File.write(File.join(run.archive_path, "diff.txt"), diff.detail)
@@ -105,5 +124,6 @@ class DataSourceRunner
       rows_changed: diff.changed,
       diff_summary: diff.summary
     )
+    diff
   end
 end
