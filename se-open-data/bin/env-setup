@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Run this script to initialise PATH etc. for convenient use of other
+# scripts in this directory.
+
+SCRIPT_DIR=${BASH_SOURCE[0]%/*}
+
+# Sets up the PATH environment variable  to use executables in this folder
+export PATH=$(readlink -f "$SCRIPT_DIR"):$PATH
+
+# And if undefined, PASSWORD_STORE to use password-store in an adjacent check-out
+# Alternatively use the env-setup script in that repository.
+[ -z "$PASSWORD_STORE" ] && {
+    export PASSWORD_STORE_DIR=$(readlink -f "$SCRIPT_DIR/../../../../password-store")
+}
+
+exec $SHELL

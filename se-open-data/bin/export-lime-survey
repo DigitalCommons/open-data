@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+# This script exports a set of responses from SEA's Lime Survey server.
+#
+# You need the log-in credentials for an account with access.
+# The server needs to have the JSON-RPC API enabled, as per:
+#
+# https://manual.limesurvey.org/RemoteControl_2_API
+# 
+# Enable the API in RPCJSON mode, by logging in to the LimeSurvey
+# administration, going to "Global settings", choosing the tab
+# "Interfaces" and selecting the JSON-RPC service.
+
+
+require_relative '../lib/load_path'
+require 'se_open_data/lime_survey_exporter'
+
+usage = <<USAGE
+usage:
+   export-lime-survey <user name> <password> <survey ID>
+
+Output the responses for the given survey ID CSV format on standard-output.
+USAGE
+
+service_url = 'https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol'
+
+user, pass, survey_id = ARGV
+abort usage unless user && pass && survey_id
+
+exporter = SeOpenData::LimeSurveyExporter.new(service_url, user, pass)
+puts exporter.export_responses(survey_id, 'csv', 'en')
+exporter.finalize
+

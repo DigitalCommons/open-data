@@ -1,0 +1,32 @@
+MULTI_EQUAL=foo=bar=baz
+EMPTY_EQUAL=
+
+# This comment should be ignored
+
+# (Along with blank lines)
+
+  # This = also a comment
+  withLowercase0123456789 = # this is not a comment #
+  WITH_PADDING = with padding  
+unique1 = unique1
+SHARED = shared
+map = hello
+ORIGINAL_CSV=Youth-ledCoops.csv
+USE_ENV_PASSWORDS=false
+SRC_CSV_DIR=original-data/
+URI_SCHEME=https
+URI_HOST=w3id.solidarityeconomy.coop
+URI_PATH_PREFIX=ica-youth-network/
+DEPLOYMENT_SERVER=sea-0-admin
+DEPLOYMENT_WEBROOT=/var/www/html/data1.solidarityeconomy.coop/
+DEPLOYMENT_RSYNC_FLAGS=--delete
+ESSGLOBAL_URI=https://w3id.solidarityeconomy.coop/essglobal/V2a/
+VIRTUOSO_ROOT_DATA_DIR=/home/admin/Virtuoso/BulkLoading/Data/
+SPARQL_ENDPOINT=http://store1.solidarityeconomy.coop:8890/sparql
+TOP_OUTPUT_DIR=generated-data/
+STANDARD_CSV=standard.csv
+AUTO_LOAD_TRIPLETS=true
+CSS_SRC_DIR=css/
+VIRTUOSO_PASS_FILE=deployments/dev-0.solidarityeconomy.coop/virtuoso/dba.password
+SERVER_ALIAS=data1.solidarityeconomy.coop
+TEST_INITIATIVE_IDENTIFIERS=16 40

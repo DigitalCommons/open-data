@@ -1,0 +1,14 @@
+link_twitter,
+https://www.example.com/,
+https://www.twitter.com/,
+https://twitter.com/,
+https://www.twitter.com/example,https://twitter.com/example
+https://twitter.com/example,https://twitter.com/example
+http://www.twitter.com/example,https://twitter.com/example
+http://twitter.com/example,https://twitter.com/example
+https://www.twitter.com/example#foo?bar,https://twitter.com/example
+https://twitter.com/example#foo?bar,https://twitter.com/example
+www.twitter.com/example,https://twitter.com/example
+twitter.com/example,https://twitter.com/example
+www.twitter.com/example#foo?bar,https://twitter.com/example
+twitter.com/example#foo?bar,https://twitter.com/example

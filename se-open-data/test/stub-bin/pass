@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+# This is a stub for the `pass` command-line tool, used for testing
+# SeOpenData::Utils::PasswordStore. It does just enough to emulate a
+# contrived usage of `pass` such that it can stand in for it in the
+# tests.
+#
+# See https://www.passwordstore.org/ for background on `pass`.
+
+require 'optparse'
+
+
+# Some hardwired password definitions for tests
+Passwords = {
+  "some/path" => "sekret",
+  "some/other/path" => "sekret2",
+}
+
+options = {}
+OptionParser.new do |opts|
+end.parse!
+
+
+
+class Pass
+  def error(*msg)
+    $stderr.puts *msg
+    return -1
+  end
+  
+  def parse(argv)
+    cmd, *params = *argv
+    method = "do_#{cmd}"
+    if !respond_to? method
+      return error "unknown command: #{cmd}"
+    end
+    return public_send method, *params
+  end
+  
+  def do_show(path)
+    if !Passwords.has_key? path
+      return error "unknown password path: #{path}"
+    end
+    puts Passwords[path]
+    return 0
+  end
+end
+
+exit Pass.new.parse(ARGV)
+
+
