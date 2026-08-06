@@ -1,0 +1,22 @@
+alpha_success:
+  data_source: alpha
+  status: succeeded
+  triggered_by: scheduled
+  started_at: <%= 2.hours.ago %>
+  finished_at: <%= 2.hours.ago + 30.seconds %>
+  exit_code: 0
+  rows_added: 2
+  rows_removed: 1
+  rows_changed: 3
+  diff_summary: "2 added, 1 removed, 3 changed (10 rows, was 9)."
+  created_at: <%= 2.hours.ago %>
+
+alpha_failed:
+  data_source: alpha
+  status: failed
+  triggered_by: scheduled
+  started_at: <%= 1.hour.ago %>
+  finished_at: <%= 1.hour.ago + 5.seconds %>
+  exit_code: 1
+  log: "something broke\n"
+  created_at: <%= 1.hour.ago %>

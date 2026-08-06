@@ -14,7 +14,10 @@ class RunArchiver
   end
 
   def call
-    dir = OpenData.downloads_root + source.directory + @now.strftime("%Y-%m-%d_%H%M%S")
+    base = OpenData.downloads_root + source.directory + @now.strftime("%Y-%m-%d_%H%M%S")
+    dir = base
+    suffix = 1
+    dir = Pathname.new("#{base}-#{suffix += 1}") while dir.exist?
     FileUtils.mkdir_p(dir)
 
     original_data = source.project_dir + "original-data"

@@ -1,9 +1,10 @@
-<% password_digest = BCrypt::Password.create("password") %>
+# Default user still on the seeded password (must change it on first entry).
+mykomaps:
+  username: mykomaps
+  password_digest: <%= BCrypt::Password.create("admin") %>
 
-one:
-  email_address: one@example.com
-  password_digest: <%= password_digest %>
-
-two:
-  email_address: two@example.com
-  password_digest: <%= password_digest %>
+# A user who has already changed their password.
+settled:
+  username: settled
+  password_digest: <%= BCrypt::Password.create("password123") %>
+  password_changed_at: <%= 1.week.ago %>

@@ -1,0 +1,15 @@
+alpha:
+  directory: alpha
+  name: Alpha Co-ops
+  description: A scheduled source
+  download_url: https://example.com/alpha.csv
+  kind: auto
+  enabled: true
+  schedule: "*/10 * * * *"
+
+beta:
+  directory: beta
+  name: Beta Directory
+  description: A manual-upload source
+  kind: manual
+  enabled: false

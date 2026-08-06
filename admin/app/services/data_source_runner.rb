@@ -24,6 +24,10 @@ class DataSourceRunner
 
     install_upload if run.upload?
 
+    if (source.project_dir + "Gemfile").file?
+      return finish(:failed) unless execute([ "bundle", "install", "--quiet" ]).success?
+    end
+
     unless run.upload?
       status = seod("download")
       return finish(:failed) unless status.exitstatus.in?([ 0, NO_CHANGES_EXIT ])
@@ -67,16 +71,26 @@ class DataSourceRunner
   end
 
   def seod(command)
-    argv = OpenData.seod_wrapper.split + [ "seod", command ]
+    execute(OpenData.seod_wrapper.split + [ "seod", command ])
+  end
+
+  def execute(argv)
     run.append_log("$ #{argv.join(' ')}\n")
-    output, status = Bundler.with_unbundled_env do
-      Open3.capture2e(*argv, chdir: source.project_dir.to_s)
-    end
+    output, status = Open3.capture2e(subprocess_env, *argv,
+      unsetenv_others: true, chdir: source.project_dir.to_s)
     run.append_log(output)
     run.append_log("(exit #{status.exitstatus})\n")
     run.exit_code = status.exitstatus
     run.save!
     status
+  end
+
+  # The app runs under its own bundler; the project must resolve its own
+  # Gemfile, so strip bundler and ruby load-path leakage from the child env.
+  def subprocess_env
+    ENV.to_h.reject do |key, _|
+      key.start_with?("BUNDLE_", "GEM_") || key.in?(%w[ RUBYOPT RUBYLIB ])
+    end
   end
 
   def record_diff(previous_csv)
