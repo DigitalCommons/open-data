@@ -1,0 +1,247 @@
+# Curated origin/processing summaries per data source directory.
+# Applied by DataSource.sync_from_repo! only when the field is blank in the
+# database, so descriptions edited in the UI are never overwritten.
+acmei:
+  description: >-
+    ACMEI data is supplied manually as a CSV (Windows-1252, transcoded to
+    UTF-8) whose columns are already near the standard schema, including
+    lat/long and ICA activity codes. The converter normalises the country,
+    assembles a single address string, geocodes it via Geoapify (shared file
+    cache) and normalises the website URL; structure, membership type and
+    activity values pass through unchanged.
+cmc:
+  description: >-
+    Co-operatives and Mutuals Canada member data, supplied manually as a CSV
+    (identifier, organisation name, address, website, activities, membership
+    type). The converter builds a Canadian address (country hard-coded CA),
+    geocodes via cached Geoapify and normalises the website; CMC's own
+    activity and membership values are carried through as extra columns in a
+    "standard plus" output schema.
+cooperar:
+  description: >-
+    Cooperar (Argentine confederation of co-operatives) data is downloaded as
+    a CSV export of a Google Sheet (ETag-cached). The converter builds an
+    address ending in "Argentina", geocodes via cached Geoapify and drops any
+    geocode that does not resolve to AR; the website's root domain is emitted
+    as an extra column. No vocab mapping or dedup.
+  download_url: "https://docs.google.com/spreadsheets/d/1jKe_CGYMGmxrRYVjY3f37UHBcGcDPLvV/export?format=csv&range=A:O"
+coops-uk:
+  description: >-
+    Co-operatives UK's open data organisations CSV; the downloader scrapes
+    uk.coop/resources/open-data for the current download link and fetches it
+    with ETag caching. The converter skips dead registrations and maps SIC
+    codes, legal form and ownership to ESSGLOBAL activity, structure and
+    membership terms via committed lookup tables; registered addresses are
+    geocoded with Mapbox. Output adds sector, SIC, ownership and legal form
+    columns.
+  download_url: https://www.uk.coop/resources/open-data
+covid-mutual-aid:
+  description: >-
+    COVID-era mutual aid groups downloaded as JSON from the mutualaid.wiki
+    API. The converter flattens the JSON to CSV (stripping emoji, resolving
+    ISO country codes), normalises and joins website and Facebook links,
+    regex-extracts UK postcodes, and takes lat/long straight from the source
+    with no geocoding or vocab mapping.
+  download_url: https://mutualaid.wiki/api/group/get
+dc-ica-ncba-cuk:
+  description: >-
+    An aggregation project, not a primary source: downloads the
+    already-converted standard.csv outputs of dotcoop, ica, ncba and coops-uk
+    from dev.data.digitalcommons.coop, loads them into a SQLite database and
+    deduplicates organisations by linking on .coop domain registrations
+    (dc + ncba + ica + cuk set logic). The unified table becomes its
+    standard.csv.
+  download_url: https://dev.data.digitalcommons.coop/
+deep-adaptation:
+  description: >-
+    Deep Adaptation initiative survey responses (LimeSurvey, run by the
+    Solidarity Economy Association), published as CSV in the SEA data-capture
+    GitHub repo and fetched with ETag caching. The shared LimeSurveyCore
+    converter keeps only approved rows, derives structure and activities from
+    tick-box columns, geocodes UK addresses when no lat/long supplied, and
+    blanks phone/email as sensitive data.
+  download_url: https://raw.githubusercontent.com/SolidarityEconomyAssociation/data-capture/deep-adaptation/deep-adaptation/data.csv
+dotcoop:
+  description: >-
+    The .coop registry's verified registrant directory, a JSON export on Azure
+    blob storage fetched with a time-limited SAS token. NOTE: the token/URL is
+    IP-restricted to prod-2 and dev-2, so downloads fail from other hosts
+    (including this app's server) until DotCoop allow-lists it. The converter
+    shortens tag UUIDs to SIDs, emits generated tag vocabularies, maps
+    economic sectors to ICA activity terms via a lookup table, geocodes
+    cleaned addresses with Geoapify, and validates OrgID identifiers with a
+    duplicate check; output adds sector, category, memberOf and domains
+    columns.
+eurocoop:
+  description: >-
+    Euro Coop (European consumer co-operatives) member data downloaded as a
+    CSV export of a Google Sheet. The converter resolves the country name from
+    the ISO code, geocodes via cached Geoapify (discarding geocodes that
+    contradict the declared country), and extracts the website's root domain
+    as an extra column. No vocab mapping.
+  download_url: "https://docs.google.com/spreadsheets/d/1TTvEUv7u3LMAdnVpC3WZj_GxeDBgy_DKwNyWep7kHuw/export?format=csv&range=A:J"
+fca:
+  description: >-
+    US Farm Credit Administration institutions, supplied manually as a CSV
+    (UNINUM, institution name, district, HQ state). The converter maps UNINUM
+    to the identifier, sets country US and region to the HQ state, hard-codes
+    the ICA Financial Services activity, and deliberately skips geocoding
+    because only a state-level address is available.
+ficu:
+  description: >-
+    US federally insured credit unions, from NCUA call-report/directory
+    extracts supplied manually as CSV. The converter keys on charter number,
+    hard-codes country US and the ICA Financial Services activity, builds a
+    cleaned street/city/state/zip address and geocodes it via Geoapify with
+    the shared cache; financial statistics columns are read but dropped.
+ica:
+  description: >-
+    The International Cooperative Alliance's membership database, pulled as
+    JSON from their CiviCRM instance via a custom REST entity (ETag-cached;
+    API key omitted). The converter maps structure, economic activity,
+    typology and promoter status onto ESSGLOBAL SKOS terms, normalises
+    country names to ISO codes with hand-coded exceptions, derives territory
+    from the ICA country code, and geocodes assembled addresses via Geoapify.
+  download_url: "https://crm.ica.coop/civicrm/ajax/rest?entity=LOD&action=get"
+ica-youth-network:
+  description: >-
+    An older ICA-supplied extract restricted to the ICA Youth Network,
+    delivered manually as CSV. An earlier-generation converter maps fields via
+    plain-label lookup tables (not ESSGLOBAL URIs), validates territory
+    consistency, geocodes with the postcode lat/long helper, patches known bad
+    country IDs, and emits geocoder confidence reports.
+ics:
+  description: >-
+    Member organisations of Impuls Cooperatiu de Sants (Barcelona), supplied
+    manually as CSV with everything hard-coded to country ES. The converter
+    splits the map field into lat/long, geocodes via Geoapify, and translates
+    activity, structure and typology to ESSGLOBAL identifiers through three
+    lookup CSVs. NOTE: those lookup files are referenced but not currently
+    committed, so this converter fails until they are restored.
+iffco:
+  description: >-
+    IFFCO (Indian Farmers Fertiliser Cooperative) membership list, supplied
+    manually as a fixed-column extract (Windows-1252). The converter keys on
+    member number, hard-codes country IN and the ICA Agriculture activity,
+    builds an address ending in INDIA and geocodes via Geoapify; RDF
+    generation is deliberately disabled for this dataset.
+mersey-green:
+  description: >-
+    A LimeSurvey self-registration survey of green and community organisations
+    in the Mersey region, run on the Solidarity Economy Association's
+    LimeQuery instance and exported via the LimeSurvey RemoteControl API
+    (credentials from the password store). The shared LimeSurveyCore converter
+    maps the standard SEA question set to the standard schema and geocodes
+    addresses via Geoapify.
+  download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+monitor-2022:
+  description: >-
+    The 2022 World Cooperative Monitor top-300 co-operatives (ICA/EURICSE),
+    supplied manually as CSV. The converter strictly validates free-text
+    activity and organisation type fields (raising on anything unrecognised),
+    maps type to ESSGLOBAL membership terms, stores the ISO country as
+    territory rather than country (the listed country often mismatches the
+    address), and adds coordinates via the postcode lat/long helper.
+mutual-aid:
+  description: >-
+    A curated spreadsheet of UK COVID-era mutual aid groups on the Digital
+    Commons Nextcloud, downloaded as an ODS file. The converter dumps the
+    sheet to CSV with Roo, keeps only approved rows, splits the location field
+    into lat/long (no geocoding needed) and normalises website, Twitter and
+    Facebook handles into URLs.
+  download_url: https://nextcloud.digitalcommons.coop/s/rbJAyT4S7mcL8rk/download
+ncba:
+  description: >-
+    NCBA CLUSA (US National Cooperative Business Association) member export,
+    apparently from HubSpot, supplied manually as CSV. The converter
+    normalises countries to ISO codes, geocodes addresses via Geoapify, and
+    maps the NCBA taxonomy through committed lookup tables to an ICA activity
+    plus NCBA-specific industry and sector identifiers emitted as extra
+    columns.
+ncg:
+  description: >-
+    National Co+op Grocers (US food co-ops) store list, supplied manually as
+    CSV. The converter emits one record per store with a synthetic incrementing
+    identifier (the source has no stable key), hard-codes country US and the
+    ICA Agriculture activity, normalises websites and geocodes the cleaned
+    address via Geoapify with the shared cache.
+ncui:
+  description: >-
+    National Cooperative Union of India data, downloaded as a CSV export of a
+    Google Sheet. The converter validates names, hard-codes country IN,
+    geocodes the free-text address via Geoapify (shared cache) and discards
+    geocodes outside India; CWC activity/membership and NCUI category columns
+    are read but not yet mapped to vocab terms.
+  download_url: "https://docs.google.com/spreadsheets/d/1sgQNwbpihrLikryME3p6K0IxPF_7Tx352qbbHKsM_4Q/export?format=csv&range=A:AE"
+newbridge:
+  description: >-
+    Solidarity NE (Newbridge) data from a LimeSurvey questionnaire on the
+    Solidarity Economy Association's LimeQuery instance, exported via the
+    LimeSurvey RemoteControl API (credentials from the password store). The
+    shared LimeSurveyCore converter maps answer codes to activity and
+    structure labels, normalises contact fields, forces country GB and
+    geocodes addresses via Geoapify unless the survey supplied lat/long.
+  download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+owned-by-oxford:
+  description: >-
+    Owned by Oxford's directory, held in an Airtable base and fetched as JSON
+    from the Airtable REST API (personal access token from the password
+    store). The converter keeps only approved rows, falls back to linked
+    External Initiative records for blank fields, maps Airtable vocab record
+    IDs to ESSGLOBAL activity/structure URIs, forces locality Oxford/GB and
+    geocodes via Geoapify; results are also published to the Murmurations
+    index. Removed from the production cron in 2025 because of Airtable API
+    throttling.
+  download_url: https://api.airtable.com/v0/appr96wyWydb1ryUS/Organisations%20ObO
+oxford:
+  description: >-
+    Solidarity Oxford data from a LimeSurvey questionnaire on the Solidarity
+    Economy Association's LimeQuery instance, exported via the RemoteControl
+    API. The shared LimeSurveyCore converter maps answer codes to activity and
+    structure labels, normalises contact fields, sets country GB and geocodes
+    addresses via Geoapify; published under lod.coop/sea-lod/oxford and to the
+    Murmurations index.
+  download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+powys:
+  description: >-
+    A bilingual (English/Welsh) Powys food-system mapping CSV with category,
+    locality and popup text columns. A downloader script exists but the URL is
+    commented out, so data is supplied manually in practice. The converter
+    translates numeric subcategory and town IDs via local lookup tables into
+    food-system category and locality codes, normalises URLs and emails,
+    builds a GB address and geocodes via Geoapify, emitting the Welsh fields
+    and category IDs as extra columns.
+usda:
+  description: >-
+    US agricultural co-operatives from USDA data, supplied manually as CSV
+    (name, address, contacts, co-op type, products, USDA codes). The converter
+    assigns a synthetic sequential identifier (no stable source id),
+    hard-codes country US and the ICA Agriculture activity, builds a US postal
+    address geocoded via cached Geoapify, and passes the co-op type through as
+    an extra column.
+usfwc:
+  description: >-
+    US Federation of Worker Cooperatives membership, supplied manually as a
+    BOM-prefixed CSV whose structure, membership and activity values are
+    human-readable phrases. The converter resolves those phrases to SKOS term
+    URIs via a local vocabs.json (raising on unrecognised text), strips the
+    inconsistent "usfwc-" id prefix, normalises the country, geocodes the
+    composed address via Geoapify and passes supplied lat/long through.
+workers-coop:
+  description: >-
+    Workers.coop member data, downloaded as a CSV export from their CiviCRM
+    Data Processor endpoint (ETag-aware; unchanged data exits 100). The
+    converter prefixes the already-numeric structure/activity/membership/
+    country codes with ESSGLOBAL vocab URIs, maps UK nation names to ISO
+    codes, fills blank taxonomy fields with "unknown", keeps the registered
+    number only for Companies House registrations, rejects invalid or
+    duplicate keys and geocodes addresses via Geoapify. Local lookup tables
+    build the project-specific vocabularies.
+  download_url: "https://www.workers.coop/civicrm/dataprocessor/output/export/?dataprocessor=test&type=export_csv"
+ycc:
+  description: >-
+    A manually supplied CSV of Philippine co-operatives (no download URL
+    configured). The converter geocodes addresses via cached Geoapify and
+    sanity-checks results by their distance from the centre of the
+    Philippines, normalises website URLs, and writes geocode statistics to
+    stats.csv alongside the standard output.
