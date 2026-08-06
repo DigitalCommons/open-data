@@ -1,0 +1,15 @@
+{
+  "manifestVersion": 2,
+  "id": "coop.digitalcommons.opendata",
+  "title": "MykoMaps Data Admin",
+  "author": "Marc Sutton <marc@codev.uk>",
+  "tagline": "Scheduled downloads and processing for the open-data pipeline",
+  "description": "Admin interface for the DigitalCommons open-data converters: per-source schedules, manual downloads and uploads, dated download archives, standard.csv output and diffs between downloads.",
+  "version": "1.0.0",
+  "httpPort": 3000,
+  "healthCheckPath": "/up",
+  "memoryLimit": 2147483648,
+  "addons": {
+    "localstorage": {}
+  }
+}

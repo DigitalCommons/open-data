@@ -1,0 +1,7 @@
+.git
+caches/gems
+*/generated-data
+admin/storage
+admin/log
+admin/tmp
+admin/.bundle
