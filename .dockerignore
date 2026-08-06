@@ -5,3 +5,5 @@ admin/storage
 admin/log
 admin/tmp
 admin/.bundle
+admin/config/master.key
+admin/config/credentials.yml.enc

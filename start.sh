@@ -1,9 +1,6 @@
 #!/bin/bash
 set -eu
 
-# Writable HOME so per-project `bundle install` can fall back to a user path
-export HOME=/app/data
-
 mkdir -p /app/data/storage /app/data/downloads /run/app/tmp /run/app/log
 
 # Persistent secret key, generated on first start
@@ -32,11 +29,17 @@ chown -R cloudron:cloudron /run/app /app/data
 
 cd /app/code/admin
 
+# gosu resets HOME to /home/cloudron (read-only); the app and per-project
+# `bundle install` need a writable one.
+run_as_app() {
+    gosu cloudron:cloudron env HOME=/app/data "$@"
+}
+
 echo "=> Preparing database"
-gosu cloudron:cloudron bundle exec rails db:prepare
+run_as_app bundle exec rails db:prepare
 
 echo "=> Seeding (idempotent: default user, new data sources)"
-gosu cloudron:cloudron bundle exec rails db:seed
+run_as_app bundle exec rails db:seed
 
 echo "=> Starting puma (Solid Queue in-process)"
-exec gosu cloudron:cloudron bundle exec puma -C config/puma.rb
+exec gosu cloudron:cloudron env HOME=/app/data bundle exec puma -C config/puma.rb
