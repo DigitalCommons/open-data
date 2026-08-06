@@ -1,0 +1,7 @@
+production: &default
+  schedule_dispatch:
+    class: ScheduleDispatchJob
+    queue: default
+    schedule: every minute
+
+development: *default

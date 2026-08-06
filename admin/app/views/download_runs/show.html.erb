@@ -1,0 +1,47 @@
+<% content_for :title, "Run ##{@run.id} - MykoMaps Data Admin" %>
+
+<div class="flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <div class="flex items-center gap-3">
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+        <%= link_to @run.data_source.name, @run.data_source, class: "text-indigo-700 hover:text-indigo-500" %>
+        run #<%= @run.id %>
+      </h1>
+      <%= status_badge(@run) %>
+    </div>
+    <p class="mt-1 text-sm text-slate-500">
+      <%= @run.triggered_by %> run,
+      <%= @run.started_at ? "started #{time_ago_in_words(@run.started_at)} ago" : "not started" %>,
+      duration <%= format_duration(@run.duration) %>
+      <% if @run.uploaded_filename.present? %>, uploaded file <span class="font-mono"><%= @run.uploaded_filename %></span><% end %>
+    </p>
+  </div>
+  <div class="flex items-center gap-2">
+    <% if @run.standard_csv_path %>
+      <%= link_to "Download standard.csv", standard_csv_download_run_path(@run),
+            class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
+    <% end %>
+    <% if @run.diff_path %>
+      <%= link_to "Download diff", diff_download_run_path(@run),
+            class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
+    <% end %>
+  </div>
+</div>
+
+<% if @run.succeeded? %>
+  <div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <h2 class="text-sm font-semibold text-slate-900">Differences from previous download</h2>
+    <p class="mt-2 text-sm text-slate-700"><%= @run.diff_summary.presence || "No diff recorded." %></p>
+    <% if @run.diff_path %>
+      <pre class="mt-4 max-h-96 overflow-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-slate-200"><%= File.read(@run.diff_path) %></pre>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+  <h2 class="text-sm font-semibold text-slate-900">Log</h2>
+  <% if @run.archive_path.present? %>
+    <p class="mt-1 text-xs text-slate-500">Archived at <span class="font-mono"><%= @run.archive_path %></span></p>
+  <% end %>
+  <pre class="mt-4 max-h-[32rem] overflow-auto rounded-lg bg-slate-950 p-4 text-xs leading-relaxed text-slate-200"><%= @run.log.presence || "No output captured." %></pre>
+</div>

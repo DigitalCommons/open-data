@@ -1,0 +1,57 @@
+<% content_for :title, "Edit #{@data_source.name} - MykoMaps Data Admin" %>
+
+<div class="mx-auto max-w-xl">
+  <h1 class="text-xl font-semibold tracking-tight text-slate-900">Edit <%= @data_source.name %></h1>
+
+  <div class="mt-6 rounded-xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+    <%= form_with model: @data_source, class: "space-y-5" do |form| %>
+      <% if @data_source.errors.any? %>
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+          <%= @data_source.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= form.label :name, class: "block text-sm font-medium text-slate-700" %>
+        <%= form.text_field :name, required: true,
+              class: "mt-1 block w-full rounded-md border-0 px-3 py-2 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" %>
+      </div>
+
+      <div>
+        <%= form.label :description, class: "block text-sm font-medium text-slate-700" %>
+        <%= form.text_area :description, rows: 3,
+              class: "mt-1 block w-full rounded-md border-0 px-3 py-2 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" %>
+      </div>
+
+      <div>
+        <%= form.label :download_url, "Download URL", class: "block text-sm font-medium text-slate-700" %>
+        <%= form.url_field :download_url,
+              class: "mt-1 block w-full rounded-md border-0 px-3 py-2 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" %>
+      </div>
+
+      <div>
+        <%= form.label :kind, "Type", class: "block text-sm font-medium text-slate-700" %>
+        <%= form.select :kind, [ [ "Scheduled download", "auto" ], [ "Manual upload", "manual" ] ],
+              {}, class: "mt-1 block w-full rounded-md border-0 px-3 py-2 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" %>
+      </div>
+
+      <div>
+        <%= form.label :schedule, "Schedule (cron expression)", class: "block text-sm font-medium text-slate-700" %>
+        <%= form.text_field :schedule, placeholder: "*/10 * * * *",
+              class: "mt-1 block w-full rounded-md border-0 px-3 py-2 font-mono ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" %>
+        <p class="mt-1 text-xs text-slate-500">e.g. <span class="font-mono">*/10 * * * *</span> every 10 minutes, <span class="font-mono">0 4 * * *</span> daily at 04:00.</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= form.check_box :enabled, class: "h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600" %>
+        <%= form.label :enabled, "Enabled (runs on schedule)", class: "text-sm text-slate-700" %>
+      </div>
+
+      <div class="flex items-center justify-between pt-2">
+        <%= link_to "Cancel", @data_source, class: "text-sm text-slate-500 hover:text-slate-700" %>
+        <%= form.submit "Save changes",
+              class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

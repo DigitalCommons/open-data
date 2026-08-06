@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="h-full bg-slate-100">
+  <head>
+    <title><%= content_for(:title) || "MykoMaps Data Admin" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="MykoMaps Data Admin">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full text-slate-800 antialiased">
+    <% if authenticated? %>
+      <header class="bg-slate-900 text-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-14 items-center justify-between">
+          <div class="flex items-center gap-8">
+            <%= link_to root_path, class: "flex items-center gap-2 font-semibold tracking-tight" do %>
+              <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+              MykoMaps Data Admin
+            <% end %>
+            <nav class="flex gap-6 text-sm text-slate-300">
+              <%= link_to "Dashboard", root_path, class: "hover:text-white" %>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 text-sm text-slate-300">
+            <%= link_to "Change password", edit_password_path, class: "hover:text-white" %>
+            <%= button_to "Sign out", session_path, method: :delete,
+                  class: "rounded-md bg-slate-700 px-3 py-1.5 text-sm text-white hover:bg-slate-600 cursor-pointer" %>
+          </div>
+        </div>
+      </header>
+    <% end %>
+
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <% if notice.present? %>
+        <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><%= notice %></div>
+      <% end %>
+      <% if alert.present? %>
+        <div class="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"><%= alert %></div>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>
