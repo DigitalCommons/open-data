@@ -1,0 +1,25 @@
+# Standard Rails ignores (restored; secrets and machine state must not be tracked)
+/.bundle
+
+/log/*
+!/log/.keep
+
+/tmp/*
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+
+/storage/*
+!/storage/.keep
+
+/public/assets
+
+# Compiled tailwind output; rebuilt by assets:precompile
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+# Decrypts config/credentials.yml.enc; never commit
+/config/master.key
+/config/credentials/*.key
+
+/node_modules

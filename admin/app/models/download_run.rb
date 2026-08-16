@@ -6,6 +6,20 @@ class DownloadRun < ApplicationRecord
 
   scope :completed, -> { where(status: %i[succeeded no_changes]) }
 
+  # A run whose job died ungracefully (app killed mid-run) stays queued/running
+  # forever and blocks its source via DataSource#running?. The runner saves the
+  # run after every command, so updated_at is a coarse heartbeat.
+  STALE_AFTER = 6.hours
+
+  def self.reap_stale!
+    where(status: %i[queued running])
+      .where(updated_at: ...STALE_AFTER.ago)
+      .find_each do |run|
+        run.append_log("Marked failed: no activity for #{STALE_AFTER.inspect} (job lost, likely an app restart).\n")
+        run.update!(status: :failed, finished_at: Time.current)
+      end
+  end
+
   def duration
     return nil unless started_at && finished_at
     finished_at - started_at

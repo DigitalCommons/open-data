@@ -23,6 +23,15 @@ else
     rsync -a --update "${common_excludes[@]}" \
         --exclude '/*/original-data' --exclude '/*/generated-data' \
         /app/code/ /app/data/open-data/
+    # The excludes above also skip committed original-data for projects added
+    # since first install; seed any project whose original-data is absent.
+    for src in /app/code/*/original-data; do
+        [[ -d $src ]] || continue
+        dest="/app/data/open-data/$(basename "$(dirname "$src")")/original-data"
+        if [[ ! -d $dest ]]; then
+            rsync -a "$src/" "$dest/"
+        fi
+    done
 fi
 
 chown -R cloudron:cloudron /run/app /app/data

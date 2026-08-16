@@ -48,8 +48,10 @@ class DataSourceRunner
     diff = record_diff(previous_csv)
 
     # A download that converts to an identical standard.csv is a duplicate:
-    # keep the run line but not the files.
-    if previous_csv && diff && !run.changes?
+    # keep the run line but not the files. The byte comparison guards against
+    # a misleading zero diff (duplicate/blank Identifiers collapse in CsvDiff).
+    if previous_csv && diff && !run.changes? &&
+        run.standard_csv_path && FileUtils.identical?(previous_csv, run.standard_csv_path)
       FileUtils.remove_entry(run.archive_path)
       run.update!(archive_path: nil)
       run.append_log("Converted output identical to previous download; archive discarded.\n")
@@ -76,8 +78,11 @@ class DataSourceRunner
 
     original_data = source.project_dir + "original-data"
     FileUtils.mkdir_p(original_data)
-    FileUtils.cp(run.uploaded_file_path, original_data + run.uploaded_filename)
-    run.append_log("Installed uploaded file #{run.uploaded_filename} into #{original_data}\n")
+    # The convert stage only reads the conf's ORIGINAL_CSV filename, so the
+    # upload must be installed under that name, not the browser's.
+    target = original_csv_name
+    FileUtils.cp(run.uploaded_file_path, original_data + target)
+    run.append_log("Installed uploaded file #{run.uploaded_filename} as #{original_data + target}\n")
   end
 
   def seod(command)
@@ -109,7 +114,25 @@ class DataSourceRunner
         .reject { |dir| dir.start_with?(bundle_root) }
         .join(File::PATH_SEPARATOR)
     end
+    # Without SEOD_CONFIG seod falls back to local.conf/default.conf, the dev
+    # config (dev endpoints, IP-locked download URLs). Prefer production.conf
+    # where the project has one; an explicit SEOD_CONFIG env var still wins.
+    if env["SEOD_CONFIG"].blank? && (source.project_dir + "production.conf").file?
+      env["SEOD_CONFIG"] = "production.conf"
+    end
     env
+  end
+
+  # The name the convert stage reads from original-data/, from the same conf
+  # file seod will use (ORIGINAL_CSV; the gem's default is original.csv).
+  def original_csv_name
+    names = subprocess_env["SEOD_CONFIG"] || "{local,default}.conf"
+    conf = Dir.glob(names, base: source.project_dir.to_s).first
+    if conf && (path = source.project_dir + conf).file?
+      match = path.read[/^\s*ORIGINAL_CSV\s*=\s*(\S+)/, 1]
+      return match if match
+    end
+    "original.csv"
   end
 
   def record_diff(previous_csv)
