@@ -38,7 +38,18 @@ function process {
 FAILS=()
 set +o errexit # <- we want to manage failure more finely than this here
 
-for dir in ica  newbridge mersey-green deep-adaptation dotcoop workers-coop; do
+# List of directories to process. Can be overridden via SEOD_DIRS environment variable.
+# Providers with inactive contracts (e.g. newbridge, mersey-green) can be ignored via SEOD_IGNORE_DIRS.
+# Reference: DigitalCommons/mykomap-monolith#322
+SEOD_IGNORE_DIRS=${SEOD_IGNORE_DIRS:-"newbridge mersey-green"}
+ALL_DIRS=${SEOD_DIRS:-"ica newbridge mersey-green deep-adaptation dotcoop workers-coop"}
+
+for dir in $ALL_DIRS; do
+    if [[ -n "$SEOD_IGNORE_DIRS" && " $SEOD_IGNORE_DIRS " =~ [[:space:]]"$dir"[[:space:]] ]]; then
+        echo "SKIPPING $dir (ignored via SEOD_IGNORE_DIRS)"
+        continue
+    fi
+
     echo "PROCESSING $dir..."
     
     process $dir
