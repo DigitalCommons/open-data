@@ -31,19 +31,28 @@ Environment:
 
 ## Development
 
+Ruby is pinned by `mise.toml` in the repo root. Install
+[mise](https://mise.jdx.dev), then:
+
 ```bash
+cd /path/to/open-data
+mise install
 cd admin
-bundle install
-bin/rails db:prepare db:seed
-bin/dev
+mise exec -- bundle install
+mise exec -- bin/rails db:prepare db:seed
+mise exec -- bin/dev
 ```
+
+`mise exec --` runs a command with the pinned Ruby regardless of any rbenv or
+asdf shims on the PATH. If mise is activated in your shell the prefix can be
+dropped.
 
 ## Tests
 
 ```bash
 cd admin
-bin/rails test
-bin/rubocop
+mise exec -- bin/rails test
+mise exec -- bin/rubocop
 ```
 
 The suite stubs `seod` with `test/stub_bin/seod` and points `OPEN_DATA_ROOT`

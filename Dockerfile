@@ -1,13 +1,13 @@
 # Cloudron app image: the admin Rails app plus the converter projects.
-# Build/deploy: cloudron build && cloudron install --location <subdomain>
+# Build and deploy: see "Cloudron deployment" in admin/README.md.
 FROM cloudron/base:5.0.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libyaml-dev libsqlite3-dev gosu rsync openssl git \
     && rm -rf /var/lib/apt/lists/*
 
-# Ruby via mise. /usr/local/ruby is a stable path so runtime scripts don't
-# need mise or the version number.
+# Ruby via mise, pinned by mise.toml. /usr/local/ruby is a stable path so
+# runtime scripts don't need mise or the version number.
 RUN curl -fsSL https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
 ENV MISE_DATA_DIR=/usr/local/mise
 WORKDIR /app/code
