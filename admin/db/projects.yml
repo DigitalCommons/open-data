@@ -12,6 +12,10 @@ cwm:
   description: >-
     Co-operatives worldwide, merged and deduplicated across data partners and
     published at maps.coop. Built in data-pipelines from these sources.
+    Note: the unified CSV matches data-pipelines, including its bug that
+    ignores the field and name priorities (data-unification.ts spreads tables
+    instead of fieldPriorities), so merged records take each field from the
+    first source alphabetically. To be fixed.
   sources: [ acmei, cmc, comn, cooperar, coops-uk, dotcoop, eurocoop, fca, ficu, ica, ics, iffco, ncba, ncg, ncui, nfca, usda, usfwc, workers-coop, ycc ]
   # From data-pipelines apps/cwm-data/defs.ts
   unify:
