@@ -122,7 +122,8 @@ class ProjectTest < ActiveSupport::TestCase
 
   test "CWM description ends with the field priority note" do
     description = Project.project_definitions.dig("cwm", "description")
-    assert description.end_with?("so merged records take each field from the first source alphabetically. To be fixed."), description
+    assert_includes description, "so merged records take each field from the first source alphabetically. To be fixed."
+    assert description.end_with?("so the diff may report a merged organisation as removed and added."), description
     assert_includes description, "Note: the unified CSV matches data-pipelines, including its bug"
   end
 end
