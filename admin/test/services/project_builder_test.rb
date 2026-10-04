@@ -1,4 +1,5 @@
 require "test_helper"
+require "csv"
 
 class ProjectBuilderTest < ActiveSupport::TestCase
   include OpenDataTestHelper
@@ -77,5 +78,19 @@ class ProjectBuilderTest < ActiveSupport::TestCase
     assert_equal "datasetId\tid\ttype\tmessage\turl\tdomain\n", tsv.first
     assert_includes tsv, "be\t9\terror\turl must not have path\thttps://x.coop/path\tx.coop\n"
     assert_match(/al: 1 rows/, build.log)
+  end
+
+  test "unifies the cleaned sources into unified.csv" do
+    archive_standard_csv(data_sources(:alpha), "Identifier,Name,Website\n1,One,https://one.coop\n2,Two,https://two.coop\n")
+    archive_standard_csv(data_sources(:beta), "Identifier,Name,Website\n9,Uno,https://www.one.coop\n")
+
+    build = build!
+    assert build.succeeded?, build.log
+    rows = CSV.read(build.csv_path, headers: true)
+    assert_equal [ "al/1", "al/2" ], rows.map { |row| row["Identifier"] }
+    assert_equal "AL;BE", rows.first["Memberships"]
+    assert_equal 2, build.row_count
+    assert_equal 1, build.merged_count
+    assert_match(/2 rows, 1 merged/, build.log)
   end
 end

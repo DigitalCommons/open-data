@@ -1,13 +1,14 @@
 require "csv"
 
 # Builds a project's unified CSV from the latest converted standard.csv of
-# each source in its unify settings, then archives it:
+# each source in its unify settings (cleaned by UnifiedCsv::Cleaner, then
+# merged by UnifiedCsv::Unifier) and archives it:
 #
 #   <builds_root>/<project-key>/<YYYY-MM-DD_HHMMSS>/
 #     meta.json     project and the download run behind each input
 #     cleaned/      <code>.cleaned.csv per table and clean-csv-data.tsv,
 #                   the cleaner's log in data-pipelines' format
-#     unified.csv   the output
+#     unified.csv   the cleaned sources merged by UnifiedCsv::Unifier
 class ProjectBuilder
   attr_reader :build, :project, :settings
 
@@ -30,11 +31,11 @@ class ProjectBuilder
 
     dir = archive_dir
     cleaned = clean(inputs, dir + "cleaned")
-    headers, rows = combine(cleaned)
-    write_csv(dir + "unified.csv", headers, rows)
+    stats = UnifiedCsv::Unifier.new(settings, cleaned.to_h).unify(dir + "unified.csv")
     File.write(dir + "meta.json", JSON.pretty_generate(meta(inputs)))
-    build.row_count = rows.size
-    build.append_log("Wrote #{rows.size} rows from #{inputs.size} sources.\n")
+    build.row_count = stats[:rows]
+    build.merged_count = stats[:merged]
+    build.append_log("Unified: #{stats[:rows]} rows, #{stats[:merged]} merged from #{inputs.size} sources.\n")
     finish(:succeeded)
   rescue StandardError => e
     build.append_log("#{e.class}: #{e.message}\n")
@@ -73,26 +74,6 @@ class ProjectBuilder
       entries.each do |entry|
         file.puts entry.values_at(:dataset_id, :id, :type, :message, :url, :domain).map(&escape).join("\t")
       end
-    end
-  end
-
-  # Every cleaned row; headers are the union of the inputs' headers in
-  # first-seen order.
-  def combine(cleaned)
-    headers = []
-    rows = []
-    cleaned.each do |_code, path|
-      csv = CSV.read(path, headers: true)
-      headers |= csv.headers
-      csv.each { |row| rows << row.to_h }
-    end
-    [ headers, rows ]
-  end
-
-  def write_csv(path, headers, rows)
-    CSV.open(path, "w", quote_empty: false) do |csv|
-      csv << headers
-      rows.each { |row| csv << row.values_at(*headers) }
     end
   end
 
