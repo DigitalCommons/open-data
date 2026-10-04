@@ -13,11 +13,20 @@
       <%= @build.started_at ? "started #{time_ago_in_words(@build.started_at)} ago" : "not started" %>,
       duration <%= format_duration(@build.duration) %>
     </p>
+    <% if @build.diff_summary.present? %>
+      <p class="mt-1 text-sm text-slate-700"><%= @build.diff_summary %></p>
+    <% end %>
   </div>
-  <% if @build.csv_path %>
-    <%= link_to "Download unified CSV", csv_project_build_path(@build),
-          class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
-  <% end %>
+  <div class="flex items-center gap-2">
+    <% if @build.csv_path %>
+      <%= link_to "Download unified CSV", csv_project_build_path(@build),
+            class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
+    <% end %>
+    <% if @build.diff_path %>
+      <%= link_to "Download diff", diff_project_build_path(@build),
+            class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
+    <% end %>
+  </div>
 </div>
 
 <div class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">

@@ -9,6 +9,7 @@ require "csv"
 #     cleaned/      <code>.cleaned.csv per table and clean-csv-data.tsv,
 #                   the cleaner's log in data-pipelines' format
 #     unified.csv   the cleaned sources merged by UnifiedCsv::Unifier
+#     diff.txt      changes since the previous successful build
 class ProjectBuilder
   attr_reader :build, :project, :settings
 
@@ -31,7 +32,9 @@ class ProjectBuilder
 
     dir = archive_dir
     cleaned = clean(inputs, dir + "cleaned")
+    previous_csv = previous_build&.csv_path
     stats = UnifiedCsv::Unifier.new(settings, cleaned.to_h).unify(dir + "unified.csv")
+    record_diff(previous_csv, dir)
     File.write(dir + "meta.json", JSON.pretty_generate(meta(inputs)))
     build.row_count = stats[:rows]
     build.merged_count = stats[:merged]
@@ -75,6 +78,17 @@ class ProjectBuilder
         file.puts entry.values_at(:dataset_id, :id, :type, :message, :url, :domain).map(&escape).join("\t")
       end
     end
+  end
+
+  def previous_build
+    project.project_builds.succeeded.where.not(id: build.id).order(created_at: :desc).first
+  end
+
+  def record_diff(previous_csv, dir)
+    diff = CsvDiff.call(previous_csv, (dir + "unified.csv").to_s)
+    File.write(dir + "diff.txt", diff.detail)
+    build.assign_attributes(rows_added: diff.added, rows_removed: diff.removed,
+      rows_changed: diff.changed, diff_summary: diff.summary)
   end
 
   def archive_dir

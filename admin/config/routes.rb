@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   resources :project_builds, only: :show do
     member do
       get :csv
+      get :diff
     end
   end
 

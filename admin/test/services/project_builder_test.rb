@@ -93,4 +93,21 @@ class ProjectBuilderTest < ActiveSupport::TestCase
     assert_equal 1, build.merged_count
     assert_match(/2 rows, 1 merged/, build.log)
   end
+
+  test "compares each build with the project's previous successful build" do
+    alpha = data_sources(:alpha)
+    archive_standard_csv(alpha, "Identifier,Name\n1,One\n2,Two\n")
+    archive_standard_csv(data_sources(:beta), "Identifier,Name\n9,Nine\n")
+    first = build!
+    assert_equal [ 3, 0, 0 ], [ first.rows_added, first.rows_removed, first.rows_changed ]
+
+    archive_standard_csv(alpha, "Identifier,Name\n1,One renamed\n3,Three\n")
+    @build = projects(:cwm).project_builds.create!(status: :queued)
+    second = build!
+
+    assert second.succeeded?, second.log
+    assert_equal [ 1, 1, 1 ], [ second.rows_added, second.rows_removed, second.rows_changed ]
+    assert_match(/1 added, 1 removed, 1 changed/, second.diff_summary)
+    assert File.file?(second.diff_path)
+  end
 end

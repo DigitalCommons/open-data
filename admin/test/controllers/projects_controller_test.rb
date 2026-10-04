@@ -110,4 +110,20 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   ensure
     FileUtils.remove_entry(dir) if dir
   end
+
+  test "build page offers the diff from the previous build" do
+    dir = Dir.mktmpdir
+    File.write(File.join(dir, "diff.txt"), "+ added\n")
+    build = projects(:cwm).project_builds.create!(status: :succeeded, archive_path: dir,
+      rows_added: 1, rows_removed: 0, rows_changed: 0, diff_summary: "1 added, 0 removed, 0 changed (1 rows, was 0).")
+
+    get project_build_path(build)
+    assert_select "a[href=?]", diff_project_build_path(build), "Download diff"
+    assert_select "p", /1 added, 0 removed, 0 changed/
+
+    get diff_project_build_path(build)
+    assert_equal "+ added\n", response.body
+  ensure
+    FileUtils.remove_entry(dir) if dir
+  end
 end

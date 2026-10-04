@@ -23,12 +23,22 @@ class ProjectBuild < ApplicationRecord
   end
 
   def csv_path
-    return nil if archive_path.blank?
-    path = File.join(archive_path, "unified.csv")
-    File.file?(path) ? path : nil
+    path_in_archive("unified.csv")
+  end
+
+  def diff_path
+    path_in_archive("diff.txt")
   end
 
   def append_log(text)
     self.log = [ log, text ].compact.join
+  end
+
+  private
+
+  def path_in_archive(filename)
+    return nil if archive_path.blank?
+    path = File.join(archive_path, filename)
+    File.file?(path) ? path : nil
   end
 end
