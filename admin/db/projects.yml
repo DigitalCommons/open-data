@@ -9,17 +9,15 @@ cwm:
   category: mykomaps_v4
   description: >-
     Co-operatives worldwide, merged and deduplicated across data partners and
-    published at maps.coop. Built in data-pipelines from these sources plus
-    NFCA and CoMN, which are not yet in this app.
-  sources: [ acmei, cmc, cooperar, coops-uk, dotcoop, eurocoop, fca, ficu, ica, ics, iffco, ncba, ncg, ncui, usda, usfwc, workers-coop, ycc ]
+    published at maps.coop. Built in data-pipelines from these sources.
+  sources: [ acmei, cmc, comn, cooperar, coops-uk, dotcoop, eurocoop, fca, ficu, ica, ics, iffco, ncba, ncg, ncui, nfca, usda, usfwc, workers-coop, ycc ]
 powys:
   name: Powys Food Map
   category: mykomaps_v4
   description: >-
-    Bilingual (English and Welsh) map of the Powys food system. Built in
-    data-pipelines from a Google Sheet; the powys source here takes manual
-    uploads.
-  sources: [ powys ]
+    Bilingual (English and Welsh) map of the Powys food system, from a Google
+    Sheet. One source per language.
+  sources: [ powys-eng, powys-cym ]
 newbridge:
   name: For Solidarity
   category: mykomaps_v3
