@@ -17,6 +17,13 @@ cmc:
     geocodes via cached Geoapify and normalises the website; CMC's own
     activity and membership values are carried through as extra columns in a
     "standard plus" output schema.
+comn:
+  description: >-
+    Co-Minnesota (APEX) sheet, downloaded as CSV and supplied manually. Rows
+    have a permanent ID and English vocab labels (activities, structure,
+    membership type, country) mapped to codes via vocabs.json. Sheet
+    coordinates are used when present, otherwise addresses are geocoded via
+    Mapbox with a committed cache. Ported from data-pipelines.
 cooperar:
   description: >-
     Cooperar (Argentine confederation of co-operatives) data is downloaded as
@@ -158,6 +165,13 @@ ncba:
     maps the NCBA taxonomy through committed lookup tables to an ICA activity
     plus NCBA-specific industry and sector identifiers emitted as extra
     columns.
+nfca:
+  description: >-
+    NFCA (US food co-op network) export, apparently from HubSpot, supplied
+    manually as CSV. The converter drops the example row, maps Co-op Sector
+    to an ICA activity, slugifies the name as the identifier and geocodes via
+    Mapbox with a committed cache; rows that fail to geocode are left out.
+    Ported from data-pipelines.
 ncg:
   description: >-
     National Co+op Grocers (US food co-ops) store list, supplied manually as
@@ -202,15 +216,20 @@ oxford:
     addresses via Geoapify; published under lod.coop/sea-lod/oxford and to the
     Murmurations index.
   download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
-powys:
+powys-cym:
   description: >-
-    A bilingual (English/Welsh) Powys food-system mapping CSV with category,
-    locality and popup text columns. A downloader script exists but the URL is
-    commented out, so data is supplied manually in practice. The converter
-    translates numeric subcategory and town IDs via local lookup tables into
-    food-system category and locality codes, normalises URLs and emails,
-    builds a GB address and geocodes via Geoapify, emitting the Welsh fields
-    and category IDs as extra columns.
+    Powys Food Map in Welsh. Same sheet and converter as powys-eng, using the
+    Welsh title and popup text (no English fallback).
+  download_url: "https://docs.google.com/spreadsheets/d/1C8SgDAv0axnivbBoXTPEmqJvoudp4L8F2y5Jaoj7wkw/export?format=csv&gid=0"
+powys-eng:
+  description: >-
+    Powys Food Map in English, downloaded as a CSV export of a Google Sheet
+    (first row is notes). Category, subcategory and town names map to
+    food-system category and locality codes; sheet Geocode coordinates are
+    used when present, otherwise addresses are geocoded via Mapbox (Powys
+    bounding box, postcode preferred) with a committed cache shared with
+    powys-cym. Ported from data-pipelines.
+  download_url: "https://docs.google.com/spreadsheets/d/1C8SgDAv0axnivbBoXTPEmqJvoudp4L8F2y5Jaoj7wkw/export?format=csv&gid=0"
 usda:
   description: >-
     US agricultural co-operatives from USDA data, supplied manually as CSV
