@@ -57,3 +57,6 @@ group :test do
 end
 
 gem "fugit", "~> 1.13"
+
+# Registrable domains for the unified CSV cleaner (tldts in data-pipelines)
+gem "public_suffix", "~> 7.0"

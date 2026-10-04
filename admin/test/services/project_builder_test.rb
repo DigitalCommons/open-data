@@ -54,4 +54,28 @@ class ProjectBuilderTest < ActiveSupport::TestCase
     assert build.failed?
     assert_match(/CSV::MalformedCSVError|Unclosed quoted field/, build.log)
   end
+
+  test "cleans each source into the archive with the clean log" do
+    @settings = UnifySettings.from_definition(
+      "match_on" => [ "Domains" ],
+      "tables" => {
+        "al" => { "source" => "alpha", "row_filter" => { "Status" => "1" } },
+        "be" => { "source" => "beta" }
+      }
+    )
+    archive_standard_csv(data_sources(:alpha), "Identifier,Name,Website,Status\n1,One,https://one.coop,1\n2,Two,,0\n")
+    archive_standard_csv(data_sources(:beta), "Identifier,Name,Website\n9,Nine,https://x.coop/path\n")
+
+    build = build!
+    assert build.succeeded?, build.log
+    cleaned = Pathname.new(build.archive_path) + "cleaned"
+    assert_equal "Identifier,Name,Website,Status,Domains,Dataset\n1,One,https://one.coop,1,one.coop,al\n",
+      File.read(cleaned + "al.cleaned.csv")
+    assert File.file?(cleaned + "be.cleaned.csv")
+
+    tsv = File.read(cleaned + "clean-csv-data.tsv").lines
+    assert_equal "datasetId\tid\ttype\tmessage\turl\tdomain\n", tsv.first
+    assert_includes tsv, "be\t9\terror\turl must not have path\thttps://x.coop/path\tx.coop\n"
+    assert_match(/al: 1 rows/, build.log)
+  end
 end
