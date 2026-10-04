@@ -1,0 +1,45 @@
+Identifier,Name,Description,Organisational Structure,Primary Activity,Activities,Street Address,Locality,Region,Postcode,Country ID,Territory ID,Website,Phone,Email,Twitter,Facebook,Companies House Number,Qualifiers,Membership Type,Latitude,Longitude,Geo Container,Geo Container Confidence,Geo Container Latitude,Geo Container Longitude,Geocoded Address,Sector,SIC Section,SIC Code,Ownership Classification,Legal Form
+R002847,Footprint Workers Co-operative,"Footprint is a workers co-operative based at Cornerstone Resource Centre, Chapeltown in Leeds. Footprint was set up to provide printing services to the highest possible ethical and environmental standards. We have 2 current members who both live in Cornerstone Housing Co-op and have been involved in social and ecological activism for a number of years.",https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS50,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,"16 Sholebroke Avenue
+Chapeltown",Leeds,Leeds,LS7 3HB,GB,,http://www.footprinters.co.uk,,,,,03357921,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=53.81937&mlong=-1.53328,78,53.81937,-1.53328,"16 Sholebroke Avenue
+Chapeltown, Leeds, Leeds, LS7 3HB, England",Arts and Culture,"Arts, Entertainment and Recreation",90030,Workers,Company
+R004368,Atomised Co-operative,"Atomised is a web design agency with a difference. We're a worker's co-operative, which means that everyone who works here owns an equal share in the company. We're not a reseller or a middle-man, and our clients don't have to wade through layers of sales teams and managers. They deal directly with Neil, AL & Morgan: the team of developers who work on perfecting their brands, websites & applications. As an ethical co-operative we are committed to customer care and in working transparently, fully sharing our expertise and insight with our clients in an open and hands-on manner.  Our trio are a well-rounded team of web experts with core expertise in hand-crafted interface design, brand audit & redesign, standards compliant web design, mobile web design and development, content management, online strategy, information architecture, accessibility, email & web marketing, search engine optimization (SEO) and web analysis & usability consulting.",https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS50,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,"2 Millhouse
+Millgate",Cupar,Fife,KY15 5EH,GB,,http://www.atomised.coop,,,,,SC347143,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=56.2843&mlong=-3.00497,74,56.2843,-3.00497,"2 Millhouse
+Millgate, Cupar, Fife, KY15 5EH, Scotland","Digital, Media and Communication",Information and Communication,62020,Workers,Company
+R005391,Co-operatives and Mutuals Wales,Regional Co-operative Council,https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS160,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,"Anderley Lodge
+216 Stow Hill",Newport,Newport,NP20 4HA,GB,,http://www.cooperatives-wales.coop/,,,,,,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT40,,,https://www.openstreetmap.org/mlat=51.58312&mlong=-3.00842,100,51.58312,-3.00842,"Anderley Lodge
+216 Stow Hill, Newport, Newport, NP20 4HA, Wales","Membership associations, social clubs and trade unions",Other Service Activities,94110,Multi-stakeholder,Unincorporated
+R006143,Thornton Conservative Club,Social club,https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS130,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,"385 Thornton Road
+Thornton",Bradford,Bradford,BD13 3JX,GB,,,,,,,,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT10,,,https://www.openstreetmap.org/mlat=53.790469&mlong=-1.852225,69,53.790469,-1.852225,"385 Thornton Road
+Thornton, Bradford, Bradford, BD13 3JX, England","Membership associations, social clubs and trade unions",Other Service Activities,94920,Consumers,Society
+R006686,Pine Tree Housing Co-operative,Housing co-operative,https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS130,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA210,,"Unit A, Arc House
+82 Tanner Street",London,Southwark,SE1 3GN,GB,,http://www.cds.coop/for-co-ops/co-op/pine-tree/?type=coop,,,,,,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT50,,,https://www.openstreetmap.org/mlat=51.49965&mlong=-0.07699,84,51.49965,-0.07699,"Unit A, Arc House
+82 Tanner Street, London, Southwark, SE1 3GN, England",Housing,Real Estate,68201,Tenants,Society
+R006793,Bristol Wood Recycling Project,"Reclaimed timber yard, furniture maker and wood waste collection service.",https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS50,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA230,,"Unit 4 William Street
+St. Philips",Bristol,"Bristol, City of",BS2 0RG,GB,,http://www.bwrp.org.uk,,,,,05081319,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=51.454274&mlong=-2.573967,90,51.454274,-2.573967,"Unit 4 William Street
+St. Philips, Bristol, Bristol, City of, BS2 0RG, England",Energy and Environment,Water Supply; Sewerage and Waste,38110,Workers,Company
+R009306,City Cabs Edinburgh,"City Cabs are Edinburgh’s largest and longest serving taxi association and boast a fleet of over 450 vehicles. Since 1925 City Cabs have been offering a quality service that is backed up by the best technology on the market.
+
+A lot of people don’t know that City Cabs is a co-operative, owned and operated by its members, this in turn means that our members and drivers are committed to the long term success of City Cabs and to the standard of service we offer.
+
+As Edinburgh’s Favourite Taxi Company we pride ourselves on treating our customers as individuals, and provide a range of services to suit all needs.
+
+•    Local or long distance travel.
+•    Edinburgh Airport transfers, including Meet & Greet services.
+•    Corporate accounts.
+•    Group bookings.
+•    Wedding taxis.
+•    Online web booking
+•    iPhone and Android booking app.",https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS50,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA220,,2 Atholl Place,Edinburgh,City of Edinburgh,EH3 8HP,GB,,http://www.citycabs.co.uk,,,,,SC033518,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=55.948897&mlong=-3.210999,82,55.948897,-3.210999,"2 Atholl Place, Edinburgh, City of Edinburgh, EH3 8HP, Scotland",Transport,Transportation and Storage,49320,Self-employed,Company
+R009442,Westmorland Country Markets,Local markets,https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS130,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA260,,"Country Markets Limited
+Dunston House
+Dunston Road
+Sheepbridge",Chesterfield,Derbyshire,S41 9QD,GB,,http://www.country-markets.co.uk,,,,,,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=53.26518&mlong=-1.439616,79,53.26518,-1.439616,"Country Markets Limited
+Dunston House
+Dunston Road
+Sheepbridge, Chesterfield, Derbyshire, S41 9QD, England",Retail,Wholesale and Retail; Vehicle Repair,47810,Self-employed,Society
+R010782,Twin Cabs Owner Drivers Association,Taxi driver owned co-operative,https://dev.lod.coop/essglobal/2.1/standard/organisational-structure/OS130,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,81b Hallcraig Street,Airdrie,North Lanarkshire,ML6 6AW,GB,,,,,,,,,https://dev.lod.coop/essglobal/2.1/standard/base-membership-type/BMT30,,,https://www.openstreetmap.org/mlat=55.86702&mlong=-3.97676,91,55.86702,-3.97676,"81b Hallcraig Street, Airdrie, North Lanarkshire, ML6 6AW, Scotland","Membership associations, social clubs and trade unions",Other Service Activities,94100,Self-employed,Society
+R013792,Radford Bridge Road Garden Holders Association,"The Radford Bridge Road Garden Holders was started by a group of gardeners in 1930's with more area added in 1947.
+
+We are a co-operative with approximately 170 shareholders.",,https://dev.lod.coop/essglobal/2.1/standard/activities-ica/ICA280,,"Cawley House
+149-155 Canal Street",Nottingham,Nottingham,NG1 7HR,GB,,http://rbrgha.blogspot.co.uk,,,,,,,,,,https://www.openstreetmap.org/mlat=52.94968&mlong=-1.14508,65,52.94968,-1.14508,"Cawley House
+149-155 Canal Street, Nottingham, Nottingham, NG1 7HR, England",Other,Households as Employers; For Own Use,98100,,Society

@@ -1,0 +1,51 @@
+Identifier,Name,Description,Website,Primary Activity,Organisational Structure,Membership Type,UC Country ID,Source Latitude,Source Longitude,Geo Container Latitude,Geo Container Longitude,Geo Container,Geocoded Address,Region,dc.Domains,Domains,Memberships,Identifiers,Country ID,Latitude,Longitude
+cuk/R004368,Atomised Co-operative,"Atomised is a web design agency with a difference. We're a worker's co-operative, which means that everyone who works here owns an equal share in the company. We're not a reseller or a middle-man, and our clients don't have to wade through layers of sales teams and managers. They deal directly with Neil, AL & Morgan: the team of developers who work on perfecting their brands, websites & applications. As an ethical co-operative we are committed to customer care and in working transparently, fully sharing our expertise and insight with our clients in an open and hands-on manner.  Our trio are a well-rounded team of web experts with core expertise in hand-crafted interface design, brand audit & redesign, standards compliant web design, mobile web design and development, content management, online strategy, information architecture, accessibility, email & web marketing, search engine optimization (SEO) and web analysis & usability consulting.",http://www.atomised.coop,ICA280,OS50,BMT30,GB,56.3193913,-3.0116545,56.2843,-3.00497,https://www.openstreetmap.org/mlat=56.2843&mlong=-3.00497,"2 Millhouse
+Millgate, Cupar, Fife, KY15 5EH, Scotland",Fife,atomised.coop,atomised.coop,CUK;DC;WC,cuk=R004368;dc=VqxBrl;wc=471,gb,56.3193913,-3.0116545
+iffco/19680,BADALI ALA SINGH COOP AGRL SER SOCY LTD.,,,ICA10,,,IN,,,30.625015,76.3853971,https://www.openstreetmap.org/mlat=30.625015&mlong=76.3853971,"VILL & PO. BADALI ALA SINGH, TEH SIRHIND, FATEHGARH SAHIB, PUNJAB, INDIA",PUNJAB,,,IFFCO,iffco=19680,in,30.625015,76.3853971
+iffco/30085,BHUILI SAHAKARI SANGH LTD,,,ICA10,,,IN,,,25.102388,83.058085,https://www.openstreetmap.org/mlat=25.102388&mlong=83.058085,"VILL- BHUILI POST BHUILI DISTT MIRZAPUR, DT MIRZAPUR, MIRZAPUR, UTTAR PRADESH, INDIA",UTTAR PRADESH,,,IFFCO,iffco=30085,in,25.102388,83.058085
+dc/1KR9eq,Bluff Country Co-op,,http://www.bluff.coop,ICA240,,,us,,,44.053642,-91.638389,https://www.openstreetmap.org/mlat=44.053642&mlong=-91.638389,"121 West Second Street, Winona, United States",MN,bluff.coop,bluff.coop,DC;NCBA;NCG,dc=1KR9eq;ncba=8227219121;ncg=5,us,44.053642,-91.638389
+cuk/R006793,Bristol Wood Recycling Project,"Reclaimed timber yard, furniture maker and wood waste collection service.",http://www.bwrp.org.uk,ICA230,OS50,BMT30,GB,51.4544852,-2.5742121,51.454274,-2.573967,https://www.openstreetmap.org/mlat=51.454274&mlong=-2.573967,"Unit 4 William Street
+St. Philips, Bristol, Bristol, City of, BS2 0RG, England","Bristol, City of",,bwrp.org.uk,CUK;WC,cuk=R006793;wc=511,gb,51.4544852,-2.5742121
+ycc/3256,Bugallon Entrepreneurs and Farmers Multi Purpose Cooperative,,,,,,PH,,,16.1170839,120.3989291,https://www.openstreetmap.org/mlat=16.1170839&mlong=120.3989291,"Bugallon Cayanga, Pangasinan, Republic of the Philippines",Pangasinan,,,YCC,ycc=3256,ph,16.1170839,120.3989291
+ycc/7460,Cabian Van Transport Service Cooperative,,,,,,PH,,,16.2747727,122.11867125,https://www.openstreetmap.org/mlat=16.2747727&mlong=122.11867125,"Barangay Bianoan, Casiguran, Aurora, Republic of the Philippines",Aurora,,,YCC,ycc=7460,ph,16.2747727,122.11867125
+cuk/R009306,City Cabs Edinburgh,"City Cabs are Edinburgh’s largest and longest serving taxi association and boast a fleet of over 450 vehicles. Since 1925 City Cabs have been offering a quality service that is backed up by the best technology on the market.
+
+A lot of people don’t know that City Cabs is a co-operative, owned and operated by its members, this in turn means that our members and drivers are committed to the long term success of City Cabs and to the standard of service we offer.
+
+As Edinburgh’s Favourite Taxi Company we pride ourselves on treating our customers as individuals, and provide a range of services to suit all needs.
+
+•    Local or long distance travel.
+•    Edinburgh Airport transfers, including Meet & Greet services.
+•    Corporate accounts.
+•    Group bookings.
+•    Wedding taxis.
+•    Online web booking
+•    iPhone and Android booking app.",http://www.citycabs.co.uk,ICA220,OS50,BMT30,GB,55.9475192,-3.2144196,55.948897,-3.210999,https://www.openstreetmap.org/mlat=55.948897&mlong=-3.210999,"2 Atholl Place, Edinburgh, City of Edinburgh, EH3 8HP, Scotland",City of Edinburgh,,citycabs.co.uk,CUK;WC,cuk=R009306;wc=551,gb,55.9475192,-3.2144196
+cuk/R005391,Co-operatives and Mutuals Wales,Regional Co-operative Council,http://www.cooperatives-wales.coop/,ICA280,OS160,BMT40,GB,51.4325908,-3.2168367,51.58312,-3.00842,https://www.openstreetmap.org/mlat=51.58312&mlong=-3.00842,"Anderley Lodge
+216 Stow Hill, Newport, Newport, NP20 4HA, Wales",Newport,consultancy.coop;cooperatives-wales.coop,consultancy.coop;cooperatives-wales.coop,CUK;DC;WC,cuk=R005391;dc=rWzp9K;wc=579,gb,51.4325908,-3.2168367
+cuk/R002847,Footprint Workers Co-operative,"Footprint is a workers co-operative based at Cornerstone Resource Centre, Chapeltown in Leeds. Footprint was set up to provide printing services to the highest possible ethical and environmental standards. We have 2 current members who both live in Cornerstone Housing Co-op and have been involved in social and ecological activism for a number of years.",http://www.footprinters.co.uk,ICA280,OS50,BMT30,GB,53.8193679,-1.5331667,53.81937,-1.53328,https://www.openstreetmap.org/mlat=53.81937&mlong=-1.53328,"16 Sholebroke Avenue
+Chapeltown, Leeds, Leeds, LS7 3HB, England",Leeds,,footprinters.co.uk,CUK;WC,cuk=R002847;wc=672,gb,53.8193679,-1.5331667
+ycc/3597,Ilocano Farmers Multipurpose Cooperative,,,,,,PH,,,14.62245,121.1253,https://www.openstreetmap.org/mlat=14.62245&mlong=121.1253,"City of Candon Langlangca Primero, Ilocos Sur, Republic of the Philippines",Ilocos Sur,,,YCC,ycc=3597,ph,14.62245,121.1253
+cooperar/46,Instituto Movilizador de Fondos Cooperativos (IMFC),"<p>El Instituto Movilizador de Fondos Coperativos fue fundado el 23 de noviembre de 1958, en la ciudad de Rosario, provincia de Santa Fe, con cuatro objetivos estrat&eacute;gicos:</p>
+
+<p>Difundir los valores y principios de la cooperaci&oacute;n, promover la creaci&oacute;n de cajas de cr&eacute;dito cooperativas, representar a sus entidades asociadas antes los poderes pol&iacute;ticos y movilizar los recursos financieros ociosos de unas regiones a otras, seg&uacute;n las necesidades estacionales de la econom&iacute;a.</p>
+
+<p>Entre 1958 y 1966 el IMFC contribuy&oacute; a crear m&aacute;s de 800 cajas de cr&eacute;dito cooperativas.</p>
+
+<p>A fines de la d&eacute;cada del 70, el Instituto Movilizador impuls&oacute; la creaci&oacute;n de bancos cooperativos sobre la base de la integraci&oacute;n de un gran n&uacute;mero de cajas de cr&eacute;dito. As&iacute; naci&oacute; el Banco Credicoop, el 19 de marzo de 1979, producto de la fusi&oacute;n de 44 cajas de cr&eacute;dito cooperativas. Actualmente, es el &uacute;nico banco cooperativo de la Rep&uacute;blica Argentina.</p>",https://www.imfc.coop/,ICA140,OS240,BMT10,AR,,,-34.9964963,-64.9672817,https://www.openstreetmap.org/mlat=-34.9964963&mlong=-64.9672817,Argentina,,imfc.coop;accion.coop;centrocultural.coop,accion.coop;centrocultural.coop;imfc.coop,COOPERAR;DC;ICA,cooperar=46;dc=YlBgVW;ica=70,ar,-34.9964963,-64.9672817
+dc/NlDADW,Moscow Food Co-op,,http://moscowfood.coop,ICA240,,,us,,,46.7323875,-117.000165,https://www.openstreetmap.org/mlat=46.7323875&mlong=-117.000165,"P. O. Box 9485, Moscow, United States",ID,moscowfood.coop;mfc.coop,mfc.coop;moscowfood.coop,DC;NCBA;NCG,dc=NlDADW;ncba=8226961325;ncg=220,us,46.7323875,-117.000165
+dc/W64G9K,Northwest Construction Cooperative,,http://northwestconstruction.coop,ICA70,OS115,BMT30,us,47,-122,47.0451022,-122.8950075,https://www.openstreetmap.org/mlat=47.0451022&mlong=-122.8950075,"PO Box 2953, Olympia, WA, United States",WA,northwestconstruction.coop,northwestconstruction.coop,DC;USFWC,dc=W64G9K;usfwc=3572,us,47,-122
+cuk/R006686,Pine Tree Housing Co-operative,Housing co-operative,http://www.cds.coop/for-co-ops/co-op/pine-tree/?type=coop,ICA210,OS130,BMT50,GB,,,51.49965,-0.07699,https://www.openstreetmap.org/mlat=51.49965&mlong=-0.07699,"Unit A, Arc House
+82 Tanner Street, London, Southwark, SE1 3GN, England",Southwark,,,CUK,cuk=R006686,gb,51.49965,-0.07699
+cuk/R013792,Radford Bridge Road Garden Holders Association,"The Radford Bridge Road Garden Holders was started by a group of gardeners in 1930's with more area added in 1947.
+
+We are a co-operative with approximately 170 shareholders.",http://rbrgha.blogspot.co.uk,ICA280,,,GB,,,52.94968,-1.14508,https://www.openstreetmap.org/mlat=52.94968&mlong=-1.14508,"Cawley House
+149-155 Canal Street, Nottingham, Nottingham, NG1 7HR, England",Nottingham,,,CUK,cuk=R013792,gb,52.94968,-1.14508
+cuk/R006143,Thornton Conservative Club,Social club,,ICA280,OS130,BMT10,GB,,,53.790469,-1.852225,https://www.openstreetmap.org/mlat=53.790469&mlong=-1.852225,"385 Thornton Road
+Thornton, Bradford, Bradford, BD13 3JX, England",Bradford,,,CUK,cuk=R006143,gb,53.790469,-1.852225
+cuk/R010782,Twin Cabs Owner Drivers Association,Taxi driver owned co-operative,,ICA280,OS130,BMT30,GB,55.8669906,-3.9775943,55.86702,-3.97676,https://www.openstreetmap.org/mlat=55.86702&mlong=-3.97676,"81b Hallcraig Street, Airdrie, North Lanarkshire, ML6 6AW, Scotland",North Lanarkshire,,,CUK;WC,cuk=R010782;wc=1087,gb,55.8669906,-3.9775943
+cuk/R009442,Westmorland Country Markets,Local markets,http://www.country-markets.co.uk,ICA260,OS130,BMT30,GB,54.3289795,-2.747183,53.26518,-1.439616,https://www.openstreetmap.org/mlat=53.26518&mlong=-1.439616,"Country Markets Limited
+Dunston House
+Dunston Road
+Sheepbridge, Chesterfield, Derbyshire, S41 9QD, England",Derbyshire,,,CUK;WC,cuk=R009442;wc=1121,gb,54.3289795,-2.747183
+dc/jl23YW,Williamson Street Grocery Cooperative,,http://willystreet.coop,ICA240,,,us,,,43.08941459375,-89.36296434375001,https://www.openstreetmap.org/mlat=43.08941459375&mlong=-89.36296434375001,"1457 E. Washington Ave., Madison, Wisconsin, United States",WI,willystreet.coop,willystreet.coop,DC;NCBA;NCG,dc=jl23YW;ncba=8227205485;ncg=79,us,43.08941459375,-89.36296434375001
