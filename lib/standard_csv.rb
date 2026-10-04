@@ -66,7 +66,9 @@ module StandardCsv
       end
     end
 
+    # Like data-pipelines (json2csv): no trailing newline, except after a
+    # header with no rows
     FileUtils.mkdir_p(File.dirname(path))
-    File.write(path, text.chomp)
+    File.write(path, rows.empty? ? text : text.chomp)
   end
 end

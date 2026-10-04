@@ -21,7 +21,7 @@ class StandardCsvTest < Minitest::Test
   def test_writes_only_the_header_when_there_are_no_rows
     StandardCsv.write(@path, [])
 
-    assert_equal StandardCsv::COLUMNS.join(","), File.read(@path)
+    assert_equal StandardCsv::COLUMNS.join(",") + "\n", File.read(@path)
   end
 
   def test_leaves_missing_and_empty_values_unquoted
