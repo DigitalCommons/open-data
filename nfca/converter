@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+#
+# Converts the NFCA Food Coop Network export (uploaded by hand as
+# original-data/original.csv) into generated-data/standard.csv, geocoding
+# with Mapbox through the committed cache in cache/geocodes.csv. Rows that
+# fail to geocode are left out and listed.
+#
+# Run with `seod convert`, or directly with `./converter`.
+
+require_relative "../lib/converter_support"
+require_relative "nfca"
+
+exit(ConverterSupport.run(cache_path: File.join(__dir__, "cache", "geocodes.csv")) do |rows, geocoder|
+  Nfca.convert(rows, geocoder)
+end)

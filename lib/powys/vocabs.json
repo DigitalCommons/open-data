@@ -1,0 +1,41 @@
+{
+  "fsc": {
+    "ep": "Community food provision",
+    "ep-fb": " - Food bank",
+    "ep-cf": " - Community fridge",
+    "ep-pm": " - Pay as you feel meals",
+    "ep-fs": " - Community food share",
+    "ep-sm": " - Shared meals",
+    "cg": "Community growing",
+    "cg-ie": " - Incredible Edible",
+    "cg-ga": " - Community garden",
+    "cg-or": " - Community orchard",
+    "cg-al": " - Allotments",
+    "lp": "Local food provider",
+    "lp-gr": " - Farmer/grower",
+    "lp-cr": " - Cafe/restaurant",
+    "lp-mk": " - Market",
+    "lp-sp": " - Shop",
+    "ev": "Events",
+    "ev-ff": " - Festival",
+    "ev-cc": " - Cooking classes",
+    "ft": "Food Trails"
+  },
+  "loc": {
+    "bl": "Builth & Llanwrtyd",
+    "br": "Brecon",
+    "ch": "Crickhowell",
+    "ht": "Hay & Talgarth",
+    "kp": "Knighton & Presteigne",
+    "ld": "Llanidloes",
+    "lf": "Llanfyllin",
+    "lr": "Llandrindod & Rhayader",
+    "lc": "Llanfair Caereinion",
+    "mh": "Machynlleth",
+    "ms": "Monmouthshire",
+    "nt": "Newtown",
+    "op": "Outside Powys",
+    "wm": "Welshpool & Montgomery",
+    "yg": "Ystradgynlais"
+  }
+}

@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+#
+# Converts the Powys Food Map sheet (original-data/original.csv, fetched by
+# the downloader) into generated-data/standard.csv in the language named by
+# this directory: powys-eng (English) or powys-cym (Welsh). The shared
+# logic, vocabs and geocode cache are in ../lib/powys.rb and ../lib/powys/.
+#
+# Run with `seod convert`, or directly with `./converter`.
+
+require_relative "../lib/converter_support"
+require_relative "../lib/powys"
+
+LANGUAGE = File.basename(__dir__).delete_prefix("powys-")
+
+exit(ConverterSupport.run(cache_path: Powys::CACHE_PATH, columns: Powys::COLUMNS,
+                          read: Powys.method(:read), **Powys::GEOCODER_OPTIONS) do |rows, geocoder|
+  Powys.convert(rows, geocoder, Powys.vocabs, LANGUAGE)
+end)
