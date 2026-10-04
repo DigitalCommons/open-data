@@ -6,7 +6,6 @@ alpha:
   kind: auto
   enabled: true
   schedule: "*/10 * * * *"
-  project: cwm
 
 beta:
   directory: beta

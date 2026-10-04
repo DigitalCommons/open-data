@@ -1,5 +1,6 @@
 class DataSource < ApplicationRecord
-  belongs_to :project, optional: true
+  has_many :project_sources, dependent: :destroy
+  has_many :projects, through: :project_sources
   has_many :download_runs, dependent: :destroy
 
   # auto: has a downloader script, can be fetched on a schedule

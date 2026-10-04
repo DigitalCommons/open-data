@@ -1,8 +1,9 @@
 # Projects (maps and datasets) and the data source directories they are
 # built from, in dashboard order. Read by Project.sync_from_file! on every
-# start: new projects are created at positions 10, 20, 30... in file order
-# and unassigned sources attached, but names, categories, descriptions and
-# positions edited in the UI are never overwritten.
+# start: new projects are created at their `position`, or 10, 20, 30... in
+# file order, and listed sources are added (a source may be in several
+# projects), but names, categories, descriptions and positions edited in
+# the UI are never overwritten.
 # Categories: mykomaps_v4, mykomaps_v3, legacy.
 cwm:
   name: Cooperative World Map (CWM)
@@ -18,6 +19,23 @@ powys:
     Bilingual (English and Welsh) map of the Powys food system, from a Google
     Sheet. One source per language.
   sources: [ powys-eng, powys-cym ]
+dotcoop:
+  name: DotCoop
+  category: mykomaps_v4
+  position: 24
+  description: >-
+    Co-operatives with a .coop domain, from the DotCoop registry. Standalone
+    map embedded by identity.coop; a CWM submap is planned to replace it.
+  sources: [ dotcoop ]
+workers-coop:
+  name: Workers.coop
+  category: mykomaps_v4
+  position: 26
+  description: >-
+    UK worker co-operatives from the workers.coop CiviCRM directory, Live
+    co-ops only. Standalone map embedded by workers.coop; a CWM submap is
+    planned to replace it.
+  sources: [ workers-coop ]
 newbridge:
   name: For Solidarity
   category: mykomaps_v3

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -19,11 +19,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.boolean "enabled", default: false, null: false
     t.integer "kind", default: 0, null: false
     t.string "name", null: false
-    t.integer "project_id"
     t.string "schedule"
     t.datetime "updated_at", null: false
     t.index ["directory"], name: "index_data_sources_on_directory", unique: true
-    t.index ["project_id"], name: "index_data_sources_on_project_id"
   end
 
   create_table "download_runs", force: :cascade do |t|
@@ -45,6 +43,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.string "uploaded_filename"
     t.index ["data_source_id", "created_at"], name: "index_download_runs_on_data_source_id_and_created_at"
     t.index ["data_source_id"], name: "index_download_runs_on_data_source_id"
+  end
+
+  create_table "project_sources", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "data_source_id", null: false
+    t.integer "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_source_id"], name: "index_project_sources_on_data_source_id"
+    t.index ["project_id", "data_source_id"], name: "index_project_sources_on_project_id_and_data_source_id", unique: true
+    t.index ["project_id"], name: "index_project_sources_on_project_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -76,7 +84,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  add_foreign_key "data_sources", "projects", on_delete: :nullify
   add_foreign_key "download_runs", "data_sources"
+  add_foreign_key "project_sources", "data_sources", on_delete: :cascade
+  add_foreign_key "project_sources", "projects", on_delete: :cascade
   add_foreign_key "sessions", "users"
 end

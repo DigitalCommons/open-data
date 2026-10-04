@@ -29,10 +29,11 @@
     <h2 class="text-sm font-semibold text-slate-900">Details</h2>
     <dl class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
       <div>
-        <dt class="text-slate-500">Project</dt>
+        <dt class="text-slate-500">Projects</dt>
         <dd class="mt-0.5 text-slate-900">
-          <% if @data_source.project %>
-            <%= link_to @data_source.project.name, @data_source.project, class: "text-indigo-700 hover:text-indigo-500" %>
+          <% projects = @data_source.projects.ordered %>
+          <% if projects.any? %>
+            <%= safe_join(projects.map { |project| link_to project.name, project, class: "text-indigo-700 hover:text-indigo-500" }, ", ") %>
           <% else %>
             -
           <% end %>

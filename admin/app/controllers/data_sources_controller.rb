@@ -4,6 +4,7 @@ class DataSourcesController < ApplicationController
   def index
     @data_sources = DataSource.order(enabled: :desc, name: :asc)
     @projects = Project.ordered
+    group_sources_by_project
   end
 
   def show
@@ -74,6 +75,19 @@ class DataSourcesController < ApplicationController
   end
 
   private
+
+  # A source is listed under every project it belongs to, in dashboard
+  # order; sources in no project are listed under "Other sources".
+  def group_sources_by_project
+    member_ids = ProjectSource.pluck(:project_id, :data_source_id)
+      .group_by(&:first).transform_values { |pairs| pairs.map(&:last).to_set }
+    @sources_by_project = @projects.to_h do |project|
+      ids = member_ids.fetch(project.id, Set.new)
+      [ project.id, @data_sources.select { |source| ids.include?(source.id) } ]
+    end
+    grouped_ids = member_ids.values.reduce(Set.new, :|)
+    @other_sources = @data_sources.reject { |source| grouped_ids.include?(source.id) }
+  end
 
   def set_data_source
     @data_source = DataSource.find(params[:id])

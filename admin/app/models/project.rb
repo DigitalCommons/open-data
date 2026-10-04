@@ -1,6 +1,7 @@
 # A map or dataset built from one or more data sources.
 class Project < ApplicationRecord
-  has_many :data_sources, dependent: :nullify
+  has_many :project_sources, dependent: :destroy
+  has_many :data_sources, through: :project_sources
 
   # Which MykoMaps generation serves the project.
   enum :category, { mykomaps_v4: 0, mykomaps_v3: 1, legacy: 2 }
@@ -25,8 +26,9 @@ class Project < ApplicationRecord
     path.file? ? YAML.load_file(path) : {}
   end
 
-  # Create missing projects and assign listed sources that have no project.
-  # New projects are positioned 10, 20, 30... in file order. Like
+  # Create missing projects and add each listed source to its project.
+  # New projects take the file's position, or 10, 20, 30... in file order.
+  # Sources are only ever added, never removed. Like
   # DataSource.sync_from_repo!, existing records only gain a description
   # when blank, so edits made in the UI survive re-seeding.
   def self.sync_from_file!(definitions: project_definitions)
@@ -34,12 +36,14 @@ class Project < ApplicationRecord
       project = find_or_initialize_by(key: key)
       if project.new_record?
         project.assign_attributes(name: info["name"], category: info["category"],
-          position: (index + 1) * POSITION_STEP)
+          position: info["position"] || (index + 1) * POSITION_STEP)
       end
       project.description = info["description"] if project.description.blank?
       project.save! if project.new_record? || project.changed?
 
-      DataSource.where(directory: Array(info["sources"]), project_id: nil).update_all(project_id: project.id)
+      DataSource.where(directory: Array(info["sources"])).where.not(id: project.data_source_ids).each do |source|
+        project.project_sources.create!(data_source: source)
+      end
     end
   end
 

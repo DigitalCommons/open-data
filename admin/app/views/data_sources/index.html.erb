@@ -29,10 +29,9 @@
   </div>
 </div>
 
-<% sources_by_project = @data_sources.group_by(&:project_id) %>
 <div class="mt-6 space-y-4">
   <% @projects.each_with_index do |project, index| %>
-    <% sources = sources_by_project.fetch(project.id, []) %>
+    <% sources = @sources_by_project.fetch(project.id) %>
     <section id="project_<%= project.id %>" class="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
       <div class="project-heading px-4 py-3">
         <div class="flex flex-wrap items-center gap-3">
@@ -48,10 +47,10 @@
       <%= render "source_table", sources: sources, show_header: index.zero? %>
     </section>
   <% end %>
-  <% if (other_sources = sources_by_project[nil]) %>
+  <% if @other_sources.any? %>
     <section id="other_sources" class="overflow-x-auto rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
       <div class="project-heading px-4 py-3 text-base font-semibold text-slate-900">Other sources</div>
-      <%= render "source_table", sources: other_sources, show_header: @projects.empty? %>
+      <%= render "source_table", sources: @other_sources, show_header: @projects.empty? %>
     </section>
   <% end %>
 </div>

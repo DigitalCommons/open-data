@@ -53,14 +53,24 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index has no Other sources group when every source has a project" do
-    data_sources(:beta).update!(project: projects(:cwm))
+    projects(:cwm).data_sources << data_sources(:beta)
     get data_sources_path
     assert_select "section#other_sources", count: 0
   end
 
-  test "show links to the source's project" do
+  test "index lists a source under each of its projects" do
+    projects(:mersey_green).data_sources << data_sources(:alpha)
+    get data_sources_path
+    assert_select "section#project_#{projects(:cwm).id} td", /Alpha Co-ops/
+    assert_select "section#project_#{projects(:mersey_green).id} td", /Alpha Co-ops/
+  end
+
+  test "show links to each of the source's projects" do
+    projects(:mersey_green).data_sources << data_sources(:alpha)
     get data_source_path(data_sources(:alpha))
+    assert_select "dt", "Projects"
     assert_select "a[href=?]", project_path(projects(:cwm)), "Cooperative World Map (CWM)"
+    assert_select "a[href=?]", project_path(projects(:mersey_green)), "Mersey Green Network"
   end
 
   test "show displays details and run history" do
