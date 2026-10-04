@@ -52,4 +52,62 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_equal "Cooperative World Map (CWM)", projects(:cwm).reload.name
   end
+
+  test "show offers a build for projects with unify settings" do
+    get project_path(projects(:cwm))
+    assert_select "h2", "Unified CSV builds"
+    assert_select "form[action=?]", build_project_path(projects(:cwm))
+    assert_select "td", "No builds yet."
+  end
+
+  test "show has no builds panel for other projects" do
+    get project_path(projects(:mersey_green))
+    assert_select "h2", text: "Unified CSV builds", count: 0
+  end
+
+  test "build queues a unified CSV build" do
+    assert_enqueued_with(job: ProjectBuildJob) do
+      post build_project_path(projects(:cwm))
+    end
+    assert_redirected_to project_path(projects(:cwm))
+    assert projects(:cwm).project_builds.last.queued?
+    follow_redirect!
+    assert_select "div", "Build queued."
+  end
+
+  test "build refuses while a build is in progress" do
+    projects(:cwm).project_builds.create!(status: :running)
+    assert_no_enqueued_jobs do
+      post build_project_path(projects(:cwm))
+    end
+    follow_redirect!
+    assert_select "div", "A build is already in progress."
+  end
+
+  test "build is not found for projects without unify settings" do
+    post build_project_path(projects(:mersey_green))
+    assert_response :not_found
+  end
+
+  test "show lists builds and downloads the latest unified CSV" do
+    dir = Dir.mktmpdir
+    File.write(File.join(dir, "unified.csv"), "Identifier\n1\n")
+    build = projects(:cwm).project_builds.create!(status: :succeeded, started_at: 1.minute.ago,
+      finished_at: Time.current, archive_path: dir, row_count: 1, merged_count: 0)
+
+    get project_path(projects(:cwm))
+    assert_select "a[href=?]", project_build_path(build)
+    assert_select "a[href=?]", csv_project_build_path(build), "Download unified CSV"
+
+    get csv_project_build_path(build)
+    assert_response :success
+    assert_equal "Identifier\n1\n", response.body
+    assert_match(/cwm-unified-#{build.id}\.csv/, response.headers["Content-Disposition"])
+
+    get project_build_path(build)
+    assert_response :success
+    assert_select "h2", "Log"
+  ensure
+    FileUtils.remove_entry(dir) if dir
+  end
 end

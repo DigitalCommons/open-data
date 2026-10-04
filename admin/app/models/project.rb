@@ -2,6 +2,7 @@
 class Project < ApplicationRecord
   has_many :project_sources, dependent: :destroy
   has_many :data_sources, through: :project_sources
+  has_many :project_builds, dependent: :destroy
 
   # Which MykoMaps generation serves the project.
   enum :category, { mykomaps_v4: 0, mykomaps_v3: 1, legacy: 2 }
@@ -45,6 +46,20 @@ class Project < ApplicationRecord
         project.project_sources.create!(data_source: source)
       end
     end
+  end
+
+  # Settings for the unified CSV build, or nil if the project has none.
+  def unify_settings
+    definition = self.class.project_definitions.dig(key, "unify")
+    definition && UnifySettings.from_definition(definition)
+  end
+
+  def buildable?
+    self.class.project_definitions.dig(key, "unify").present?
+  end
+
+  def building?
+    project_builds.exists?(status: %i[ queued running ])
   end
 
   def category_label

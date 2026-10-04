@@ -13,7 +13,17 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :projects, only: %i[ show edit update ]
+  resources :projects, only: %i[ show edit update ] do
+    member do
+      post :build
+    end
+  end
+
+  resources :project_builds, only: :show do
+    member do
+      get :csv
+    end
+  end
 
   resources :download_runs, only: :show do
     member do

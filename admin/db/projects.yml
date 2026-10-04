@@ -5,6 +5,7 @@
 # projects), but names, categories, descriptions and positions edited in
 # the UI are never overwritten.
 # Categories: mykomaps_v4, mykomaps_v3, legacy.
+# A `unify:` section enables the unified CSV build (see UnifySettings).
 cwm:
   name: Cooperative World Map (CWM)
   category: mykomaps_v4
@@ -12,6 +13,33 @@ cwm:
     Co-operatives worldwide, merged and deduplicated across data partners and
     published at maps.coop. Built in data-pipelines from these sources.
   sources: [ acmei, cmc, comn, cooperar, coops-uk, dotcoop, eurocoop, fca, ficu, ica, ics, iffco, ncba, ncg, ncui, nfca, usda, usfwc, workers-coop, ycc ]
+  # From data-pipelines apps/cwm-data/defs.ts
+  unify:
+    match_on: [ Domains, CUK ID ]
+    field_priorities:
+      default: [ ica, cuk, dc, ncba ]
+      name: [ ica, dc, cuk, ncba ]
+    tables:
+      acmei: { source: acmei, match: { Domains: Domains } }
+      cmc: { source: cmc, match: { Domains: Domains } }
+      cooperar: { source: cooperar, match: { Domains: Domains } }
+      cuk: { source: coops-uk, match: { Domains: Domains, CUK ID: Identifier } }
+      dc: { source: dotcoop, match: { Domains: Domains }, include_cols: [ Domains ] }
+      eurocoop: { source: eurocoop, match: { Domains: Domains } }
+      fca: { source: fca }
+      ficu: { source: ficu }
+      ica: { source: ica, match: { Domains: Domains } }
+      ics: { source: ics, match: { Domains: Domains } }
+      iffco: { source: iffco }
+      ncba: { source: ncba, match: { Domains: Domains } }
+      ncg: { source: ncg, match: { Domains: Domains } }
+      ncui: { source: ncui }
+      usda: { source: usda, match: { Domains: Domains } }
+      usfwc: { source: usfwc, match: { Domains: Domains } }
+      wc: { source: workers-coop, match: { Domains: Domains, CUK ID: CUK ID } }
+      ycc: { source: ycc }
+      nfca: { source: nfca, match: { Domains: Domains } }
+      comn: { source: comn, match: { Domains: Domains } }
 powys:
   name: Powys Food Map
   category: mykomaps_v4
@@ -27,6 +55,17 @@ dotcoop:
     Co-operatives with a .coop domain, from the DotCoop registry. Standalone
     map embedded by identity.coop; a CWM submap is planned to replace it.
   sources: [ dotcoop ]
+  # From data-pipelines apps/dotcoop-data/defs.ts
+  unify:
+    match_on: [ Domains ]
+    field_priorities:
+      default: [ dc ]
+      name: [ dc ]
+    tables:
+      dc:
+        source: dotcoop
+        match: { Domains: Domains }
+        include_cols: [ Country ID, Economic Sector ID, Organisational Category ID ]
 workers-coop:
   name: Workers.coop
   category: mykomaps_v4
@@ -36,6 +75,18 @@ workers-coop:
     co-ops only. Standalone map embedded by workers.coop; a CWM submap is
     planned to replace it.
   sources: [ workers-coop ]
+  # From data-pipelines apps/workerscoop-data/defs.ts
+  unify:
+    match_on: [ Domains ]
+    field_priorities:
+      default: [ wc ]
+      name: [ wc ]
+    tables:
+      wc:
+        source: workers-coop
+        match: { Domains: Domains }
+        include_cols: [ Registered Status, Industry, Ownership Classification, Legal Form, Registered Number ]
+        row_filter: { Registered Status: "1" }
 newbridge:
   name: For Solidarity
   category: mykomaps_v3

@@ -34,6 +34,7 @@ ENV RAILS_ENV=production \
     SOLID_QUEUE_IN_PUMA=1 \
     OPEN_DATA_ROOT=/app/data/open-data \
     DOWNLOADS_ROOT=/app/data/downloads \
+    BUILDS_ROOT=/app/data/builds \
     PORT=3000
 
 CMD ["/app/code/start.sh"]

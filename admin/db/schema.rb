@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_100000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -43,6 +43,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
     t.string "uploaded_filename"
     t.index ["data_source_id", "created_at"], name: "index_download_runs_on_data_source_id_and_created_at"
     t.index ["data_source_id"], name: "index_download_runs_on_data_source_id"
+  end
+
+  create_table "project_builds", force: :cascade do |t|
+    t.string "archive_path"
+    t.datetime "created_at", null: false
+    t.text "diff_summary"
+    t.datetime "finished_at"
+    t.text "log"
+    t.integer "merged_count"
+    t.integer "project_id", null: false
+    t.integer "row_count"
+    t.integer "rows_added"
+    t.integer "rows_changed"
+    t.integer "rows_removed"
+    t.datetime "started_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_project_builds_on_project_id"
   end
 
   create_table "project_sources", force: :cascade do |t|
@@ -85,6 +103,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_090000) do
   end
 
   add_foreign_key "download_runs", "data_sources"
+  add_foreign_key "project_builds", "projects", on_delete: :cascade
   add_foreign_key "project_sources", "data_sources", on_delete: :cascade
   add_foreign_key "project_sources", "projects", on_delete: :cascade
   add_foreign_key "sessions", "users"

@@ -8,6 +8,10 @@ module OpenData
     Pathname.new(ENV.fetch("DOWNLOADS_ROOT") { Rails.root.join("storage/downloads").to_s }).expand_path
   end
 
+  def self.builds_root
+    Pathname.new(ENV.fetch("BUILDS_ROOT") { Rails.root.join("storage/builds").to_s }).expand_path
+  end
+
   # Prefix for invoking seod inside a source dir. Empty string means run
   # `seod` directly (used by the test suite, which puts a stub on PATH).
   def self.seod_wrapper

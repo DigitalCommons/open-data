@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu
 
-mkdir -p /app/data/storage /app/data/downloads /run/app/tmp /run/app/log
+mkdir -p /app/data/storage /app/data/downloads /app/data/builds /run/app/tmp /run/app/log
 
 # Persistent secret key, generated on first start
 if [[ ! -f /app/data/secret_key_base ]]; then

@@ -5,6 +5,7 @@ class ScheduleDispatchJob < ApplicationJob
 
   def perform
     DownloadRun.reap_stale!
+    ProjectBuild.reap_stale!
     DataSource.enabled.find_each do |source|
       next unless source.due? && !source.running?
       run = source.download_runs.create!(status: :queued, triggered_by: :scheduled)
