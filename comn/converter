@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+#
+# Converts the Co-Minnesota (APEX) sheet (downloaded as CSV and uploaded
+# by hand as original-data/original.csv) into generated-data/standard.csv.
+# Rows with Latitude and Longitude in the sheet are not geocoded; the rest
+# are geocoded with Mapbox through the committed cache in
+# cache/geocodes.csv. Rows that fail to geocode are left out and listed.
+#
+# Run with `seod convert`, or directly with `./converter`.
+
+require_relative "../lib/converter_support"
+require_relative "comn"
+
+exit(ConverterSupport.run(cache_path: File.join(__dir__, "cache", "geocodes.csv")) do |rows, geocoder|
+  Comn.convert(rows, geocoder, Comn.vocabs)
+end)
