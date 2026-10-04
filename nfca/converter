@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+#
+# Converts the NFCA Food Coop Network export (uploaded by hand as
+# original-data/original.csv) into generated-data/standard.csv, geocoding
+# with Mapbox through the committed cache in cache/geocodes.csv. Rows that
+# fail to geocode are left out and listed.
+#
+# Run with `seod convert`, or directly with `./converter`.
+
+require "csv"
+require "se_open_data/config"
+require "se_open_data/utils/password_store"
+require_relative "nfca"
+
+def mapbox_token(config)
+  SeOpenData::Utils::PasswordStore.new(use_env_vars: config.USE_ENV_PASSWORDS)
+    .get(config.GEOCODER_API_KEY_PATH)
+rescue RuntimeError => e
+  warn "No Mapbox token, only cached geocodes can be used: #{e.message}"
+  nil
+end
+
+def main
+  config = SeOpenData::Config.load
+  rows = CSV.read(File.join(config.SRC_CSV_DIR, config.ORIGINAL_CSV), headers: true).map(&:to_h)
+  geocoder = MapboxGeocoder.new(cache: GeocodeCache.new(File.join(__dir__, "cache", "geocodes.csv")),
+                                token: mapbox_token(config))
+
+  begin
+    output, fails = Nfca.convert(rows, geocoder)
+  ensure
+    geocoder.save
+  end
+  StandardCsv.write(config.STANDARD_CSV, output)
+  puts "Wrote #{output.size} rows to #{config.STANDARD_CSV} " \
+       "(#{geocoder.newly_geocoded} newly geocoded)"
+
+  fails.each { |name, reason| warn "Not geocoded: #{name}: #{reason}" }
+  return 0 unless geocoder.abort_reason
+
+  warn "Geocoding stopped (#{geocoder.abort_reason}): set #{config.GEOCODER_API_KEY_PATH} " \
+       "(PASSWORD__ environment variable or pass) to a valid Mapbox token"
+  1
+end
+
+exit main
