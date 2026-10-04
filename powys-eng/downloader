@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+require 'se_open_data/cli'
+
+# Run the entry point if we're invoked as a script
+exit SeOpenData::Cli.command_http_download if __FILE__ == $0

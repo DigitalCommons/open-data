@@ -9,12 +9,16 @@ require_relative "standard_csv"
 # output and report. Needs the se_open_data gem, so it is only loaded by
 # converter scripts.
 module ConverterSupport
+  READ_CSV = ->(text) { CSV.parse(text, headers: true).map(&:to_h) }
+
   # Yields (input rows, geocoder) and expects [output rows, failures] back,
   # where failures are [name, reason] pairs. The geocode cache is saved even
   # when the block raises. Returns the exit status for the converter.
-  def self.run(cache_path:, columns: StandardCsv::COLUMNS, **geocoder_options)
+  #
+  # read - turns the original CSV's text into row hashes
+  def self.run(cache_path:, columns: StandardCsv::COLUMNS, read: READ_CSV, **geocoder_options)
     config = SeOpenData::Config.load
-    rows = CSV.read(File.join(config.SRC_CSV_DIR, config.ORIGINAL_CSV), headers: true).map(&:to_h)
+    rows = read.call(File.read(File.join(config.SRC_CSV_DIR, config.ORIGINAL_CSV)))
     geocoder = MapboxGeocoder.new(cache: GeocodeCache.new(cache_path), token: mapbox_token(config),
                                   **geocoder_options)
     begin

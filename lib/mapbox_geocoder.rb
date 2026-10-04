@@ -28,6 +28,12 @@ class MapboxGeocoder
     parts.map { |part| part.to_s.strip }.reject(&:empty?).join(", ")
   end
 
+  # Formats a number like JavaScript's String(number), which wrote the
+  # existing caches and outputs
+  def self.format_coordinate(value)
+    value == value.to_i ? value.to_i.to_s : value.to_s
+  end
+
   # bbox - [west, south, east, north] to restrict results to
   # prefer_feature_type - a Mapbox feature_type (e.g. "postcode") to pick
   # over the first result when present
@@ -62,7 +68,7 @@ class MapboxGeocoder
     feature = pick_feature(JSON.parse(body)["features"] || [])
     return Failure.new("no result from Mapbox", false) unless feature
 
-    lng, lat = feature["geometry"]["coordinates"].map { |value| format_coordinate(value) }
+    lng, lat = feature["geometry"]["coordinates"].map { |value| self.class.format_coordinate(value) }
     entry = GeocodeCache::Entry.new(lat, lng, feature["properties"]["full_address"])
     @cache[query] = entry
     @newly_geocoded += 1
@@ -88,8 +94,4 @@ class MapboxGeocoder
     preferred || features.first
   end
 
-  # Formats like JavaScript's String(number), which wrote the existing caches
-  def format_coordinate(value)
-    value == value.to_i ? value.to_i.to_s : value.to_s
-  end
 end
