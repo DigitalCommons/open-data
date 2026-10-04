@@ -7,7 +7,7 @@ class DataSourceRunnerTest < ActiveSupport::TestCase
     setup_open_data_env
     @source = data_sources(:alpha)
     @source.download_runs.destroy_all
-    create_project("alpha")
+    create_source_dir("alpha")
   end
 
   teardown { teardown_open_data_env }
@@ -92,12 +92,12 @@ class DataSourceRunnerTest < ActiveSupport::TestCase
     assert_equal 2, run.exit_code
   end
 
-  test "missing project directory fails cleanly" do
+  test "missing source directory fails cleanly" do
     @source.update!(directory: "gone", schedule: @source.schedule)
     run = DataSourceRunner.new(new_run).call
 
     assert run.failed?
-    assert_match(/Project directory not found/, run.log)
+    assert_match(/Source directory not found/, run.log)
   end
 
   test "upload run installs the file and skips the download step" do

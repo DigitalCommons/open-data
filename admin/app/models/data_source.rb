@@ -25,11 +25,11 @@ class DataSource < ApplicationRecord
     path.file? ? YAML.load_file(path) : {}
   end
 
-  # Register any repo project directories not yet known and fill in curated
+  # Register any repo source directories not yet known and fill in curated
   # details. Existing records only gain description/download_url when blank,
   # so edits made in the UI survive re-seeding (seeds run on every start).
   def self.sync_from_repo!(details: source_details)
-    OpenData.project_directories.each do |dir|
+    OpenData.source_directories.each do |dir|
       source = find_or_initialize_by(directory: dir)
       if source.new_record?
         source.assign_attributes(
@@ -46,7 +46,7 @@ class DataSource < ApplicationRecord
     end
   end
 
-  def project_dir
+  def source_dir
     OpenData.root + directory
   end
 

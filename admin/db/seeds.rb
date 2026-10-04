@@ -4,5 +4,5 @@ User.find_or_create_by!(username: "mykomaps") do |user|
   user.password = "admin"
 end
 
-# Register every project directory in the repo as a data source.
+# Register every source directory in the repo as a data source.
 DataSource.sync_from_repo!

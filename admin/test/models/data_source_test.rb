@@ -100,11 +100,11 @@ class DataSourceTest < ActiveSupport::TestCase
     assert_in_delta 2.hours.ago.to_f, source.last_downloaded_at.to_f, 60
   end
 
-  test "sync_from_repo! registers new projects without clobbering existing ones" do
-    create_project("gamma")
+  test "sync_from_repo! registers new source directories without clobbering existing ones" do
+    create_source_dir("gamma")
     File.write(OpenData.root + "gamma/downloader", "#!/bin/sh\n")
-    create_project("delta")
-    (OpenData.root + "not-a-project").mkpath
+    create_source_dir("delta")
+    (OpenData.root + "not-a-source").mkpath
 
     original_name = data_sources(:alpha).name
     DataSource.sync_from_repo!
@@ -116,13 +116,13 @@ class DataSourceTest < ActiveSupport::TestCase
     delta = DataSource.find_by!(directory: "delta")
     assert delta.manual?
 
-    assert_nil DataSource.find_by(directory: "not-a-project")
+    assert_nil DataSource.find_by(directory: "not-a-source")
     assert_equal original_name, data_sources(:alpha).reload.name
   end
 
   test "sync applies curated details on create and fills blanks on existing records" do
-    create_project("gamma")
-    create_project("alpha")
+    create_source_dir("gamma")
+    create_source_dir("alpha")
     details = {
       "gamma" => { "description" => "Gamma origin and processing.", "download_url" => "https://gamma.example.com/data.csv" },
       "alpha" => { "description" => "Should not clobber", "download_url" => "https://alpha.example.com/new" }
@@ -152,7 +152,7 @@ class DataSourceTest < ActiveSupport::TestCase
   end
 
   test "legacy live sources are seeded enabled on the 10 minute schedule" do
-    create_project("ica")
+    create_source_dir("ica")
     File.write(OpenData.root + "ica/downloader", "#!/bin/sh\n")
     DataSource.sync_from_repo!
 

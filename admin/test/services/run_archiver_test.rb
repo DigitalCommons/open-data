@@ -7,11 +7,11 @@ class RunArchiverTest < ActiveSupport::TestCase
   teardown { teardown_open_data_env }
 
   test "archives originals, standard.csv and meta.json into a dated folder" do
-    project = create_project("alpha")
-    FileUtils.mkdir_p(project + "original-data")
-    File.write(project + "original-data/original.csv", "raw\n")
-    FileUtils.mkdir_p(project + "generated-data")
-    File.write(project + "generated-data/standard.csv", default_csv)
+    source_dir = create_source_dir("alpha")
+    FileUtils.mkdir_p(source_dir + "original-data")
+    File.write(source_dir + "original-data/original.csv", "raw\n")
+    FileUtils.mkdir_p(source_dir + "generated-data")
+    File.write(source_dir + "generated-data/standard.csv", default_csv)
 
     run = data_sources(:alpha).download_runs.create!(status: :running, triggered_by: :manual,
       started_at: Time.current)
@@ -29,10 +29,10 @@ class RunArchiverTest < ActiveSupport::TestCase
     assert_equal run.id, meta.dig("run", "id")
   end
 
-  test "copes with a project that has no original-data" do
-    project = create_project("alpha")
-    FileUtils.mkdir_p(project + "generated-data")
-    File.write(project + "generated-data/standard.csv", default_csv)
+  test "copes with a source that has no original-data" do
+    source_dir = create_source_dir("alpha")
+    FileUtils.mkdir_p(source_dir + "generated-data")
+    File.write(source_dir + "generated-data/standard.csv", default_csv)
 
     run = data_sources(:alpha).download_runs.create!(status: :running, triggered_by: :manual)
     dir = RunArchiver.new(run).call

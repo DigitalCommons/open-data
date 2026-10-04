@@ -2,7 +2,7 @@
 #
 #   <downloads_root>/<source-directory>/<YYYY-MM-DD_HHMMSS>/
 #     meta.json          source and run details
-#     original/...       contents of the project's original-data/
+#     original/...       contents of the source's original-data/
 #     standard.csv       the converted output
 class RunArchiver
   attr_reader :run, :source
@@ -20,13 +20,13 @@ class RunArchiver
     dir = Pathname.new("#{base}-#{suffix += 1}") while dir.exist?
     FileUtils.mkdir_p(dir)
 
-    original_data = source.project_dir + "original-data"
+    original_data = source.source_dir + "original-data"
     if original_data.directory?
       FileUtils.mkdir_p(dir + "original")
       original_data.children.select(&:file?).each { |f| FileUtils.cp(f, dir + "original") }
     end
 
-    standard_csv = source.project_dir + "generated-data/standard.csv"
+    standard_csv = source.source_dir + "generated-data/standard.csv"
     FileUtils.cp(standard_csv, dir) if standard_csv.file?
 
     File.write(dir + "meta.json", JSON.pretty_generate(meta))

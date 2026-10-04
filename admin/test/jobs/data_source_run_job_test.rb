@@ -7,7 +7,7 @@ class DataSourceRunJobTest < ActiveJob::TestCase
   teardown { teardown_open_data_env }
 
   test "performs the run end to end" do
-    create_project("alpha")
+    create_source_dir("alpha")
     source = data_sources(:alpha)
     source.download_runs.destroy_all
     run = source.download_runs.create!(status: :queued, triggered_by: :manual)

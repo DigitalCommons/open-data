@@ -23,8 +23,8 @@ module OpenDataTestHelper
     FileUtils.remove_entry(@open_data_tmp) if @open_data_tmp
   end
 
-  # Creates a fixture project dir with a queued next-download.csv.
-  def create_project(directory, csv: default_csv)
+  # Creates a fixture source dir with a queued next-download.csv.
+  def create_source_dir(directory, csv: default_csv)
     dir = OpenData.root + directory
     FileUtils.mkdir_p(dir)
     File.write(dir + "converter", "#!/bin/sh\n")

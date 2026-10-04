@@ -16,15 +16,15 @@ class DataSourceRunner
   def call
     run.update!(status: :running, started_at: Time.current)
 
-    unless source.project_dir.directory?
-      return finish(:failed, "Project directory not found: #{source.project_dir}\n")
+    unless source.source_dir.directory?
+      return finish(:failed, "Source directory not found: #{source.source_dir}\n")
     end
 
     previous_csv = source.latest_standard_csv_path
 
     install_upload if run.upload?
 
-    if (source.project_dir + "Gemfile").file?
+    if (source.source_dir + "Gemfile").file?
       return finish(:failed) unless execute([ "bundle", "install", "--quiet" ]).success?
     end
 
@@ -39,7 +39,7 @@ class DataSourceRunner
 
     return finish(:failed) unless seod("convert").success?
 
-    standard_csv = source.project_dir + "generated-data/standard.csv"
+    standard_csv = source.source_dir + "generated-data/standard.csv"
     unless standard_csv.file?
       return finish(:failed, "Conversion produced no #{standard_csv}\n")
     end
@@ -76,7 +76,7 @@ class DataSourceRunner
     raise "No uploaded file recorded" if run.uploaded_file_path.blank?
     raise "Uploaded file missing: #{run.uploaded_file_path}" unless File.file?(run.uploaded_file_path)
 
-    original_data = source.project_dir + "original-data"
+    original_data = source.source_dir + "original-data"
     FileUtils.mkdir_p(original_data)
     # The convert stage only reads the conf's ORIGINAL_CSV filename, so the
     # upload must be installed under that name, not the browser's.
@@ -92,7 +92,7 @@ class DataSourceRunner
   def execute(argv)
     run.append_log("$ #{argv.join(' ')}\n")
     output, status = Open3.capture2e(subprocess_env, *argv,
-      unsetenv_others: true, chdir: source.project_dir.to_s)
+      unsetenv_others: true, chdir: source.source_dir.to_s)
     run.append_log(output)
     run.append_log("(exit #{status.exitstatus})\n")
     run.exit_code = status.exitstatus
@@ -100,7 +100,7 @@ class DataSourceRunner
     status
   end
 
-  # The app runs under its own bundler; the project must resolve its own
+  # The app runs under its own bundler; the source must resolve its own
   # Gemfile with the system bundler, so strip bundler and ruby load-path
   # leakage from the child env, including the vendored-gem bin dirs bundler
   # prepends to PATH (otherwise the child runs the app's bundler version).
@@ -116,8 +116,8 @@ class DataSourceRunner
     end
     # Without SEOD_CONFIG seod falls back to local.conf/default.conf, the dev
     # config (dev endpoints, IP-locked download URLs). Prefer production.conf
-    # where the project has one; an explicit SEOD_CONFIG env var still wins.
-    if env["SEOD_CONFIG"].blank? && (source.project_dir + "production.conf").file?
+    # where the source has one; an explicit SEOD_CONFIG env var still wins.
+    if env["SEOD_CONFIG"].blank? && (source.source_dir + "production.conf").file?
       env["SEOD_CONFIG"] = "production.conf"
     end
     env
@@ -127,8 +127,8 @@ class DataSourceRunner
   # file seod will use (ORIGINAL_CSV; the gem's default is original.csv).
   def original_csv_name
     names = subprocess_env["SEOD_CONFIG"] || "{local,default}.conf"
-    conf = Dir.glob(names, base: source.project_dir.to_s).first
-    if conf && (path = source.project_dir + conf).file?
+    conf = Dir.glob(names, base: source.source_dir.to_s).first
+    if conf && (path = source.source_dir + conf).file?
       match = path.read[/^\s*ORIGINAL_CSV\s*=\s*(\S+)/, 1]
       return match if match
     end

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stub seod for the test suite. Runs in a fixture project dir.
+# Stub seod for the test suite. Runs in a fixture source dir.
 #
 # Behaviour is controlled by env vars:
 #   SEOD_STUB_DOWNLOAD_EXIT  exit code for `seod download` (default 0; 100 = no new data)
