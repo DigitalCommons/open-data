@@ -1,0 +1,81 @@
+# Projects (maps and datasets) and the data source directories they are
+# built from, in dashboard order. Read by Project.sync_from_file! on every
+# start: new projects are created at positions 10, 20, 30... in file order
+# and unassigned sources attached, but names, categories, descriptions and
+# positions edited in the UI are never overwritten.
+# Categories: mykomaps_v4, mykomaps_v3, legacy.
+cwm:
+  name: Cooperative World Map (CWM)
+  category: mykomaps_v4
+  description: >-
+    Co-operatives worldwide, merged and deduplicated across data partners and
+    published at maps.coop. Built in data-pipelines from these sources plus
+    NFCA and CoMN, which are not yet in this app.
+  sources: [ acmei, cmc, cooperar, coops-uk, dotcoop, eurocoop, fca, ficu, ica, ics, iffco, ncba, ncg, ncui, usda, usfwc, workers-coop, ycc ]
+powys:
+  name: Powys Food Map
+  category: mykomaps_v4
+  description: >-
+    Bilingual (English and Welsh) map of the Powys food system. Built in
+    data-pipelines from a Google Sheet; the powys source here takes manual
+    uploads.
+  sources: [ powys ]
+newbridge:
+  name: For Solidarity
+  category: mykomaps_v3
+  description: >-
+    Solidarity NE map of solidarity economy initiatives around Newbridge,
+    collected by a LimeSurvey questionnaire. Served at maps.coop/newbridge.
+  sources: [ newbridge ]
+mersey-green:
+  name: Mersey Green Network
+  category: mykomaps_v3
+  description: >-
+    Green and community organisations in the Mersey region, self-registered
+    through a LimeSurvey questionnaire. Embedded by Transition Liverpool and
+    Wirral Environmental Network.
+  sources: [ mersey-green ]
+obo-public:
+  name: Owned by Oxford
+  category: mykomaps_v3
+  description: >-
+    Owned by Oxford directory of community and co-operative enterprises in
+    Oxford, held in Airtable. Served at maps.coop/obo-public.
+  sources: [ owned-by-oxford ]
+covid-mutual-aid:
+  name: COVID Mutual Aid (mutualaid.wiki)
+  category: legacy
+  description: COVID-era mutual aid groups from the mutualaid.wiki API.
+  sources: [ covid-mutual-aid ]
+deep-adaptation:
+  name: Deep Adaptation
+  category: legacy
+  description: Deep Adaptation initiative survey responses from the Solidarity Economy Association's LimeSurvey.
+  sources: [ deep-adaptation ]
+dc-ica-ncba-cuk:
+  name: DotCoop, ICA, NCBA and Co-ops UK
+  category: legacy
+  description: >-
+    Earlier merge of the dotcoop, ica, ncba and coops-uk outputs, deduplicated
+    on .coop domains. Superseded by the CWM unification.
+  sources: [ dc-ica-ncba-cuk ]
+ica-youth-network:
+  name: ICA Youth Network
+  category: legacy
+  description: Older ICA extract restricted to the ICA Youth Network, supplied by hand.
+  sources: [ ica-youth-network ]
+mutual-aid:
+  name: Mutual Aid
+  category: legacy
+  description: Curated spreadsheet of UK COVID-era mutual aid groups.
+  sources: [ mutual-aid ]
+oxford:
+  name: Solidarity Oxford
+  category: legacy
+  description: Solidarity Oxford survey of solidarity economy initiatives, published to lod.coop and the Murmurations index.
+  sources: [ oxford ]
+monitor-2022:
+  name: World Cooperative Monitor 2022
+  category: legacy
+  description: The 2022 World Cooperative Monitor top 300 co-operatives (ICA and EURICSE), supplied by hand.
+  sources: [ monitor-2022 ]

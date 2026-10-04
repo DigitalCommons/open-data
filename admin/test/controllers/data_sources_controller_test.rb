@@ -24,6 +24,45 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", /Beta Directory/
   end
 
+  test "index groups sources under their projects, unassigned last" do
+    get data_sources_path
+    assert_response :success
+
+    headings = css_select(".project-heading").map { |heading| heading.text.squish }
+    assert_equal 3, headings.size
+    assert_match(/\AProject: Cooperative World Map \(CWM\) MykoMaps v4 Co-operatives worldwide/, headings[0])
+    assert_match(/\AProject: Mersey Green Network MykoMaps v3/, headings[1])
+    assert_equal "Other sources", headings[2]
+
+    assert_select "section#project_#{projects(:cwm).id} td", /Alpha Co-ops/
+    assert_select "section#other_sources td", /Beta Directory/
+    assert_select "section#project_#{projects(:mersey_green).id} td", /No data sources/
+  end
+
+  test "index links each project name, not its Project: label" do
+    get data_sources_path
+    assert_select ".project-heading a[href=?]", project_path(projects(:cwm)), text: "Cooperative World Map (CWM)"
+    assert_select ".project-heading a", text: /Project:/, count: 0
+  end
+
+  test "index keeps the source controls" do
+    get data_sources_path
+    assert_select "form[action=?]", toggle_data_source_path(data_sources(:alpha))
+    assert_select "form[action=?]", run_data_source_path(data_sources(:alpha))
+    assert_select "a[href=?]", data_source_path(data_sources(:beta), anchor: "upload")
+  end
+
+  test "index has no Other sources group when every source has a project" do
+    data_sources(:beta).update!(project: projects(:cwm))
+    get data_sources_path
+    assert_select "section#other_sources", count: 0
+  end
+
+  test "show links to the source's project" do
+    get data_source_path(data_sources(:alpha))
+    assert_select "a[href=?]", project_path(projects(:cwm)), "Cooperative World Map (CWM)"
+  end
+
   test "show displays details and run history" do
     get data_source_path(data_sources(:alpha))
     assert_response :success

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_045201) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_04_120000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -19,9 +19,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_045201) do
     t.boolean "enabled", default: false, null: false
     t.integer "kind", default: 0, null: false
     t.string "name", null: false
+    t.integer "project_id"
     t.string "schedule"
     t.datetime "updated_at", null: false
     t.index ["directory"], name: "index_data_sources_on_directory", unique: true
+    t.index ["project_id"], name: "index_data_sources_on_project_id"
   end
 
   create_table "download_runs", force: :cascade do |t|
@@ -45,6 +47,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_045201) do
     t.index ["data_source_id"], name: "index_download_runs_on_data_source_id"
   end
 
+  create_table "projects", force: :cascade do |t|
+    t.integer "category", default: 2, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_projects_on_key", unique: true
+  end
+
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
@@ -63,6 +76,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_045201) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "data_sources", "projects", on_delete: :nullify
   add_foreign_key "download_runs", "data_sources"
   add_foreign_key "sessions", "users"
 end

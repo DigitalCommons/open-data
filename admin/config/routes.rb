@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :projects, only: %i[ show edit update ]
+
   resources :download_runs, only: :show do
     member do
       get :standard_csv

@@ -6,3 +6,6 @@ end
 
 # Register every source directory in the repo as a data source.
 DataSource.sync_from_repo!
+
+# Group the sources into projects.
+Project.sync_from_file!

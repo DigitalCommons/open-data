@@ -3,6 +3,7 @@ class DataSourcesController < ApplicationController
 
   def index
     @data_sources = DataSource.order(enabled: :desc, name: :asc)
+    @projects = Project.ordered
   end
 
   def show

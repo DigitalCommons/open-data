@@ -13,6 +13,16 @@ module ApplicationHelper
     content_tag(:span, run.status.humanize.downcase, class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{style}")
   end
 
+  CATEGORY_STYLES = {
+    "mykomaps_v4" => "bg-emerald-100 text-emerald-800",
+    "mykomaps_v3" => "bg-sky-100 text-sky-800",
+    "legacy" => "bg-slate-100 text-slate-600"
+  }.freeze
+
+  def category_badge(project)
+    content_tag(:span, project.category_label, class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{CATEGORY_STYLES.fetch(project.category)}")
+  end
+
   def kind_badge(source)
     if source.auto?
       content_tag(:span, "scheduled", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800")

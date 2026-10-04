@@ -1,0 +1,13 @@
+cwm:
+  key: cwm
+  name: Cooperative World Map (CWM)
+  description: Co-operatives worldwide.
+  category: mykomaps_v4
+  position: 10
+
+mersey_green:
+  key: mersey-green
+  name: Mersey Green Network
+  description: Green and community organisations in the Mersey region.
+  category: mykomaps_v3
+  position: 40
