@@ -10,6 +10,6 @@ class ApplicationController < ActionController::Base
   # Users still on the seeded default password may go nowhere else.
   def require_password_change
     return unless authenticated? && Current.user&.must_change_password?
-    redirect_to edit_password_path, alert: "You must change the default password before continuing."
+    redirect_to main_app.edit_password_path, alert: "You must change the default password before continuing."
   end
 end

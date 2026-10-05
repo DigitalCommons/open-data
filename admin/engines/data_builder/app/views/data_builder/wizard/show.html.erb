@@ -1,0 +1,2125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>MykoMap dataset builder</title>
+    <%= csrf_meta_tags %>
+    <style>
+      :root {
+        --bg: #f4f6f5;
+        --card: #ffffff;
+        --text: #1c2321;
+        --muted: #5c6763;
+        --border: #dde3e0;
+        --accent: #22795b;
+        --accent-soft: #e2f2ec;
+        --danger: #b3372e;
+        --danger-soft: #f9e9e7;
+        --warn: #8a6d1a;
+        --warn-soft: #f7efd8;
+        --radius: 10px;
+        --shadow: 0 1px 2px rgba(16, 24, 20, 0.06),
+          0 4px 14px rgba(16, 24, 20, 0.05);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141816;
+          --card: #1d2320;
+          --text: #e8ecea;
+          --muted: #98a29d;
+          --border: #313a36;
+          --accent: #4cb08a;
+          --accent-soft: #21362e;
+          --danger: #e07a70;
+          --danger-soft: #3a2523;
+          --warn: #d4b45e;
+          --warn-soft: #35301f;
+          --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 0 1.25rem 7rem;
+      }
+      .wrap {
+        max-width: 72rem;
+        margin: 0 auto;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.4rem 0 0.6rem;
+        flex-wrap: wrap;
+      }
+      header h1 {
+        font-size: 1.35rem;
+        margin: 0;
+      }
+      header h1 span {
+        color: var(--accent);
+      }
+      header a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      header a:hover {
+        color: var(--accent);
+      }
+      .spacer {
+        flex: 1;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 1.6rem 0 0.6rem;
+      }
+      h3 {
+        font-size: 0.95rem;
+        margin: 1.2rem 0 0.4rem;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+      p.muted {
+        margin: 0.25rem 0 0.8rem;
+      }
+      button {
+        font: inherit;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        padding: 0.45rem 0.9rem;
+      }
+      button:hover {
+        border-color: var(--accent);
+      }
+      button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button.primary:hover {
+        filter: brightness(1.08);
+      }
+      button.danger {
+        color: var(--danger);
+      }
+      button.danger:hover {
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      button.small {
+        padding: 0.24rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      input[type="text"],
+      input[type="number"],
+      select,
+      textarea {
+        font: inherit;
+        font-size: 0.9rem;
+        padding: 0.4rem 0.55rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus,
+      button:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+      }
+      textarea {
+        width: 100%;
+        min-height: 9rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.85rem;
+      }
+      label {
+        font-size: 0.85rem;
+        display: block;
+        margin: 0.6rem 0 0.2rem;
+      }
+      .field-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: flex-end;
+      }
+      .field-row > div {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Stepper */
+      .steps {
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+        margin: 0.6rem 0 1rem;
+      }
+      .step {
+        font-size: 0.84rem;
+        padding: 0.35rem 0.8rem;
+        border-radius: 99px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        cursor: pointer;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .step.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .step.done {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .step.locked {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 0.4rem 0.55rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.87rem;
+        vertical-align: middle;
+      }
+      th {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      td input[type="text"] {
+        width: 100%;
+        min-width: 6rem;
+      }
+      td input[type="checkbox"] {
+        transform: scale(1.15);
+        accent-color: var(--accent);
+      }
+      .scroll-x {
+        overflow-x: auto;
+      }
+      .sample th,
+      .sample td {
+        white-space: nowrap;
+        max-width: 16rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #message {
+        display: none;
+        margin: 0.8rem 0;
+        padding: 0.7rem 0.9rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: var(--card);
+        white-space: pre-wrap;
+        box-shadow: var(--shadow);
+      }
+      #message.ok {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+      }
+      #message.bad {
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+
+      .issue {
+        padding: 0.5rem 0.8rem;
+        border-radius: 8px;
+        margin: 0.3rem 0;
+        font-size: 0.88rem;
+      }
+      .issue.error {
+        background: var(--danger-soft);
+        color: var(--danger);
+      }
+      .issue.warn {
+        background: var(--warn-soft);
+        color: var(--warn);
+      }
+
+      footer.bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        padding: 0.7rem 1.25rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+      }
+      footer.bar .inner {
+        max-width: 72rem;
+        margin: 0 auto;
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        width: 100%;
+      }
+      .chip-count {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .pane-block {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.7rem 0.9rem;
+        margin-bottom: 0.9rem;
+      }
+      .popup-item {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 0.4rem 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .popup-item:last-of-type {
+        border-bottom: none;
+      }
+      .popup-item label {
+        display: inline-flex;
+        gap: 0.25rem;
+        align-items: center;
+        margin: 0;
+        font-size: 0.8rem;
+      }
+      .vocab-block {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.8rem 1rem;
+        margin-bottom: 1rem;
+      }
+      td code {
+        font-family: ui-monospace, monospace;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      tr.main-row td {
+        border-bottom: none;
+        padding-bottom: 0.15rem;
+      }
+      tr.sample-row td {
+        padding-top: 0;
+        font-size: 0.8rem;
+      }
+      .ok-badge {
+        color: var(--accent);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1><span>MykoMap</span> dataset builder</h1>
+        <div class="spacer"></div>
+        <a href="/">Open Data Admin</a>
+      </header>
+
+      <div class="steps" id="steps"></div>
+      <div id="message"></div>
+      <div id="step-content"></div>
+    </div>
+
+    <footer class="bar">
+      <div class="inner">
+        <button id="btn-back">Back</button>
+        <button id="btn-next" class="primary">Next</button>
+        <div class="spacer"></div>
+        <span class="chip-count" id="status-line"></span>
+        <input
+          type="text"
+          id="tpl-name"
+          placeholder="template name"
+          style="width: 11rem"
+          pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}"
+        />
+        <button id="btn-save-tpl">Save template</button>
+      </div>
+    </footer>
+
+    <script>
+      "use strict";
+
+      /* ---------- utilities ---------- */
+
+      const $ = (s) => document.querySelector(s);
+
+      const API = "/data-builder";
+      const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || "";
+
+      async function api(url, options) {
+        options = options || {};
+        options.headers = Object.assign({ "X-CSRF-Token": CSRF }, options.headers || {});
+        const res = await fetch(url, options);
+        let body = {};
+        try {
+          body = await res.json();
+        } catch (e) {}
+        if (!res.ok)
+          throw new Error(body.message || res.status + " " + res.statusText);
+        return body;
+      }
+
+      const esc = (s) =>
+        String(s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      function showMessage(text, isError) {
+        const el = $("#message");
+        el.textContent = text;
+        el.className = isError ? "bad" : "ok";
+        el.style.display = "block";
+        el.scrollIntoView({ block: "nearest" });
+      }
+      function clearMessage() {
+        $("#message").style.display = "none";
+      }
+
+      /** Makes an identifier-ish slug (snake_case) from a header name */
+      function slug(s) {
+        let r = String(s)
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[̀-ͯ]/g, "")
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/^_+|_+$/g, "")
+          .replace(/__+/g, "_");
+        if (!r || /^[0-9]/.test(r)) r = "p_" + r;
+        return r;
+      }
+
+      /** Makes a vocab term ID (an XML NCName) from a CSV value */
+      function termSlug(s) {
+        let r = String(s)
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[̀-ͯ]/g, "")
+          .replace(/[^a-z0-9._-]+/g, "-")
+          .replace(/^[-.]+|[-.]+$/g, "")
+          .replace(/--+/g, "-");
+        if (!r || !/^[a-z_]/.test(r)) r = "t" + (r ? "-" + r : "");
+        return r;
+      }
+
+      function uniqueIn(taken, base) {
+        if (!taken.has(base)) return base;
+        let i = 2;
+        while (taken.has(base + "-" + i)) i++;
+        return base + "-" + i;
+      }
+
+      const fmtInt = (n) => Number(n).toLocaleString();
+
+      /* ---------- state ---------- */
+
+      const UNIQUE_ROLES = ["id", "name", "lat", "lng"];
+      const ROLE_LABELS = {
+        ignore: "Ignore",
+        id: "ID",
+        name: "Name",
+        lat: "Latitude",
+        lng: "Longitude",
+        geocode: "Geocode input",
+        text: "Text",
+        number: "Number",
+        boolean: "Yes / no",
+        vocab: "Category (one value)",
+        multivocab: "Categories (many values)",
+        multitext: "Text list (many values)",
+      };
+      const VOCAB_ROLES = ["vocab", "multivocab"];
+
+      const newState = () => ({
+        csvId: null,
+        csvName: null,
+        headers: [],
+        columns: [],
+        sampleRows: [],
+        rowCount: 0,
+        name: "",
+        displayName: "",
+        project: "uncategorised",
+        subProject: "",
+        languages: ["en"],
+        cols: [], // [{header, include, role, prop, filter, search, vocabId}]
+        titles: {}, // prop -> {lang -> label}
+        vocabs: {}, // vocabId -> {title: {lang -> str}, terms: [{id, values: [], labels: {lang -> str}}]}
+        ui: {
+          title: "",
+          dirField: "",
+          showMapKey: true,
+          bounds: null,
+          logoLarge: "",
+          logoSmall: "",
+          logoAlt: "",
+        },
+        about: {}, // lang -> markdown
+        geocode: { template: "", prefer: "latlng" },
+        popup: {
+          titleProp: "name",
+          leftPaneWidth: "70%",
+          leftPane: [],
+          topRightPane: [],
+          bottomRightPane: [],
+        },
+        configOverride: null,
+      });
+
+      let S = newState();
+      let step = 0;
+      let buildResult = null;
+      // Where the map front-end lives, from the server (see
+      // ADMIN_MAP_BASE_URL); "/" when it shares the admin's origin
+      let mapUrl = "/";
+      let projectList = [];
+
+      const STEPS = [
+        "Source",
+        "Columns",
+        "Geocode",
+        "Vocabs",
+        "Map and UI",
+        "About",
+        "Popup",
+        "Review and build",
+      ];
+
+      /* ---------- column and vocab derivation ---------- */
+
+      function colByHeader(header) {
+        return S.cols.find((c) => c.header === header);
+      }
+      function colInfo(header) {
+        return S.columns.find((c) => c.name === header);
+      }
+
+      /** Guess a sensible role for a CSV column from its inspection */
+      function guessRole(col, taken) {
+        const h = col.name.toLowerCase();
+        if (!taken.has("id") && /^(id|identifier|ref|reference|uri)$/.test(h))
+          return "id";
+        if (!taken.has("lat") && /\blat\b|latitude/.test(h) && col.allNumeric)
+          return "lat";
+        if (
+          !taken.has("lng") &&
+          /\b(lng|lon|long)\b|longitude/.test(h) &&
+          col.allNumeric
+        )
+          return "lng";
+        if (
+          !taken.has("name") &&
+          /(^|[^a-z])(name|title)$|^(name|title)/.test(h)
+        )
+          return "name";
+        if (col.allNumeric) return "number";
+        const distinct = col.distinct.length;
+        if (col.semicolons > 0 && !col.distinctTruncated && distinct <= 100)
+          return "multivocab";
+        if (
+          !col.distinctTruncated &&
+          distinct > 0 &&
+          distinct <= 25 &&
+          col.nonEmpty > distinct
+        )
+          return "vocab";
+        return "text";
+      }
+
+      /** (Re)initialise the column mappings from a fresh CSV inspection,
+       * preserving any existing settings for headers that still exist. */
+      function initColumns(keepExisting) {
+        const old = keepExisting ? S.cols : [];
+        const taken = new Set(
+          old.filter((c) => UNIQUE_ROLES.includes(c.role)).map((c) => c.role),
+        );
+        const props = new Set(old.map((c) => c.prop));
+        S.cols = S.headers.map((header) => {
+          const existing = old.find((c) => c.header === header);
+          if (existing) return existing;
+          const info = colInfo(header);
+          const role = guessRole(info, taken);
+          if (UNIQUE_ROLES.includes(role)) taken.add(role);
+          const prop = UNIQUE_ROLES.includes(role)
+            ? role
+            : uniqueIn(props, slug(header));
+          props.add(prop);
+          const col = {
+            header,
+            include: role !== "ignore",
+            role,
+            prop,
+            filter: VOCAB_ROLES.includes(role),
+            search: role === "name",
+            vocabId: VOCAB_ROLES.includes(role) ? prop : null,
+          };
+          if (col.vocabId) ensureVocab(col);
+          if (!S.titles[prop])
+            S.titles[prop] = Object.fromEntries(
+              S.languages.map((l) => [l, header]),
+            );
+          return col;
+        });
+      }
+
+      /** The distinct values of a column, split into elements for multi roles */
+      function distinctValues(col) {
+        const info = colInfo(col.header);
+        if (!info) return [];
+        if (col.role === "multivocab") {
+          const seen = new Set();
+          const out = [];
+          for (const v of info.distinct)
+            for (const part of v
+              .split(";")
+              .map((x) => x.trim())
+              .filter(Boolean))
+              if (!seen.has(part)) {
+                seen.add(part);
+                out.push(part);
+              }
+          return out;
+        }
+        return info.distinct;
+      }
+
+      /** Generate vocab terms for a column from its distinct CSV values */
+      function generateTerms(col) {
+        const takenIds = new Set();
+        return distinctValues(col).map((value) => {
+          const id = uniqueIn(takenIds, termSlug(value));
+          takenIds.add(id);
+          return {
+            id,
+            values: [value],
+            labels: Object.fromEntries(S.languages.map((l) => [l, value])),
+          };
+        });
+      }
+
+      function ensureVocab(col) {
+        if (!col.vocabId) col.vocabId = col.prop;
+        if (!S.vocabs[col.vocabId])
+          S.vocabs[col.vocabId] = {
+            title: Object.fromEntries(S.languages.map((l) => [l, col.header])),
+            terms: generateTerms(col),
+          };
+      }
+
+      /** Drop vocabs no longer referenced by any column */
+      function pruneVocabs() {
+        const used = new Set(
+          S.cols
+            .filter(
+              (c) => c.include && c.vocabId && VOCAB_ROLES.includes(c.role),
+            )
+            .map((c) => c.vocabId),
+        );
+        for (const id of Object.keys(S.vocabs))
+          if (!used.has(id)) delete S.vocabs[id];
+      }
+
+      const includedCols = () =>
+        S.cols.filter((c) => c.include && c.role !== "ignore");
+      const vocabCols = () =>
+        includedCols().filter((c) => VOCAB_ROLES.includes(c.role));
+      const filterableCols = () => vocabCols().filter((c) => c.filter);
+
+      /* ---------- config generation ---------- */
+
+      function langValue(map, lang) {
+        if (map && map[lang]) return map[lang];
+        const first = map && Object.values(map).find((v) => v);
+        return first || "";
+      }
+
+      function buildConfig() {
+        const langs = S.languages.length ? S.languages : ["en"];
+        const base =
+          "https://vocabs.mykomap.coop/" + (S.name || "dataset") + "/";
+
+        const prefixes = {};
+        const vocabs = {};
+        for (const col of vocabCols()) {
+          const v = S.vocabs[col.vocabId];
+          if (!v) continue;
+          vocabs[col.vocabId] = Object.fromEntries(
+            langs.map((lang) => [
+              lang,
+              {
+                title: langValue(v.title, lang) || col.vocabId,
+                terms: Object.fromEntries(
+                  v.terms.map((t) => [t.id, langValue(t.labels, lang) || t.id]),
+                ),
+              },
+            ]),
+          );
+          prefixes[base + col.vocabId + "/"] = col.vocabId;
+        }
+
+        // The ui vocab holds property labels and the localised about texts
+        const uiTerms = (lang) => {
+          const terms = {};
+          for (const col of includedCols()) {
+            const title = langValue(S.titles[col.prop], lang);
+            if (title) terms[col.prop] = title;
+          }
+          if (S.about[lang] && S.about[lang].trim())
+            terms["about_content"] = S.about[lang];
+          return terms;
+        };
+        vocabs["ui"] = Object.fromEntries(
+          langs.map((lang) => [
+            lang,
+            {
+              title: "Translations",
+              terms: uiTerms(lang),
+            },
+          ]),
+        );
+        prefixes[base + "ui/"] = "ui";
+
+        const itemProps = {};
+        for (const col of includedCols()) {
+          const common = { from: col.header };
+          if (langValue(S.titles[col.prop], langs[0]))
+            common.titleUri = "ui:" + col.prop;
+          switch (col.role) {
+            case "id":
+              itemProps.id = { type: "value", from: col.header };
+              break;
+            case "name":
+              itemProps.name = {
+                type: "value",
+                search: !!col.search,
+                from: col.header,
+              };
+              break;
+            case "lat":
+              itemProps.lat = {
+                type: "value",
+                as: "number",
+                nullable: true,
+                from: col.header,
+              };
+              break;
+            case "lng":
+              itemProps.lng = {
+                type: "value",
+                as: "number",
+                nullable: true,
+                from: col.header,
+              };
+              break;
+            case "number":
+              itemProps[col.prop] = {
+                ...common,
+                type: "value",
+                as: "number",
+                nullable: true,
+              };
+              break;
+            case "boolean":
+              itemProps[col.prop] = {
+                ...common,
+                type: "value",
+                as: "boolean",
+                nullable: true,
+              };
+              break;
+            case "geocode":
+            case "text":
+              itemProps[col.prop] = {
+                ...common,
+                type: "value",
+                search: !!col.search,
+              };
+              break;
+            case "multitext":
+              itemProps[col.prop] = {
+                ...common,
+                type: "multi",
+                of: { type: "value" },
+                search: !!col.search,
+              };
+              break;
+            case "vocab":
+              itemProps[col.prop] = {
+                ...common,
+                type: "vocab",
+                uri: col.vocabId + ":",
+                filter: !!col.filter,
+              };
+              break;
+            case "multivocab":
+              itemProps[col.prop] = {
+                ...common,
+                type: "multi",
+                of: { type: "vocab", uri: col.vocabId + ":" },
+                filter: !!col.filter,
+              };
+              break;
+          }
+        }
+
+        // Geocoding appends synthetic lat/lng columns to the CSV at build
+        // time; they take over the lat/lng properties
+        if (geocodeOn()) {
+          itemProps.lat = {
+            type: "value",
+            as: "number",
+            nullable: true,
+            from: "__geocoded_lat",
+          };
+          itemProps.lng = {
+            type: "value",
+            as: "number",
+            nullable: true,
+            from: "__geocoded_lng",
+          };
+        }
+
+        const ui = {
+          title: S.ui.title || undefined,
+          // Ignore a stale dirField whose column is no longer filterable
+          directory_panel_field:
+            (filterableCols().some((c) => c.prop === S.ui.dirField)
+              ? S.ui.dirField
+              : "") ||
+            (filterableCols()[0] ? filterableCols()[0].prop : "id"),
+          show_map_key: !!S.ui.showMapKey,
+          dataLastUpdated: new Date().toISOString(),
+        };
+        const b = S.ui.bounds;
+        if (
+          b &&
+          [b.w, b.s, b.e, b.n].every(
+            (v) => v !== "" && v !== null && !isNaN(Number(v)),
+          )
+        )
+          ui.map = {
+            mapBounds: [
+              [Number(b.w), Number(b.s)],
+              [Number(b.e), Number(b.n)],
+            ],
+          };
+        if (S.ui.logoLarge || S.ui.logoSmall || S.ui.logoAlt) {
+          ui.logo = {};
+          if (S.ui.logoLarge) ui.logo.largeLogo = S.ui.logoLarge;
+          if (S.ui.logoSmall) ui.logo.smallLogo = S.ui.logoSmall;
+          if (S.ui.logoAlt) ui.logo.altText = S.ui.logoAlt;
+        }
+
+        const propNames = new Set(Object.keys(itemProps));
+        const pane = (items) =>
+          items
+            .filter((i) => propNames.has(i.itemProp))
+            .map((i) => ({
+              itemProp: i.itemProp,
+              valueStyle: i.valueStyle || "text",
+              showLabel: !!i.showLabel,
+              showBullets: !!i.showBullets,
+              analyticOnClick: !!i.analyticOnClick,
+              hyperlinkBaseUri: i.hyperlinkBaseUri || "",
+              ...(i.displayText ? { displayText: i.displayText } : {}),
+              ...(i.singleColumnLimit !== "" && i.singleColumnLimit != null
+                ? { singleColumnLimit: Number(i.singleColumnLimit) }
+                : {}),
+            }));
+
+        return {
+          prefixes,
+          languages: langs,
+          vocabs,
+          itemProps,
+          ui,
+          popup: {
+            titleProp: propNames.has(S.popup.titleProp)
+              ? S.popup.titleProp
+              : propNames.has("name")
+                ? "name"
+                : "id",
+            leftPaneWidth: S.popup.leftPaneWidth || "70%",
+            leftPane: pane(S.popup.leftPane),
+            topRightPane: pane(S.popup.topRightPane),
+            bottomRightPane: pane(S.popup.bottomRightPane),
+          },
+        };
+      }
+
+      /** CSV header -> raw value -> term ID maps, for the build endpoint */
+      function buildValueMaps() {
+        const maps = {};
+        for (const col of vocabCols()) {
+          const v = S.vocabs[col.vocabId];
+          if (!v) continue;
+          const map = {};
+          for (const term of v.terms)
+            for (const value of term.values)
+              if (value !== term.id) map[value] = term.id;
+          if (Object.keys(map).length) maps[col.header] = map;
+        }
+        return maps;
+      }
+
+      /** Client-side sanity checks; errors block the build, warnings don't */
+      function validate() {
+        const errors = [],
+          warnings = [];
+        if (!S.csvId)
+          errors.push(
+            "No CSV uploaded (or the upload has expired). Upload one on the Source step.",
+          );
+        if (!S.name) errors.push("The dataset needs a name (Source step).");
+        else if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(S.name))
+          errors.push(
+            "The dataset name may only use letters, digits, hyphens and underscores.",
+          );
+        if (!S.languages.length)
+          errors.push("At least one language is needed (Source step).");
+        if (S.languages.some((l) => !/^[a-z]{2}$/.test(l)))
+          errors.push(
+            "Languages must be two-letter ISO 639-1 codes, e.g. en, cy.",
+          );
+
+        const roles = includedCols().map((c) => c.role);
+        if (!roles.includes("id"))
+          errors.push("Map a column to the ID role (Columns step).");
+        if (!roles.includes("name"))
+          errors.push(
+            "Map a column to the Name role (Columns step): the map's search results display it.",
+          );
+        if (geocodeOn()) {
+          const unknown = templateFieldNames(S.geocode.template).filter(
+            (f) => !S.headers.includes(f),
+          );
+          if (unknown.length)
+            errors.push(
+              "The geocode template references unknown columns: " +
+                unknown.join(", "),
+            );
+        } else {
+          if (geocodeCols().length)
+            warnings.push(
+              "Columns have the Geocode input role but the geocode template is empty (Geocode step).",
+            );
+          if (!roles.includes("lat") || !roles.includes("lng"))
+            warnings.push(
+              "No latitude/longitude columns are mapped and no geocode template is set, so no pins will appear on the map.",
+            );
+        }
+
+        const props = includedCols().map((c) => c.prop);
+        const dupes = props.filter((p, i) => props.indexOf(p) !== i);
+        if (dupes.length)
+          errors.push(
+            "Duplicate property names: " + [...new Set(dupes)].join(", "),
+          );
+
+        for (const col of vocabCols()) {
+          const v = S.vocabs[col.vocabId];
+          if (!v || v.terms.length === 0)
+            errors.push(
+              `The vocab for '${col.header}' has no terms (Vocabs step).`,
+            );
+          else {
+            const ids = v.terms.map((t) => t.id);
+            if (ids.some((id, i) => ids.indexOf(id) !== i))
+              errors.push(
+                `The vocab for '${col.header}' has duplicate term IDs.`,
+              );
+            if (ids.some((id) => !/^[A-Za-z_][A-Za-z0-9._-]*$/.test(id)))
+              errors.push(
+                `The vocab for '${col.header}' has invalid term IDs (use letters, digits, dots, hyphens; starting with a letter).`,
+              );
+          }
+        }
+        if (!filterableCols().length)
+          warnings.push(
+            "No filterable category column: the directory panel will fall back to grouping by ID.",
+          );
+        if (!Object.values(S.about).some((t) => t && t.trim()))
+          warnings.push("No about text has been written (About step).");
+        return { errors, warnings };
+      }
+
+      /* ---------- rendering ---------- */
+
+      function stepUnlocked(i) {
+        if (i === 0) return true;
+        return S.headers.length > 0;
+      }
+
+      function render() {
+        const stepsEl = $("#steps");
+        stepsEl.innerHTML = STEPS.map(
+          (label, i) =>
+            `<span class="step ${i === step ? "active" : ""} ${stepUnlocked(i) ? "" : "locked"}" data-ix="${i}">
+      ${i + 1}. ${label}</span>`,
+        ).join("");
+
+        $("#btn-back").disabled = step === 0;
+        $("#btn-next").style.display = step === STEPS.length - 1 ? "none" : "";
+        $("#btn-next").disabled = !stepUnlocked(step + 1);
+        $("#status-line").textContent = S.csvName
+          ? `${S.csvName}: ${fmtInt(S.rowCount)} rows, ${S.headers.length} columns`
+          : "no CSV uploaded yet";
+        if (!$("#tpl-name").value && S.name) $("#tpl-name").value = S.name;
+
+        const renderers = [
+          renderSource,
+          renderColumns,
+          renderGeocode,
+          renderVocabs,
+          renderUiStep,
+          renderAbout,
+          renderPopup,
+          renderReview,
+        ];
+        $("#step-content").innerHTML = renderers[step]();
+        const attach = [
+          attachSource,
+          attachColumns,
+          attachGeocode,
+          attachVocabs,
+          attachUiStep,
+          attachAbout,
+          attachPopup,
+          attachReview,
+        ];
+        attach[step]();
+      }
+
+      /* ----- step 1: source ----- */
+
+      function renderSource() {
+        return `
+  <div class="panel">
+    <h2>1. Name and data</h2>
+    <div class="field-row">
+      <div><label for="ds-name">Dataset name (used in URLs)</label>
+        <input type="text" id="ds-name" value="${esc(S.name)}" placeholder="e.g. food-map"
+               pattern="[A-Za-z0-9][A-Za-z0-9_-]{0,63}" style="width:15rem"></div>
+      <div><label for="ds-display">Display name</label>
+        <input type="text" id="ds-display" value="${esc(S.displayName)}" placeholder="e.g. Powys Food Map" style="width:20rem"></div>
+      <div><label for="ds-langs">Languages (ISO 639-1 codes, first is the default)</label>
+        <input type="text" id="ds-langs" value="${esc(S.languages.join(", "))}" placeholder="en, cy" style="width:10rem"></div>
+      ${
+        projectList.length
+          ? `<div><label for="ds-project">Project</label>
+        <select id="ds-project">${projectList
+          .map(
+            (p) =>
+              `<option value="${esc(p.id)}" ${p.id === S.project ? "selected" : ""}>${esc(p.name)}</option>`,
+          )
+          .join("")}</select></div>
+      <div><label for="ds-subproject">Sub-project</label>
+        <select id="ds-subproject">${['<option value="">(none)</option>']
+          .concat(
+            (
+              projectList.find((p) => p.id === S.project) || {
+                subProjects: [],
+              }
+            ).subProjects.map(
+              (s) =>
+                `<option value="${esc(s.id)}" ${s.id === S.subProject ? "selected" : ""}>${esc(s.name)}</option>`,
+            ),
+          )
+          .join("")}</select></div>`
+          : ""
+      }
+    </div>
+
+    <h3>CSV data</h3>
+    ${
+      S.csvId
+        ? `<p><span class="ok-badge">Uploaded:</span> ${esc(S.csvName)} (${fmtInt(S.rowCount)} rows, ${S.headers.length} columns).
+         You can upload a replacement below; matching columns keep their settings.</p>`
+        : S.headers.length
+          ? `<p class="issue warn">This setup was loaded from a template. Upload a CSV to build with:
+           columns matching the template keep their settings.</p>`
+          : ""
+    }
+    <p class="muted">The first row of the CSV must be a title row naming each
+    column; the data starts on the second row.</p>
+    <div class="field-row">
+      <div><input type="file" id="csv-file" accept=".csv,text/csv"></div>
+      <div><button class="primary" id="csv-upload">Upload CSV</button></div>
+    </div>
+
+    <h3>Use an Open Data source</h3>
+    <p class="muted">Builds from the latest converted standard.csv of one of this
+    site's data sources instead of an upload.</p>
+    <div class="field-row">
+      <div><select id="src-select"><option value="">Loading sources...</option></select></div>
+      <div><button id="src-use">Use this source</button></div>
+    </div>
+
+    <h3>Start from a template</h3>
+    <p class="muted">Loads a saved setup (column mappings, vocabs, texts, popup). Your current settings are replaced.</p>
+    <div class="field-row">
+      <div><select id="tpl-select"><option value="">Loading templates...</option></select></div>
+      <div><button id="tpl-load">Load template</button></div>
+    </div>
+  </div>`;
+      }
+
+      function attachSource() {
+        $("#ds-name").oninput = (e) => {
+          S.name = e.target.value.trim();
+        };
+        $("#ds-display").oninput = (e) => {
+          S.displayName = e.target.value;
+        };
+        const projectEl = $("#ds-project");
+        if (projectEl) {
+          // #ds-project/#ds-subproject only render when projectList is set
+          projectEl.onchange = (e) => {
+            S.project = e.target.value;
+            S.subProject = "";
+            render();
+          };
+          $("#ds-subproject").onchange = (e) => {
+            S.subProject = e.target.value;
+          };
+        }
+        $("#ds-langs").onchange = (e) => {
+          S.languages = e.target.value
+            .split(",")
+            .map((s) => s.trim().toLowerCase())
+            .filter(Boolean);
+          if (!S.languages.length) S.languages = ["en"];
+          render();
+        };
+        const applyStagedCsv = (r, verb) => {
+          S.csvId = r.id;
+          S.csvName = r.filename;
+          S.headers = r.inspection.headers;
+          S.columns = r.inspection.columns;
+          S.sampleRows = r.inspection.sampleRows;
+          S.rowCount = r.inspection.rowCount;
+          initColumns(true);
+          pruneVocabs();
+          clearMessage();
+          showMessage(
+            `CSV ${verb}: ${r.filename} (${fmtInt(r.inspection.rowCount)} rows).` +
+              (r.skippedLeading
+                ? ` Skipped ${r.skippedLeading} leading row(s) above the title row.`
+                : "") +
+              " Press Next to check the column mappings.",
+            false,
+          );
+        };
+        $("#csv-upload").onclick = async () => {
+          const file = $("#csv-file").files[0];
+          if (!file) {
+            showMessage("Choose a CSV file first.", true);
+            return;
+          }
+          const btn = $("#csv-upload");
+          btn.disabled = true;
+          btn.textContent = "Uploading...";
+          try {
+            const form = new FormData();
+            form.append("file", file);
+            const r = await api(API + "/csvs", { method: "POST", body: form });
+            applyStagedCsv(r, "uploaded");
+          } catch (e) {
+            showMessage("CSV upload failed: " + e.message, true);
+          } finally {
+            render();
+          }
+        };
+        loadSourceList();
+        $("#src-use").onclick = async () => {
+          const id = $("#src-select").value;
+          if (!id) {
+            showMessage("Choose a data source first.", true);
+            return;
+          }
+          const btn = $("#src-use");
+          btn.disabled = true;
+          btn.textContent = "Staging...";
+          try {
+            const r = await api(API + "/csvs/from_source/" + id, {
+              method: "POST",
+            });
+            applyStagedCsv(r, "staged");
+          } catch (e) {
+            showMessage("Could not use the data source: " + e.message, true);
+          } finally {
+            render();
+          }
+        };
+        loadTemplateList();
+        $("#tpl-load").onclick = async () => {
+          const name = $("#tpl-select").value;
+          if (!name) return;
+          try {
+            const t = await api(API + "/templates/" + encodeURIComponent(name));
+            applyTemplate(t.state);
+            showMessage(
+              `Template '${name}' loaded.` +
+                (S.csvId ? "" : " Upload a CSV to build."),
+              false,
+            );
+          } catch (e) {
+            showMessage("Could not load template: " + e.message, true);
+          }
+          render();
+        };
+      }
+
+      async function loadSourceList() {
+        try {
+          const r = await api(API + "/sources");
+          const sel = $("#src-select");
+          if (!sel) return;
+          sel.innerHTML =
+            '<option value="">Choose a data source...</option>' +
+            r.sources
+              .map(
+                (s) =>
+                  `<option value="${esc(s.id)}">${esc(s.name)} (${esc(s.directory)})</option>`,
+              )
+              .join("");
+        } catch (e) {
+          /* not fatal */
+        }
+      }
+
+      async function loadTemplateList() {
+        try {
+          const r = await api(API + "/templates");
+          const sel = $("#tpl-select");
+          if (!sel) return;
+          sel.innerHTML =
+            '<option value="">Choose a template...</option>' +
+            r.templates
+              .map(
+                (t) =>
+                  `<option value="${esc(t.name)}">${esc(t.name)}${t.description ? " (" + esc(t.description) + ")" : ""}</option>`,
+              )
+              .join("");
+        } catch (e) {
+          /* not fatal */
+        }
+      }
+
+      async function applyTemplate(state) {
+        S = Object.assign(newState(), state);
+        // A staged CSV from an earlier session has probably expired; check
+        if (S.csvId) {
+          try {
+            await api(API + "/csvs/" + S.csvId);
+          } catch (e) {
+            S.csvId = null;
+          }
+        }
+        render();
+      }
+
+      /* ----- step 2: columns ----- */
+
+      /** The display title of a column's property (first language) */
+      function colTitle(col) {
+        return langValue(S.titles[col.prop], S.languages[0]) || col.header;
+      }
+
+      /** Renames a column's property, keeping its titles, vocab, popup
+       * items and UI settings pointing at the new name */
+      function renameProp(col, newProp) {
+        const taken = new Set(
+          S.cols.filter((c) => c !== col).map((c) => c.prop),
+        );
+        newProp = uniqueIn(taken, newProp);
+        const old = col.prop;
+        if (newProp === old) return;
+        col.prop = newProp;
+        if (S.titles[old]) {
+          S.titles[newProp] = S.titles[old];
+          delete S.titles[old];
+        }
+        // Rename the vocab too, if this column owns one named after the old
+        // property
+        if (
+          col.vocabId === old &&
+          S.vocabs[old] &&
+          !(newProp in S.vocabs) &&
+          !S.cols.some((c) => c !== col && c.vocabId === old)
+        ) {
+          S.vocabs[newProp] = S.vocabs[old];
+          delete S.vocabs[old];
+        }
+        if (col.vocabId === old && newProp in S.vocabs) col.vocabId = newProp;
+        // Follow the rename in the popup and UI settings
+        for (const [key] of PANES)
+          for (const item of S.popup[key])
+            if (item.itemProp === old) item.itemProp = newProp;
+        if (S.popup.titleProp === old) S.popup.titleProp = newProp;
+        if (S.ui.dirField === old) S.ui.dirField = newProp;
+      }
+
+      function renderColumns() {
+        const langNote =
+          S.languages.length > 1
+            ? ` Titles can be translated per language on the Map and UI step.`
+            : "";
+        const rows = S.cols
+          .map((col, ix) => {
+            const info = colInfo(col.header) || {
+              nonEmpty: 0,
+              distinct: [],
+              semicolons: 0,
+            };
+            const roleOptions = Object.entries(ROLE_LABELS)
+              .map(
+                ([value, label]) =>
+                  `<option value="${value}" ${col.role === value ? "selected" : ""}>${label}</option>`,
+              )
+              .join("");
+            const isVocab = VOCAB_ROLES.includes(col.role);
+            const hix = S.headers.indexOf(col.header);
+            const samples = S.sampleRows
+              .slice(0, 3)
+              .map((r) => r[hix] ?? "")
+              .filter((v) => v !== "")
+              .map((v) => (v.length > 60 ? v.slice(0, 60) + "..." : v));
+            return `<tr class="main-row" data-ix="${ix}">
+      <td><input type="checkbox" data-k="include" ${col.include ? "checked" : ""}></td>
+      <td><strong>${esc(col.header)}</strong><br>
+          <span class="muted">${fmtInt(info.nonEmpty)} values, ${fmtInt(info.distinct.length)}${info.distinctTruncated ? "+" : ""} distinct${info.semicolons ? ", ; separated" : ""}</span></td>
+      <td><input type="text" data-k="title" value="${esc(colTitle(col))}" style="min-width:9rem"></td>
+      <td><select data-k="role">${roleOptions}</select></td>
+      <td><input type="text" readonly tabindex="-1" value="${esc(col.prop)}" style="width:8.5rem;font-family:ui-monospace,monospace;font-size:0.8rem;color:var(--muted)"></td>
+      <td style="text-align:center">${isVocab ? `<input type="checkbox" data-k="filter" ${col.filter ? "checked" : ""}>` : ""}</td>
+      <td style="text-align:center">${["name", "text", "multitext", "geocode"].includes(col.role) ? `<input type="checkbox" data-k="search" ${col.search ? "checked" : ""}>` : ""}</td>
+    </tr>
+    <tr class="sample-row"><td></td><td colspan="6">
+      <span class="muted"><em>Sample data:</em> ${samples.length ? samples.map(esc).join(" | ") : "(empty)"}</span>
+    </td></tr>`;
+          })
+          .join("");
+
+        const sample = S.sampleRows.length
+          ? `
+    <h3>Data preview</h3>
+    <div class="scroll-x"><table class="sample">
+      <thead><tr>${S.headers.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead>
+      <tbody>${S.sampleRows
+        .slice(0, 5)
+        .map(
+          (r) =>
+            `<tr>${r.map((v) => `<td>${esc(v ?? "")}</td>`).join("")}</tr>`,
+        )
+        .join("")}</tbody>
+    </table></div>`
+          : "";
+
+        return `
+  <div class="panel">
+    <h2>2. Map the CSV columns to properties</h2>
+    <p class="muted">Every dataset needs an ID column and a Name column, plus
+    coordinates: either latitude/longitude columns, or address columns given
+    the "Geocode input" role, combined on the next step. Category columns
+    become vocabs whose values can be filtered on the map. The title labels
+    the property on the map, and the property's internal name is derived from
+    it.${langNote}</p>
+    <div class="scroll-x"><table>
+      <thead><tr><th>Use</th><th>CSV Title</th><th>Title</th><th>Role</th><th>Property</th><th>Filter</th><th>Search</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    ${sample}
+  </div>`;
+      }
+
+      function attachColumns() {
+        $("#step-content")
+          .querySelectorAll("tr[data-ix]")
+          .forEach((tr) => {
+            const col = S.cols[Number(tr.dataset.ix)];
+            tr.querySelectorAll("[data-k]").forEach((input) => {
+              const k = input.dataset.k;
+              input.onchange = () => {
+                if (k === "include") col.include = input.checked;
+                else if (k === "filter") col.filter = input.checked;
+                else if (k === "search") col.search = input.checked;
+                else if (k === "title") {
+                  const newTitle = input.value.trim() || col.header;
+                  const oldTitle = colTitle(col);
+                  const titles = (S.titles[col.prop] ??= {});
+                  for (const lang of S.languages)
+                    if (!titles[lang] || titles[lang] === oldTitle)
+                      titles[lang] = newTitle;
+                  titles[S.languages[0]] = newTitle;
+                  if (!UNIQUE_ROLES.includes(col.role))
+                    renameProp(col, slug(newTitle));
+                } else if (k === "role") {
+                  col.role = input.value;
+                  col.include = col.role !== "ignore";
+                  if (UNIQUE_ROLES.includes(col.role)) {
+                    // Only one column can hold each special role, and its
+                    // property must be exactly the role name
+                    for (const other of S.cols) {
+                      if (other === col) continue;
+                      if (other.role === col.role) other.role = "text";
+                      if (other.prop === col.role)
+                        renameProp(other, slug(colTitle(other) + " column"));
+                    }
+                    renameProp(col, col.role);
+                  } else if (UNIQUE_ROLES.includes(col.prop) || !col.prop) {
+                    renameProp(col, slug(colTitle(col)));
+                  }
+                  if (VOCAB_ROLES.includes(col.role)) {
+                    col.filter = true;
+                    col.vocabId = col.prop;
+                    ensureVocab(col);
+                  }
+                  if (col.role === "name") col.search = true;
+                  pruneVocabs();
+                }
+                if (!S.titles[col.prop])
+                  S.titles[col.prop] = Object.fromEntries(
+                    S.languages.map((l) => [l, col.header]),
+                  );
+                render();
+              };
+            });
+          });
+      }
+
+      /* ----- step 3: geocode ----- */
+
+      function geocodeCols() {
+        return includedCols().filter((c) => c.role === "geocode");
+      }
+      function geocodeOn() {
+        return !!S.geocode && S.geocode.template.trim() !== "";
+      }
+      /** Mirrors the server-side template rendering, for the preview */
+      function renderGeocodeInput(template, row) {
+        return template
+          .replace(/\{\{(.*?)\}\}/g, (_, name) => {
+            const ix = S.headers.indexOf(String(name).trim());
+            return ix < 0 ? "" : (row[ix] ?? "").trim();
+          })
+          .replace(/(\s*,\s*)+/g, ", ")
+          .replace(/^[\s,]+|[\s,]+$/g, "");
+      }
+      function templateFieldNames(template) {
+        return [...template.matchAll(/\{\{(.*?)\}\}/g)].map((m) => m[1].trim());
+      }
+
+      function renderGeocode() {
+        const gcols = geocodeCols();
+        // Prefill the template from the Geocode columns the first time
+        if (S.geocode.template === "" && gcols.length)
+          S.geocode.template = gcols.map((c) => `{{${c.header}}}`).join(", ");
+        const latCol = S.cols.find((c) => c.include && c.role === "lat");
+        const lngCol = S.cols.find((c) => c.include && c.role === "lng");
+        const preview = geocodeOn()
+          ? S.sampleRows
+              .slice(0, 3)
+              .map((r) => renderGeocodeInput(S.geocode.template, r))
+              .filter(Boolean)
+          : [];
+        return `<div class="panel">
+    <h2>3. Geocoding</h2>
+    <p class="muted">Turns addresses into map pins when the dataset is built.
+    Combine columns and free text into the input sent to the geocoder, e.g.
+    "{{Address}}, {{Postcode}}, UK". Columns given the "Geocode input" role are
+    combined for you as a starting point. Leave the template empty for no
+    geocoding.</p>
+    <label for="gc-template">Geocoder input template</label>
+    <input type="text" id="gc-template" value="${esc(S.geocode.template)}" style="width:100%" placeholder="{{Address}}, UK">
+    <p>${S.headers.map((h) => `<button class="small" data-gc-insert="${esc(h)}" title="Add this column to the template">+ ${esc(h)}</button>`).join(" ")}</p>
+    ${preview.length ? `<h3>Preview <span class="muted">(from the first rows)</span></h3><ul>${preview.map((p) => `<li class="muted">${esc(p)}</li>`).join("")}</ul>` : ""}
+    <h3>Preference</h3>
+    ${
+      latCol && lngCol
+        ? `<label><input type="radio" name="gc-prefer" value="latlng" ${S.geocode.prefer !== "geocode" ? "checked" : ""}>
+        Prefer the ${esc(latCol.header)} / ${esc(lngCol.header)} columns; geocode only the rows without coordinates</label>
+        <label><input type="radio" name="gc-prefer" value="geocode" ${S.geocode.prefer === "geocode" ? "checked" : ""}>
+        Prefer the geocoded result; use the columns only where geocoding finds nothing</label>`
+        : `<p class="muted">No Latitude/Longitude columns are mapped, so the geocoded result is used for every row.</p>`
+    }
+    <p class="muted">Geocoding runs while the dataset is built, one lookup per
+    second (OpenStreetMap Nominatim by default), so the first build of a large
+    file takes a while. Every input and result is cached on the server: rows
+    whose input has not changed are looked up from the cache instantly on
+    rebuilds.</p>
+  </div>`;
+      }
+
+      function attachGeocode() {
+        $("#gc-template").onchange = (e) => {
+          S.geocode.template = e.target.value;
+          render();
+        };
+        $("#step-content")
+          .querySelectorAll("[data-gc-insert]")
+          .forEach((btn) => {
+            btn.onclick = () => {
+              const t = S.geocode.template.trim();
+              S.geocode.template =
+                (t ? t + (t.endsWith(",") ? " " : ", ") : "") +
+                "{{" +
+                btn.dataset.gcInsert +
+                "}}";
+              render();
+            };
+          });
+        $("#step-content")
+          .querySelectorAll("input[name=gc-prefer]")
+          .forEach((radio) => {
+            radio.onchange = () => {
+              S.geocode.prefer = radio.value;
+            };
+          });
+      }
+
+      /* ----- step 4: vocabs ----- */
+
+      function renderVocabs() {
+        const cols = vocabCols();
+        if (!cols.length)
+          return `<div class="panel"><h2>4. Vocabs</h2>
+      <p class="muted">No category columns are mapped. Choose "Category" as the
+      role of a column on the Columns step to create filterable vocabs.</p></div>`;
+
+        return `<div class="panel">
+    <h2>4. Set up the vocabs</h2>
+    <p class="muted">Each category column becomes a vocab: a set of terms with an
+    ID and a label per language. Terms were generated from the distinct CSV
+    values; edit the labels (and IDs if you like), or regenerate after changing
+    the CSV. The CSV values shown map to that term when the dataset is built.</p>
+    ${cols
+      .map((col) => {
+        const v = S.vocabs[col.vocabId];
+        if (!v) return "";
+        const titleInputs = S.languages
+          .map(
+            (lang) =>
+              `<div><label>Title (${lang})</label>
+         <input type="text" data-vocab="${esc(col.vocabId)}" data-title-lang="${lang}"
+                value="${esc(langValue(v.title, lang))}" style="width:14rem"></div>`,
+          )
+          .join("");
+        const rows = v.terms
+          .map(
+            (t, tix) => `
+        <tr>
+          <td><input type="text" data-vocab="${esc(col.vocabId)}" data-term="${tix}" data-k="id" value="${esc(t.id)}" style="min-width:7rem"></td>
+          ${S.languages
+            .map(
+              (lang) =>
+                `<td><input type="text" data-vocab="${esc(col.vocabId)}" data-term="${tix}" data-k="label" data-lang="${lang}"
+                 value="${esc(langValue(t.labels, lang))}"></td>`,
+            )
+            .join("")}
+          <td class="muted">${t.values.map(esc).join("; ")}</td>
+          <td><button class="small danger" data-vocab="${esc(col.vocabId)}" data-term="${tix}" data-k="del">Remove</button></td>
+        </tr>`,
+          )
+          .join("");
+        return `<div class="vocab-block">
+        <h3>${esc(col.header)} <span class="muted">(vocab: ${esc(col.vocabId)}, ${v.terms.length} terms)</span></h3>
+        <div class="field-row">${titleInputs}
+          <div><button class="small" data-vocab="${esc(col.vocabId)}" data-k="regen">Regenerate from CSV</button></div>
+        </div>
+        <div class="scroll-x"><table>
+          <thead><tr><th>Term ID</th>${S.languages.map((l) => `<th>Label (${l})</th>`).join("")}<th>CSV values</th><th></th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+      </div>`;
+      })
+      .join("")}
+  </div>`;
+      }
+
+      function attachVocabs() {
+        $("#step-content")
+          .querySelectorAll("[data-vocab]")
+          .forEach((el) => {
+            const vocab = S.vocabs[el.dataset.vocab];
+            if (!vocab) return;
+            if (el.dataset.titleLang !== undefined) {
+              el.onchange = () => {
+                vocab.title[el.dataset.titleLang] = el.value;
+              };
+            } else if (el.dataset.k === "regen") {
+              el.onclick = () => {
+                const col = vocabCols().find(
+                  (c) => c.vocabId === el.dataset.vocab,
+                );
+                if (
+                  col &&
+                  confirm(
+                    "Replace the terms of this vocab with ones generated from the CSV values?",
+                  )
+                ) {
+                  vocab.terms = generateTerms(col);
+                  render();
+                }
+              };
+            } else if (el.dataset.term !== undefined) {
+              const term = vocab.terms[Number(el.dataset.term)];
+              if (el.dataset.k === "id")
+                el.onchange = () => {
+                  term.id = el.value.trim();
+                };
+              else if (el.dataset.k === "label")
+                el.onchange = () => {
+                  term.labels[el.dataset.lang] = el.value;
+                };
+              else if (el.dataset.k === "del")
+                el.onclick = () => {
+                  vocab.terms.splice(Number(el.dataset.term), 1);
+                  render();
+                };
+            }
+          });
+      }
+
+      /* ----- step 4: map and ui ----- */
+
+      function renderUiStep() {
+        const dirOptions = ['<option value="">(automatic)</option>']
+          .concat(
+            filterableCols().map(
+              (c) =>
+                `<option value="${esc(c.prop)}" ${S.ui.dirField === c.prop ? "selected" : ""}>${esc(c.header)}</option>`,
+            ),
+          )
+          .join("");
+        const b = S.ui.bounds || { w: "", s: "", e: "", n: "" };
+        const titleRows = includedCols()
+          .filter((c) => c.role !== "id")
+          .map(
+            (col) => `
+    <tr>
+      <td>${esc(col.prop)} <span class="muted">(${esc(col.header)})</span></td>
+      ${S.languages
+        .map(
+          (lang) =>
+            `<td><input type="text" data-title-prop="${esc(col.prop)}" data-lang="${lang}"
+             value="${esc(langValue(S.titles[col.prop], lang))}"></td>`,
+        )
+        .join("")}
+    </tr>`,
+          )
+          .join("");
+
+        return `<div class="panel">
+    <h2>5. Map and interface settings</h2>
+    <div class="field-row">
+      <div><label>Map title</label>
+        <input type="text" id="ui-title" value="${esc(S.ui.title)}" style="width:20rem"></div>
+      <div><label>Directory panel groups by</label>
+        <select id="ui-dir">${dirOptions}</select></div>
+      <div><label style="display:inline-flex;gap:0.4rem;align-items:center;margin-top:1.6rem">
+        <input type="checkbox" id="ui-mapkey" ${S.ui.showMapKey ? "checked" : ""}> Show the map key</label></div>
+    </div>
+
+    <h3>Initial map bounds <span class="muted">(optional, in degrees)</span></h3>
+    <div class="field-row">
+      <div><label>West</label><input type="number" step="any" id="b-w" value="${esc(b.w)}" style="width:7rem"></div>
+      <div><label>South</label><input type="number" step="any" id="b-s" value="${esc(b.s)}" style="width:7rem"></div>
+      <div><label>East</label><input type="number" step="any" id="b-e" value="${esc(b.e)}" style="width:7rem"></div>
+      <div><label>North</label><input type="number" step="any" id="b-n" value="${esc(b.n)}" style="width:7rem"></div>
+      <div><button class="small" id="b-clear">Clear</button></div>
+    </div>
+
+    <h3>Logo <span class="muted">(optional; URLs or dataset:assets/... paths)</span></h3>
+    <div class="field-row">
+      <div><label>Large logo</label><input type="text" id="logo-large" value="${esc(S.ui.logoLarge)}" style="width:18rem"></div>
+      <div><label>Small logo</label><input type="text" id="logo-small" value="${esc(S.ui.logoSmall)}" style="width:18rem"></div>
+      <div><label>Alt text</label><input type="text" id="logo-alt" value="${esc(S.ui.logoAlt)}" style="width:14rem"></div>
+    </div>
+
+    <h3>Property labels</h3>
+    <p class="muted">Shown as filter titles and popup labels.</p>
+    <div class="scroll-x"><table>
+      <thead><tr><th>Property</th>${S.languages.map((l) => `<th>Label (${l})</th>`).join("")}</tr></thead>
+      <tbody>${titleRows}</tbody>
+    </table></div>
+  </div>`;
+      }
+
+      function attachUiStep() {
+        $("#ui-title").oninput = (e) => {
+          S.ui.title = e.target.value;
+        };
+        $("#ui-dir").onchange = (e) => {
+          S.ui.dirField = e.target.value;
+        };
+        $("#ui-mapkey").onchange = (e) => {
+          S.ui.showMapKey = e.target.checked;
+        };
+        const bounds = () => (S.ui.bounds ??= { w: "", s: "", e: "", n: "" });
+        for (const k of ["w", "s", "e", "n"])
+          $("#b-" + k).oninput = (e) => {
+            bounds()[k] = e.target.value;
+          };
+        $("#b-clear").onclick = () => {
+          S.ui.bounds = null;
+          render();
+        };
+        $("#logo-large").oninput = (e) => {
+          S.ui.logoLarge = e.target.value;
+        };
+        $("#logo-small").oninput = (e) => {
+          S.ui.logoSmall = e.target.value;
+        };
+        $("#logo-alt").oninput = (e) => {
+          S.ui.logoAlt = e.target.value;
+        };
+        $("#step-content")
+          .querySelectorAll("[data-title-prop]")
+          .forEach((el) => {
+            el.onchange = () => {
+              const prop = el.dataset.titleProp;
+              (S.titles[prop] ??= {})[el.dataset.lang] = el.value;
+            };
+          });
+      }
+
+      /* ----- step 5: about ----- */
+
+      function renderAbout() {
+        return `<div class="panel">
+    <h2>6. About box</h2>
+    <p class="muted">Shown in the map's About panel; Markdown is supported.
+    Each language has its own text. The first language's text is also saved as
+    the dataset's about.md fallback.</p>
+    ${S.languages
+      .map(
+        (lang) => `
+      <h3>About (${lang})</h3>
+      <textarea data-about-lang="${lang}" placeholder="# About this map...">${esc(S.about[lang] || "")}</textarea>
+    `,
+      )
+      .join("")}
+  </div>`;
+      }
+
+      function attachAbout() {
+        $("#step-content")
+          .querySelectorAll("[data-about-lang]")
+          .forEach((el) => {
+            el.oninput = () => {
+              S.about[el.dataset.aboutLang] = el.value;
+            };
+          });
+      }
+
+      /* ----- step 6: popup ----- */
+
+      const PANES = [
+        ["leftPane", "Left pane"],
+        ["topRightPane", "Top right pane"],
+        ["bottomRightPane", "Bottom right pane"],
+      ];
+
+      function renderPopup() {
+        const propOptions = (selected) =>
+          includedCols()
+            .filter((c) => c.role !== "id")
+            .map(
+              (c) =>
+                `<option value="${esc(c.prop)}" ${selected === c.prop ? "selected" : ""}>${esc(c.prop)}</option>`,
+            )
+            .join("");
+        const titleOptions = includedCols()
+          .map(
+            (c) =>
+              `<option value="${esc(c.prop)}" ${S.popup.titleProp === c.prop ? "selected" : ""}>${esc(c.prop)}</option>`,
+          )
+          .join("");
+
+        const paneHtml = (key, label) => `
+    <div class="pane-block">
+      <h3>${label} <span class="muted">(${S.popup[key].length} items)</span></h3>
+      ${S.popup[key]
+        .map(
+          (item, ix) => `
+        <div class="popup-item" data-pane="${key}" data-ix="${ix}">
+          <select data-k="itemProp">${propOptions(item.itemProp)}</select>
+          <select data-k="valueStyle">
+            ${["text", "address", "hyperlink"]
+              .map(
+                (s) =>
+                  `<option value="${s}" ${item.valueStyle === s ? "selected" : ""}>${s}</option>`,
+              )
+              .join("")}
+          </select>
+          <label><input type="checkbox" data-k="showLabel" ${item.showLabel ? "checked" : ""}>label</label>
+          <label><input type="checkbox" data-k="showBullets" ${item.showBullets ? "checked" : ""}>bullets</label>
+          ${
+            item.valueStyle === "hyperlink"
+              ? `<input type="text" data-k="hyperlinkBaseUri" value="${esc(item.hyperlinkBaseUri || "")}" placeholder="link base URI" style="width:10rem">
+               <input type="text" data-k="displayText" value="${esc(item.displayText || "")}" placeholder="display text" style="width:9rem">
+               <label><input type="checkbox" data-k="analyticOnClick" ${item.analyticOnClick ? "checked" : ""}>track clicks</label>`
+              : ""
+          }
+          <input type="number" data-k="singleColumnLimit" value="${esc(item.singleColumnLimit ?? "")}" placeholder="1-col limit" style="width:6.5rem" title="Switch to a single column when more than this many values">
+          <span class="spacer"></span>
+          <button class="small" data-k="up" ${ix === 0 ? "disabled" : ""}>Up</button>
+          <button class="small" data-k="down" ${ix === S.popup[key].length - 1 ? "disabled" : ""}>Down</button>
+          <button class="small danger" data-k="del">Remove</button>
+        </div>`,
+        )
+        .join("")}
+      <p><button class="small" data-add-pane="${key}">Add a property</button></p>
+    </div>`;
+
+        return `<div class="panel">
+    <h2>7. Popup layout</h2>
+    <p class="muted">The popup opens when a pin is clicked: a large left pane and
+    two stacked right panes. Add the properties to show in each.</p>
+    <div class="field-row">
+      <div><label>Popup title property</label><select id="popup-title">${titleOptions}</select></div>
+      <div><label>Left pane width</label>
+        <input type="text" id="popup-width" value="${esc(S.popup.leftPaneWidth)}" style="width:6rem"></div>
+    </div>
+    ${PANES.map(([key, label]) => paneHtml(key, label)).join("")}
+  </div>`;
+      }
+
+      function attachPopup() {
+        $("#popup-title").onchange = (e) => {
+          S.popup.titleProp = e.target.value;
+        };
+        $("#popup-width").onchange = (e) => {
+          S.popup.leftPaneWidth = e.target.value || "70%";
+        };
+        $("#step-content")
+          .querySelectorAll("[data-add-pane]")
+          .forEach((btn) => {
+            btn.onclick = () => {
+              const first = includedCols().find((c) => c.role !== "id");
+              S.popup[btn.dataset.addPane].push({
+                itemProp: first ? first.prop : "name",
+                valueStyle: "text",
+                showLabel: true,
+                showBullets: false,
+                analyticOnClick: false,
+                hyperlinkBaseUri: "",
+                displayText: "",
+                singleColumnLimit: "",
+              });
+              render();
+            };
+          });
+        $("#step-content")
+          .querySelectorAll(".popup-item")
+          .forEach((row) => {
+            const list = S.popup[row.dataset.pane];
+            const ix = Number(row.dataset.ix);
+            const item = list[ix];
+            row.querySelectorAll("[data-k]").forEach((input) => {
+              const k = input.dataset.k;
+              if (k === "del")
+                input.onclick = () => {
+                  list.splice(ix, 1);
+                  render();
+                };
+              else if (k === "up")
+                input.onclick = () => {
+                  [list[ix - 1], list[ix]] = [list[ix], list[ix - 1]];
+                  render();
+                };
+              else if (k === "down")
+                input.onclick = () => {
+                  [list[ix + 1], list[ix]] = [list[ix], list[ix + 1]];
+                  render();
+                };
+              else
+                input.onchange = () => {
+                  item[k] =
+                    input.type === "checkbox" ? input.checked : input.value;
+                  if (k === "valueStyle") render();
+                };
+            });
+          });
+      }
+
+      /* ----- step 7: review and build ----- */
+
+      function renderReview() {
+        const { errors, warnings } = validate();
+        let configJson = "";
+        try {
+          configJson =
+            S.configOverride ?? JSON.stringify(buildConfig(), null, 2);
+        } catch (e) {
+          errors.push("Could not generate the config: " + e.message);
+        }
+        const summary = `
+    <table>
+      <tr><td>Dataset name</td><td><strong>${esc(S.name || "(unset)")}</strong>${S.displayName ? " / " + esc(S.displayName) : ""}</td></tr>
+      <tr><td>CSV</td><td>${S.csvId ? esc(S.csvName) + ", " + fmtInt(S.rowCount) + " rows" : "(none uploaded)"}</td></tr>
+      <tr><td>Languages</td><td>${esc(S.languages.join(", "))}</td></tr>
+      <tr><td>Properties</td><td>${includedCols()
+        .map((c) => esc(c.prop))
+        .join(", ")}</td></tr>
+      <tr><td>Vocabs</td><td>${
+        vocabCols()
+          .map(
+            (c) =>
+              `${esc(c.vocabId)} (${(S.vocabs[c.vocabId] || { terms: [] }).terms.length} terms)`,
+          )
+          .join(", ") || "(none)"
+      }</td></tr>
+      <tr><td>Geocoding</td><td>${geocodeOn() ? esc(S.geocode.template) : "(none)"}</td></tr>
+      <tr><td>Popup</td><td>${PANES.map(([k, l]) => `${l.toLowerCase()}: ${S.popup[k].length}`).join(", ")}</td></tr>
+    </table>`;
+
+        if (buildResult) {
+          return `<div class="panel">
+      <h2>Dataset built</h2>
+      <p>${esc(buildResult.message)}</p>
+      <p><a href="${esc(buildResult.downloadUrl)}"><button class="primary">Download dataset .zip</button></a>
+         <a href="/"><button>Back to Open Data Admin</button></a></p>
+      <p class="muted">The zip contains the full dataset directory (config.json, items,
+      locations, search index) and can be uploaded straight into MykoMaps.</p>
+    </div>`;
+        }
+
+        return `<div class="panel">
+    <h2>8. Review and build</h2>
+    ${summary}
+    ${errors.map((e) => `<div class="issue error">${esc(e)}</div>`).join("")}
+    ${warnings.map((w) => `<div class="issue warn">${esc(w)}</div>`).join("")}
+    <h3>Generated config
+      <label style="display:inline-flex;gap:0.4rem;font-weight:normal;margin-left:0.8rem">
+        <input type="checkbox" id="cfg-edit" ${S.configOverride != null ? "checked" : ""}> edit manually</label>
+      ${S.configOverride != null ? '<button class="small" id="cfg-reset" style="margin-left:0.5rem">Reset to generated</button>' : ""}
+    </h3>
+    <textarea id="cfg-json" style="min-height:16rem" ${S.configOverride == null ? "readonly" : ""}>${esc(configJson)}</textarea>
+    <p>
+      <button class="primary" id="btn-build" ${errors.length ? "disabled" : ""}>Build the dataset</button>
+      <span class="muted">This builds dataset '${esc(S.name)}' and gives you a .zip to download.</span>
+    </p>
+  </div>`;
+      }
+
+      function attachReview() {
+        if (buildResult) return;
+        $("#cfg-edit").onchange = (e) => {
+          S.configOverride = e.target.checked ? $("#cfg-json").value : null;
+          render();
+        };
+        const reset = $("#cfg-reset");
+        if (reset)
+          reset.onclick = () => {
+            S.configOverride = null;
+            render();
+          };
+        $("#cfg-json").oninput = (e) => {
+          if (S.configOverride != null) S.configOverride = e.target.value;
+        };
+        $("#btn-build").onclick = async () => {
+          let config;
+          try {
+            config =
+              S.configOverride != null
+                ? JSON.parse(S.configOverride)
+                : buildConfig();
+          } catch (e) {
+            showMessage("The config JSON does not parse: " + e.message, true);
+            return;
+          }
+          const btn = $("#btn-build");
+          btn.disabled = true;
+          btn.textContent = "Building...";
+          try {
+            const firstAbout =
+              S.about[S.languages[0]] ||
+              Object.values(S.about).find((t) => t && t.trim()) ||
+              "";
+            const r = await api(API + "/builds", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: S.name,
+                displayName: S.displayName || undefined,
+                csvId: S.csvId,
+                config,
+                about: firstAbout,
+                valueMaps: buildValueMaps(),
+                project: S.project,
+                subProject: S.subProject || undefined,
+                geocode: geocodeOn()
+                  ? {
+                      template: S.geocode.template,
+                      prefer: S.geocode.prefer,
+                      latHeader: (
+                        S.cols.find((c) => c.include && c.role === "lat") || {}
+                      ).header,
+                      lngHeader: (
+                        S.cols.find((c) => c.include && c.role === "lng") || {}
+                      ).header,
+                    }
+                  : undefined,
+              }),
+            });
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            let st;
+            for (;;) {
+              st = await api(API + "/builds/" + r.id);
+              if (st.status !== "queued" && st.status !== "running") break;
+              btn.textContent =
+                st.status === "queued" ? "Queued..." : "Building...";
+              await sleep(1500);
+            }
+            if (st.status !== "succeeded")
+              throw new Error(st.error || "build failed");
+            buildResult = {
+              message: st.message,
+              downloadUrl: st.downloadUrl,
+            };
+            clearMessage();
+          } catch (e) {
+            showMessage("Build failed: " + e.message, true);
+          } finally {
+            render();
+          }
+        };
+      }
+
+      /* ---------- navigation, templates, boot ---------- */
+
+      $("#steps").addEventListener("click", (ev) => {
+        const chip = ev.target.closest(".step");
+        if (!chip) return;
+        const ix = Number(chip.dataset.ix);
+        if (!stepUnlocked(ix)) return;
+        step = ix;
+        buildResult = null;
+        render();
+      });
+      $("#btn-back").onclick = () => {
+        if (step > 0) {
+          step--;
+          buildResult = null;
+          render();
+        }
+      };
+      $("#btn-next").onclick = () => {
+        if (step < STEPS.length - 1 && stepUnlocked(step + 1)) {
+          step++;
+          render();
+        }
+      };
+
+      $("#btn-save-tpl").onclick = async () => {
+        const name = $("#tpl-name").value.trim() || S.name;
+        if (!name) {
+          showMessage("Give the template a name first.", true);
+          return;
+        }
+        try {
+          const r = await api(API + "/templates/" + encodeURIComponent(name), {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              description: S.displayName || S.ui.title || undefined,
+              state: S,
+            }),
+          });
+          showMessage(r.message, false);
+          loadTemplateList();
+        } catch (e) {
+          showMessage("Could not save template: " + e.message, true);
+        }
+      };
+
+      (async function boot() {
+        const params = new URLSearchParams(location.search);
+        const tpl = params.get("template");
+        if (tpl) {
+          try {
+            const t = await api(API + "/templates/" + encodeURIComponent(tpl));
+            await applyTemplate(t.state);
+            $("#tpl-name").value = tpl;
+            showMessage(
+              `Template '${tpl}' loaded.` +
+                (S.csvId ? "" : " Upload a CSV to build."),
+              false,
+            );
+          } catch (e) {
+            showMessage(
+              "Could not load template '" + tpl + "': " + e.message,
+              true,
+            );
+          }
+        }
+        render();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root "data_sources#index"
 
+  mount DataBuilder::Engine => "/data-builder"
+
   resource :session
   resource :password, only: %i[ edit update ]
   resource :secrets, only: :update

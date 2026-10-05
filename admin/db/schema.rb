@@ -10,7 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_150000) do
+  create_table "data_builder_builds", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "csv_filename"
+    t.string "csv_id", null: false
+    t.string "display_name"
+    t.string "error"
+    t.text "log"
+    t.string "message"
+    t.string "name", null: false
+    t.text "request", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "data_builder_templates", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "name", null: false
+    t.text "state", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_data_builder_templates_on_name", unique: true
+  end
+
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -52,6 +75,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_140000) do
     t.string "uploaded_filename"
     t.index ["data_source_id", "created_at"], name: "index_download_runs_on_data_source_id_and_created_at"
     t.index ["data_source_id"], name: "index_download_runs_on_data_source_id"
+  end
+
+  create_table "mykomap_geocode_entries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "input", null: false
+    t.float "lat"
+    t.float "lng"
+    t.datetime "updated_at", null: false
+    t.index ["input"], name: "index_mykomap_geocode_entries_on_input", unique: true
   end
 
   create_table "project_builds", force: :cascade do |t|

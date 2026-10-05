@@ -3,6 +3,10 @@ production: &default
     class: ScheduleDispatchJob
     queue: default
     schedule: every minute
+  data_builder_cleanup:
+    class: DataBuilder::CleanupJob
+    queue: default
+    schedule: every day at 3am
   disk_usage:
     class: DiskUsageJob
     queue: default
