@@ -15,9 +15,10 @@ COPY mise.toml ./
 RUN mise trust mise.toml && mise install && ln -s "$(mise where ruby)" /usr/local/ruby
 ENV PATH=/usr/local/ruby/bin:$PATH
 
-# Admin app gems
+# Admin app gems (the local engine's gemspec must exist for bundle install)
 ENV BUNDLE_DEPLOYMENT=1 BUNDLE_WITHOUT=development:test
 COPY admin/Gemfile admin/Gemfile.lock admin/.ruby-version admin/
+COPY admin/engines/data_builder/data_builder.gemspec admin/engines/data_builder/
 RUN cd admin && bundle install --jobs 4
 
 COPY . .
