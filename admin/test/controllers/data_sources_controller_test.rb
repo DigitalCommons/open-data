@@ -19,7 +19,7 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
   test "index lists sources with last download age" do
     get data_sources_path
     assert_response :success
-    assert_select "h1", /Projects & Data sources/
+    assert_select "h1", /Projects & Data Sources/
     assert_select "td", /Alpha Co-ops/
     assert_select "td", /Beta Directory/
   end
