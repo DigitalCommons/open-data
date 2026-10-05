@@ -23,4 +23,13 @@ class ProjectBuildTest < ActiveSupport::TestCase
     assert projects(:cwm).buildable?
     assert_not projects(:mersey_green).buildable?
   end
+
+  test "input_count reads the number of sources from the archived meta.json" do
+    Dir.mktmpdir do |dir|
+      build = projects(:cwm).project_builds.create!(status: :succeeded, archive_path: dir)
+      assert_nil build.input_count
+      File.write(File.join(dir, "meta.json"), { inputs: [ { code: "a" }, { code: "b" } ] }.to_json)
+      assert_equal 2, build.input_count
+    end
+  end
 end

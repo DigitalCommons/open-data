@@ -1,157 +1,139 @@
-<% content_for :title, "#{@data_source.name} - MykoMaps Data Admin" %>
+<% content_for :title, page_title(@data_source.name) %>
 
-<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="page-head">
   <div>
-    <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-semibold tracking-tight text-slate-900"><%= @data_source.name %></h1>
-      <%= kind_badge(@data_source) %>
+    <span class="crumb"><%= link_to "Projects & Data Sources", root_path %> / Source</span>
+    <div class="title-row">
+      <h1 class="title-sm"><%= @data_source.name %></h1>
       <%= status_badge(@data_source.last_run) %>
     </div>
-    <p class="mt-1 text-sm text-slate-500 font-mono"><%= @data_source.directory %>/</p>
+    <span class="mono faint"><%= @data_source.directory %>/</span>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="actions">
     <% if @data_source.latest_standard_csv_path %>
-      <%= link_to "Download standard.csv", standard_csv_data_source_path(@data_source),
-            class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50" %>
+      <%= link_to "Download standard.csv", standard_csv_data_source_path(@data_source), class: "btn btn-outline" %>
     <% end %>
     <% if @data_source.auto? %>
       <%= button_to "Download now", run_data_source_path(@data_source), method: :post,
-            disabled: @data_source.running?,
-            class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-40 cursor-pointer" %>
+            disabled: @data_source.running?, class: "btn btn-primary" %>
     <% end %>
-    <%= link_to "Edit", edit_data_source_path(@data_source),
-          class: "rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white hover:bg-slate-700" %>
+    <%= link_to "Edit", edit_data_source_path(@data_source), class: "btn btn-outline" %>
   </div>
 </div>
 
-<div class="mt-6 grid gap-6 lg:grid-cols-3">
-  <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-2">
-    <h2 class="text-sm font-semibold text-slate-900">Details</h2>
-    <dl class="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
-      <div>
-        <dt class="text-slate-500">Projects</dt>
-        <dd class="mt-0.5 text-slate-900">
-          <% projects = @data_source.projects.ordered %>
-          <% if projects.any? %>
-            <%= safe_join(projects.map { |project| link_to project.name, project, class: "text-indigo-700 hover:text-indigo-500" }, ", ") %>
-          <% else %>
-            -
-          <% end %>
-        </dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Description</dt>
-        <dd class="mt-0.5 text-slate-900"><%= @data_source.description.presence || "-" %></dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Download URL</dt>
-        <dd class="mt-0.5 break-all text-slate-900">
-          <% if @data_source.download_url.present? %>
-            <%= link_to @data_source.download_url, @data_source.download_url, class: "text-indigo-700 hover:text-indigo-500", target: "_blank", rel: "noopener" %>
-          <% else %>
-            -
-          <% end %>
-        </dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Schedule (cron)</dt>
-        <dd class="mt-0.5 font-mono text-slate-900"><%= @data_source.schedule.presence || "-" %></dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Enabled</dt>
-        <dd class="mt-0.5"><%= @data_source.enabled? ? "yes" : "no" %></dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Last downloaded</dt>
-        <dd class="mt-0.5"><%= download_age(@data_source) %></dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Last processed</dt>
-        <dd class="mt-0.5 text-slate-900">
-          <%= @data_source.last_processed_at ? "#{time_ago_in_words(@data_source.last_processed_at)} ago" : "never" %>
-        </dd>
-      </div>
-      <div>
-        <dt class="text-slate-500">Source directory</dt>
-        <dd class="mt-0.5 font-mono text-xs text-slate-900"><%= @data_source.source_dir %></dd>
-      </div>
-    </dl>
+<% if @data_source.auto? && @data_source.schedule.blank? %>
+  <div class="flash bad">
+    This source has no schedule, so it cannot be enabled.
+    <%= link_to "Set a schedule", edit_data_source_path(@data_source) %>
   </div>
+<% end %>
 
-  <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200" id="upload">
-    <h2 class="text-sm font-semibold text-slate-900">Manual upload</h2>
-    <p class="mt-2 text-xs text-slate-500">
-      Upload a source data file into <span class="font-mono"><%= @data_source.directory %>/original-data/</span>
-      and process it. Use this for sources without an automatic downloader.
-    </p>
-    <%= form_with url: upload_data_source_path(@data_source), method: :post, multipart: true, class: "mt-4 space-y-3" do |form| %>
-      <%= form.file_field :file, required: true,
-            class: "block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200" %>
-      <%= form.submit "Upload and process", disabled: @data_source.running?,
-            class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-40 cursor-pointer" %>
-    <% end %>
-  </div>
+<div class="split">
+  <section class="card" aria-labelledby="details_heading">
+    <div class="card-head"><h2 id="details_heading">Details</h2></div>
+    <div class="card-body">
+      <dl class="facts">
+        <div class="wide">
+          <dt>Description</dt>
+          <dd class="prose"><%= @data_source.description.presence || "-" %></dd>
+        </div>
+        <div>
+          <dt>Projects</dt>
+          <dd>
+            <% projects = @data_source.projects.ordered %>
+            <% if projects.any? %>
+              <%= safe_join(projects.map { |project| link_to project.name, project, class: "link" }, ", ") %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt>Download URL</dt>
+          <dd class="mono">
+            <% if @data_source.download_url.present? %>
+              <%= link_to @data_source.download_url, @data_source.download_url, class: "link", target: "_blank", rel: "noopener" %>
+            <% else %>
+              -
+            <% end %>
+          </dd>
+        </div>
+        <div><dt>Type</dt><dd><%= kind_label(@data_source) %></dd></div>
+        <div><dt>Schedule (cron)</dt><dd class="mono"><%= @data_source.schedule.presence || "-" %></dd></div>
+        <div><dt>Enabled</dt><dd><%= @data_source.enabled? ? "yes" : "no" %></dd></div>
+        <div><dt>Last downloaded</dt><dd><%= download_age(@data_source) %></dd></div>
+        <div>
+          <dt>Last processed</dt>
+          <dd><%= @data_source.last_processed_at ? "#{time_ago_in_words(@data_source.last_processed_at)} ago" : "never" %></dd>
+        </div>
+        <div class="wide"><dt>Source directory</dt><dd class="mono"><%= @data_source.source_dir %></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="card" id="upload" aria-labelledby="upload_heading">
+    <div class="card-head"><h2 id="upload_heading">Manual upload</h2></div>
+    <div class="card-body">
+      <%= form_with url: upload_data_source_path(@data_source), method: :post, multipart: true, class: "upload-form" do |form| %>
+        <p class="note">
+          Upload a source data file into <span class="mono"><%= @data_source.directory %>/original-data/</span>
+          and process it. Use this for sources without an automatic downloader.
+        </p>
+        <%= form.file_field :file, required: true %>
+        <%= form.submit "Upload and process", disabled: @data_source.running?, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </section>
 </div>
 
 <% latest_duplicate_id = @download_runs.find(&:no_changes?)&.id %>
 <% hidden_duplicates = @download_runs.count { |r| r.no_changes? && r.id != latest_duplicate_id } %>
-<div class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200" data-controller="run-history">
-  <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
-    <h2 class="text-sm font-semibold text-slate-900">Run history</h2>
-    <div class="flex items-center gap-4">
+<section class="card" data-controller="run-history" aria-labelledby="history_heading">
+  <div class="card-head">
+    <h2 id="history_heading">Run history</h2>
+    <div class="actions">
       <% if hidden_duplicates.positive? %>
-        <label class="flex items-center gap-2 text-xs text-slate-600">
-          <input type="checkbox" data-run-history-target="toggle" data-action="run-history#toggle"
-                 class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-600">
+        <label class="check-label">
+          <input type="checkbox" data-run-history-target="toggle" data-action="run-history#toggle">
           Show history for all duplicate logs (<%= hidden_duplicates %> hidden)
         </label>
       <% end %>
       <% if latest = @data_source.last_succeeded_run %>
-        <p class="text-xs text-slate-500">Latest change: <%= latest.diff_summary.presence || "-" %></p>
+        <p class="note">Latest change: <%= latest.diff_summary.presence || "-" %></p>
       <% end %>
     </div>
   </div>
-  <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-slate-200 text-sm">
-      <thead class="bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+  <div class="table-wrap">
+    <table class="data" style="min-width: 600px">
+      <thead>
         <tr>
-          <th class="px-4 py-3">Started</th>
-          <th class="px-4 py-3">Trigger</th>
-          <th class="px-4 py-3">Status</th>
-          <th class="px-4 py-3">Duration</th>
-          <th class="px-4 py-3">Changes (+ / - / ~)</th>
-          <th class="px-4 py-3 text-right"></th>
+          <th>Started</th>
+          <th>Trigger</th>
+          <th>Status</th>
+          <th>Duration</th>
+          <th>Changes (+ / - / ~)</th>
+          <th class="right"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody>
         <% @download_runs.each do |run| %>
           <% duplicate_hidden = run.no_changes? && run.id != latest_duplicate_id %>
-          <tr class="hover:bg-slate-50 <%= "hidden duplicate-run" if duplicate_hidden %>"
+          <tr class="<%= "hidden duplicate-run" if duplicate_hidden %>"
               <%= 'data-run-history-target="duplicate"'.html_safe if duplicate_hidden %>>
-            <td class="px-4 py-3 text-slate-700" title="<%= run.started_at&.to_fs(:long) %>">
+            <td title="<%= run.started_at&.to_fs(:long) %>">
               <%= run.started_at ? "#{time_ago_in_words(run.started_at)} ago" : "queued" %>
             </td>
-            <td class="px-4 py-3 text-slate-600"><%= run.triggered_by %></td>
-            <td class="px-4 py-3"><%= status_badge(run) %></td>
-            <td class="px-4 py-3 text-slate-600"><%= format_duration(run.duration) %></td>
-            <td class="px-4 py-3 font-mono text-xs">
-              <% if run.succeeded? %>
-                <span class="text-emerald-700">+<%= run.rows_added %></span>
-                <span class="text-rose-700">-<%= run.rows_removed %></span>
-                <span class="text-amber-700">~<%= run.rows_changed %></span>
-              <% else %>
-                -
-              <% end %>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <%= link_to "Details", download_run_path(run), class: "text-indigo-700 hover:text-indigo-500 text-xs font-medium" %>
-            </td>
+            <td><%= run.triggered_by %></td>
+            <td><%= status_badge(run) %></td>
+            <td><%= format_duration(run.duration) %></td>
+            <td><%= run.succeeded? ? row_changes(run) : "-" %></td>
+            <td class="right"><%= link_to "Details", download_run_path(run), class: "link" %></td>
           </tr>
         <% end %>
         <% if @download_runs.empty? %>
-          <tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">No runs yet.</td></tr>
+          <tr><td colspan="6" class="empty">No runs yet.</td></tr>
         <% end %>
       </tbody>
     </table>
   </div>
-</div>
+</section>

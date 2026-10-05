@@ -20,7 +20,8 @@ class DownloadRunsControllerTest < ActionDispatch::IntegrationTest
   test "show renders log and diff summary" do
     get download_run_path(@run)
     assert_response :success
-    assert_select "h1", /run ##{@run.id}/
+    assert_select "h1", "Run ##{@run.id}"
+    assert_select ".crumb a[href=?]", data_source_path(@run.data_source)
     assert_select "p", /2 added, 1 removed, 3 changed/
   end
 

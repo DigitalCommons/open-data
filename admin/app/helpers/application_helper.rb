@@ -1,49 +1,57 @@
 module ApplicationHelper
+  APP_NAME = "MykoMaps OpenData".freeze
+
   STATUS_STYLES = {
-    "queued" => "bg-slate-100 text-slate-700",
-    "running" => "bg-sky-100 text-sky-800",
-    "succeeded" => "bg-emerald-100 text-emerald-800",
-    "no_changes" => "bg-slate-100 text-slate-600",
-    "failed" => "bg-rose-100 text-rose-800"
+    "queued" => "run",
+    "running" => "run",
+    "succeeded" => "ok",
+    "no_changes" => "idle",
+    "failed" => "bad"
   }.freeze
 
-  def status_badge(run)
-    return content_tag(:span, "never run", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500") if run.nil?
-    style = STATUS_STYLES.fetch(run.status, STATUS_STYLES["queued"])
-    content_tag(:span, run.status.humanize.downcase, class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{style}")
+  def page_title(title = nil)
+    [ title, APP_NAME ].compact.join(" - ")
   end
 
-  CATEGORY_STYLES = {
-    "mykomaps_v4" => "bg-emerald-100 text-emerald-800",
-    "mykomaps_v3" => "bg-sky-100 text-sky-800",
-    "legacy" => "bg-slate-100 text-slate-600"
-  }.freeze
+  def status_badge(run)
+    return content_tag(:span, "never run", class: "pill idle") if run.nil?
+    content_tag(:span, run.status.humanize.downcase, class: "pill #{STATUS_STYLES.fetch(run.status, 'run')}")
+  end
 
   def category_badge(project)
-    content_tag(:span, project.category_label, class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium #{CATEGORY_STYLES.fetch(project.category)}")
+    content_tag(:span, project.category_label, class: [ "tag", ("legacy" if project.legacy?) ])
+  end
+
+  def kind_label(source)
+    source.auto? ? "Scheduled" : "Manual upload"
   end
 
   def kind_badge(source)
-    if source.auto?
-      content_tag(:span, "scheduled", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-800")
-    else
-      content_tag(:span, "manual upload", class: "inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800")
-    end
+    content_tag(:span, kind_label(source), class: "kind")
   end
 
   # Age of the last download, coloured by staleness.
   def download_age(source)
     at = source.last_downloaded_at
-    return content_tag(:span, "never", class: "text-slate-400") if at.nil?
-    classes =
-      if source.overdue?
-        "text-rose-600 font-medium"
-      elsif at > 1.day.ago
-        "text-emerald-700"
-      else
-        "text-slate-600"
+    return content_tag(:span, "never", class: "age-never") if at.nil?
+    css =
+      if source.overdue? then "age-overdue"
+      elsif at > 1.day.ago then "age-fresh"
+      else "age-old"
       end
-    content_tag(:span, "#{time_ago_in_words(at)} ago", class: classes, title: at.to_fs(:long))
+    content_tag(:span, "#{time_ago_in_words(at)} ago", class: css, title: at.to_fs(:long))
+  end
+
+  # Rows added, removed and changed, coloured; "-" when not recorded.
+  def row_changes(record)
+    return "-" if record.rows_added.nil?
+    content_tag(:span, class: "diff") do
+      safe_join([
+        content_tag(:span, "+#{record.rows_added}", class: "a"),
+        content_tag(:span, "-#{record.rows_removed}", class: "r"),
+        content_tag(:span, "~#{record.rows_changed}", class: "c")
+      ])
+    end
   end
 
   def format_duration(seconds)

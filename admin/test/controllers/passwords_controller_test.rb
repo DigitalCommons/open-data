@@ -6,10 +6,14 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
-  test "edit renders for a signed-in user" do
+  test "edit renders the settings page for a signed-in user" do
     sign_in_as(users(:settled))
     get edit_password_path
     assert_response :success
+    assert_select "h1", "Settings"
+    assert_select "h2", "Change password"
+    assert_select "p", "Change your password"
+    assert_select "input[type=password][name=current_password]"
   end
 
   test "a user on the default password is redirected everywhere except the password page" do

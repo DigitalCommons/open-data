@@ -73,6 +73,36 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", project_path(projects(:mersey_green)), "Mersey Green Network"
   end
 
+  test "index describes the page and ends with a summary" do
+    get data_sources_path
+    assert_select "p", "MykoMaps version 4 projects and data sources: download, schedules and unification."
+    assert_select "th", "Status"
+    assert_select "h2", "Summary"
+    assert_operator response.body.index("id=\"other_sources\""), :<, response.body.index(">Summary<")
+  end
+
+  test "index shows a scheduled source with no schedule as unable to be enabled" do
+    data_sources(:beta).update!(kind: :auto, schedule: nil)
+    get data_sources_path
+    assert_select "form[action=?] button[disabled]", toggle_data_source_path(data_sources(:beta))
+    assert_select ".tog-hint", "Add a schedule to enable"
+  end
+
+  test "index shows upload-only sources without a switch" do
+    get data_sources_path
+    assert_select "form[action=?]", toggle_data_source_path(data_sources(:beta)), count: 0
+    assert_select "td", "upload only"
+  end
+
+  test "show explains why a scheduled source with no schedule cannot be enabled" do
+    beta = data_sources(:beta)
+    beta.update!(kind: :auto, schedule: nil)
+    get data_source_path(beta)
+    assert_select ".flash", /This source has no schedule, so it cannot be enabled./
+    assert_select ".flash a[href=?]", edit_data_source_path(beta), "Set a schedule"
+    assert_select ".crumb a[href=?]", root_path, "Projects & Data Sources"
+  end
+
   test "show displays details and run history" do
     get data_source_path(data_sources(:alpha))
     assert_response :success

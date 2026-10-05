@@ -106,6 +106,10 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     get project_build_path(build)
     assert_response :success
+    assert_select "h1", "Build ##{build.id}"
+    assert_select ".crumb a[href=?]", project_path(projects(:cwm))
+    assert_select ".stat dt", "Rows"
+    assert_select ".stat dt", "Merged"
     assert_select "h2", "Log"
   ensure
     FileUtils.remove_entry(dir) if dir

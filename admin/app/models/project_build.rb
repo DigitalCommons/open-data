@@ -30,6 +30,12 @@ class ProjectBuild < ApplicationRecord
     path_in_archive("diff.txt")
   end
 
+  # Number of sources the build read, from its archived meta.json.
+  def input_count
+    path = path_in_archive("meta.json")
+    path && JSON.parse(File.read(path)).fetch("inputs", []).size
+  end
+
   def append_log(text)
     self.log = [ log, text ].compact.join
   end
