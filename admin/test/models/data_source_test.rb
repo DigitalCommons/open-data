@@ -151,14 +151,28 @@ class DataSourceTest < ActiveSupport::TestCase
     end
   end
 
-  test "legacy live sources are seeded enabled on the 10 minute schedule" do
+  test "legacy live sources are seeded enabled on the daily 6am UK time schedule" do
     create_source_dir("ica")
     File.write(OpenData.root + "ica/downloader", "#!/bin/sh\n")
     DataSource.sync_from_repo!
 
     ica = DataSource.find_by!(directory: "ica")
     assert ica.enabled?
-    assert_equal "*/10 * * * *", ica.schedule
+    assert_equal "0 6 * * * Europe/London", ica.schedule
+  end
+
+  test "the default schedule fires at 6am UK time, summer and winter" do
+    source = data_sources(:alpha)
+    source.update!(schedule: DataSource::DEFAULT_SCHEDULE)
+    source.download_runs.delete_all
+    source.download_runs.create!(status: :succeeded, triggered_by: :scheduled, created_at: Time.utc(2026, 6, 30, 12))
+
+    assert_not source.due?(Time.utc(2026, 7, 1, 4, 59)), "04:59 UTC is 05:59 BST"
+    assert source.due?(Time.utc(2026, 7, 1, 5, 1)), "05:01 UTC is 06:01 BST"
+
+    source.download_runs.create!(status: :succeeded, triggered_by: :scheduled, created_at: Time.utc(2026, 12, 1, 12))
+    assert_not source.due?(Time.utc(2026, 12, 2, 5, 59))
+    assert source.due?(Time.utc(2026, 12, 2, 6, 1)), "GMT in winter"
   end
 
   test "row_id_note comes from the curated details file" do

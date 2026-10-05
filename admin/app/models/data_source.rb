@@ -15,9 +15,10 @@ class DataSource < ApplicationRecord
   scope :enabled, -> { where(enabled: true) }
 
   # Sources live on prod-2/dev-2 at transition time (see TRANSITION.md); they
-  # keep the legacy 10-minute schedule when first seeded.
+  # are enabled on the default schedule when first seeded.
   LEGACY_LIVE = %w[ ica newbridge mersey-green deep-adaptation dotcoop workers-coop ].freeze
-  LEGACY_SCHEDULE = "*/10 * * * *".freeze
+  # Daily at 06:00 UK time (the server runs on UTC).
+  DEFAULT_SCHEDULE = "0 6 * * * Europe/London".freeze
 
   # Curated origin/processing summaries, applied by sync_from_repo!.
   DETAILS_FILE = "db/data_source_details.yml".freeze
@@ -38,7 +39,7 @@ class DataSource < ApplicationRecord
           name: dir.tr("-", " ").split.map(&:capitalize).join(" "),
           kind: (OpenData.root + dir + "downloader").file? ? :auto : :manual,
           enabled: LEGACY_LIVE.include?(dir),
-          schedule: LEGACY_LIVE.include?(dir) ? LEGACY_SCHEDULE : nil
+          schedule: LEGACY_LIVE.include?(dir) ? DEFAULT_SCHEDULE : nil
         )
       end
       info = details[dir] || {}

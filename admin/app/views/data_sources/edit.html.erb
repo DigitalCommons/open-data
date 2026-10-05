@@ -35,7 +35,7 @@
 
     <div class="field">
       <%= form.label :schedule, "Schedule (cron expression)" %>
-      <%= form.text_field :schedule, placeholder: "*/10 * * * *", class: "input mono-in" %>
+      <%= form.text_field :schedule, placeholder: DataSource::DEFAULT_SCHEDULE, class: "input mono-in" %>
       <p class="help">e.g. <span class="mono">*/10 * * * *</span> every 10 minutes, <span class="mono">0 4 * * *</span> daily at 04:00.</p>
     </div>
 
