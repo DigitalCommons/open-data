@@ -118,6 +118,8 @@ class DataSourceRunner
     # Without SEOD_CONFIG seod falls back to local.conf/default.conf, the dev
     # config (dev endpoints, IP-locked download URLs). Prefer production.conf
     # where the source has one; an explicit SEOD_CONFIG env var still wins.
+    # Secrets saved on the Settings page win over the environment.
+    env.merge!(Secret.env)
     if env["SEOD_CONFIG"].blank? && (source.source_dir + "production.conf").file?
       env["SEOD_CONFIG"] = "production.conf"
     end

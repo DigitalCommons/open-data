@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   resource :session
   resource :password, only: %i[ edit update ]
+  resource :secrets, only: :update
 
   resources :data_sources, only: %i[ index show edit update ] do
     member do

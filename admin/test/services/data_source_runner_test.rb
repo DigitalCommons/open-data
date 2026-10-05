@@ -174,4 +174,13 @@ class DataSourceRunnerTest < ActiveSupport::TestCase
     assert run.failed?
     assert_match(/Uploaded file missing/, run.log)
   end
+
+  test "saved secrets reach the converters, over the environment" do
+    Secret.create!(key: "geoapify", value: "saved-geo")
+    ENV["PASSWORD__GEOAPIFYAPI_TXT"] = "env-geo"
+    env = DataSourceRunner.new(new_run).send(:subprocess_env)
+    assert_equal "saved-geo", env["PASSWORD__GEOAPIFYAPI_TXT"]
+  ensure
+    ENV.delete("PASSWORD__GEOAPIFYAPI_TXT")
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_140000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -91,6 +91,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_130000) do
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_projects_on_key", unique: true
+  end
+
+  create_table "secrets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "from_env", default: false, null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.text "value", null: false
+    t.index ["key"], name: "index_secrets_on_key", unique: true
   end
 
   create_table "sessions", force: :cascade do |t|

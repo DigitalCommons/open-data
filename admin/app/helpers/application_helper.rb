@@ -54,6 +54,13 @@ module ApplicationHelper
     end
   end
 
+  # Escapes text and links any http(s) URLs in it.
+  def link_urls(text)
+    safe_join(text.to_s.split(%r{(https?://[^\s)]+)}).map.with_index do |part, index|
+      index.odd? ? link_to(part, part, class: "link", target: "_blank", rel: "noopener") : part
+    end)
+  end
+
   def format_duration(seconds)
     return "-" if seconds.nil?
     seconds < 60 ? "#{seconds.round(1)}s" : "#{(seconds / 60).floor}m #{(seconds % 60).round}s"

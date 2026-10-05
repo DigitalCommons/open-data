@@ -9,3 +9,6 @@ DataSource.sync_from_repo!
 
 # Group the sources into projects.
 Project.sync_from_file!
+
+# Save secrets found in the environment where none is saved yet.
+Secret.seed_from_env!

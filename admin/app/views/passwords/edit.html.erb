@@ -8,6 +8,36 @@
   <div class="flash warn" role="status">You are using the default password. Choose a new one to continue.</div>
 <% end %>
 
+<section class="card" aria-labelledby="secrets_heading">
+  <div class="band">
+    <h2 id="secrets_heading">Secrets</h2>
+    <p>Keys and passwords the data sources need to download and geocode. Saved values are encrypted and override the app's environment variables.</p>
+  </div>
+  <%= form_with url: secrets_path, method: :patch, class: "form-stack" do |form| %>
+    <% Secret.definitions.each do |definition| %>
+      <div class="field secret">
+        <label for="secrets_<%= definition.key %>_value"><%= definition.name %></label>
+        <p class="help"><%= definition.description %></p>
+        <input type="password" class="input" id="secrets_<%= definition.key %>_value"
+               name="secrets[<%= definition.key %>][value]" autocomplete="new-password" spellcheck="false">
+        <% status = Secret.status(definition.key) %>
+        <p class="help secret-status"><%= status %><% if status != "Not set" %>. Leave blank to keep the current value.<% end %></p>
+        <dl class="secret-facts">
+          <div><dt>Where to get it</dt><dd><%= link_urls(definition.where) %></dd></div>
+          <div><dt>Used by</dt><dd class="mono"><%= definition.used_by.join(", ").presence || "-" %></dd></div>
+        </dl>
+        <label class="check" for="secrets_<%= definition.key %>_remove">
+          <input type="checkbox" id="secrets_<%= definition.key %>_remove" name="secrets[<%= definition.key %>][remove]" value="1">
+          Remove
+        </label>
+      </div>
+    <% end %>
+    <div class="form-foot end">
+      <%= form.submit "Save secrets", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</section>
+
 <section class="card" aria-labelledby="password_heading">
   <div class="band">
     <h2 id="password_heading">Change password</h2>

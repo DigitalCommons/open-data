@@ -266,3 +266,10 @@ textarea.input { min-height: 120px; resize: vertical; font-family: var(--font-se
 .diff-cell details summary { cursor: pointer; color: var(--link); font-size: var(--t-xs); font-weight: 600; }
 .diff-cell details pre.log { margin-top: var(--s2); max-height: 16rem; }
 .input:disabled { opacity: .7; cursor: not-allowed; }
+.field.secret { padding-bottom: var(--s4); border-bottom: 1px solid var(--line); }
+.secret-status { font-weight: 600; color: var(--fg); }
+.secret-facts { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s2) var(--s4); font-size: var(--t-xs); }
+.secret-facts dt { text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.secret-facts dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .secret-facts { grid-template-columns: minmax(0, 1fr); } }
+.form-foot.end { justify-content: flex-end; }
