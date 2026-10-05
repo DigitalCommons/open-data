@@ -52,5 +52,10 @@
         <small><%= safe_join(failing.map { |source| link_to(source.name, source, class: "link") }, ", ") %></small>
       <% end %>
     </div>
+    <% usage = DiskUsage.latest %>
+    <div class="stat" title="<%= "Downloads and builds, measured #{time_ago_in_words(usage.measured_at)} ago" if usage %>">
+      <dt>Disk space used</dt>
+      <dd><%= usage ? format("%.1f GB", usage.total_bytes / 1e9) : "-" %></dd>
+    </div>
   </dl>
 </section>

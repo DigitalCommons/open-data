@@ -119,14 +119,14 @@ td.mono { white-space: nowrap; }
 .link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* Summary figures */
-.summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); margin: 0; }
+/* Up to five figures per row (the dashboard's five, a build's four), two on phones */
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s3); margin: 0; }
 .stat { background: var(--surface); border-radius: var(--radius); box-shadow: var(--card-edge); padding: var(--s4); display: flex; flex-direction: column; gap: var(--s1); }
 .stat dt { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
 .stat dd { margin: 0; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .stat dd.bad { color: var(--bad); }
 .stat small { color: var(--muted); font-size: var(--t-xs); }
 .summary-section { display: flex; flex-direction: column; gap: var(--s3); margin-top: var(--s3); }
-@media (max-width: 640px) { .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Cards and project bands */
 .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--card-edge); min-width: 0; }

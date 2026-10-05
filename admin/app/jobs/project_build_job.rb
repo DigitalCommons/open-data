@@ -6,5 +6,6 @@ class ProjectBuildJob < ApplicationJob
 
   def perform(build)
     ProjectBuilder.new(build).call
+    DiskUsageJob.perform_later
   end
 end

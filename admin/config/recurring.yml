@@ -3,5 +3,9 @@ production: &default
     class: ScheduleDispatchJob
     queue: default
     schedule: every minute
+  disk_usage:
+    class: DiskUsageJob
+    queue: default
+    schedule: every hour
 
 development: *default

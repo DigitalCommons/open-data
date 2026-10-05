@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_130000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -22,6 +22,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
     t.string "schedule"
     t.datetime "updated_at", null: false
     t.index ["directory"], name: "index_data_sources_on_directory", unique: true
+  end
+
+  create_table "disk_usages", force: :cascade do |t|
+    t.bigint "builds_bytes", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.bigint "downloads_bytes", default: 0, null: false
+    t.datetime "measured_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "download_runs", force: :cascade do |t|

@@ -277,4 +277,17 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     get data_source_path(data_sources(:beta))
     assert_select "#downloads td", "No downloads yet."
   end
+
+  test "summary shows disk space used by downloads and builds in GB" do
+    DiskUsage.create!(downloads_bytes: 1_300_000_000, builds_bytes: 200_000_000, measured_at: Time.current)
+    get data_sources_path
+    assert_select ".stat dt", "Disk space used"
+    assert_select ".stat dd", "1.5 GB"
+    assert_select ".summary .stat", 5
+  end
+
+  test "summary shows a dash before disk space is first measured" do
+    get data_sources_path
+    assert_select ".stat dd", "-"
+  end
 end
