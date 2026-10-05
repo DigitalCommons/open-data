@@ -1,0 +1,21 @@
+{
+  "id": "cuk/R006793",
+  "name": "Bristol Wood Recycling Project",
+  "description": "Reclaimed timber yard, furniture maker and wood waste collection service.",
+  "website": [
+    "http://www.bwrp.org.uk"
+  ],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA230",
+  "organisational_structure": "OS50",
+  "typology": "BMT30",
+  "address": "Unit 4 William Street\nSt. Philips, Bristol, Bristol, City of, BS2 0RG, England",
+  "data_sources": [
+    "CUK",
+    "WC"
+  ],
+  "lat": 51.45449,
+  "lng": -2.57421,
+  "region": "Bristol, City of"
+}

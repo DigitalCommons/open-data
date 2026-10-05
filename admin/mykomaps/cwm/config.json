@@ -1,0 +1,71 @@
+{
+  "ui": {
+    "title": "Cooperative World Map",
+    "show_map_key": true,
+    "customMarkers": {
+      "marker_property_name": "data_sources",
+      "markerIcons": [
+        "dataset:assets/markers/dotcoop.png",
+        "default"
+      ],
+      "termsToIconIndex": {
+        "DC": 0,
+        "default": 1
+      }
+    },
+    "logo": {
+      "largeLogo": "dataset:assets/logos/cwm-logo.png",
+      "smallLogo": "dataset:assets/logos/cwm-logo-small.png",
+      "altText": "Cooperative World Map"
+    }
+  },
+  "submaps": {
+    "co-minnesota": {
+      "lockedFilter": [
+        "country_id:us",
+        "region:MN"
+      ],
+      "mapBounds": [
+        [
+          -97.5,
+          43.2
+        ],
+        [
+          -89.0,
+          49.5
+        ]
+      ],
+      "aboutPrefix": "dataset:assets/co-minnesota-about.md",
+      "title": "Co-Minnesota"
+    }
+  },
+  "itemProps": {
+    "dc_domains": {
+      "from": "dc.Domains"
+    },
+    "region": {
+      "type": "value",
+      "filter": true,
+      "from": "Region"
+    }
+  },
+  "vocabs": {
+    "ui": {
+      "es": {
+        "terms": {
+          "about_content": "¡Bienvenidos al Cooperative World Map!\n\nEl Cooperative World Map (CWM) es un mapa digital interactivo y actualizado que aspira a reunir y dar a conocer todas las entidades cooperativas del mundo, y constituye la parte visible del [Proyecto de Datos Mundiales sobre Cooperativas](https://worldmap.coop/) El Cooperative World Map es una representación visual de todas las empresas cooperativas del mundo que han compartido voluntariamente sus datos para formar parte de esta plataforma digital accesible y abierta.\n\nTras un año de expansión en 2025, el Año Internacional de las Cooperativas, nuestro objetivo es ir aún más allá en 2026. Este año exploramos nuevas formas de ampliar los datos para incluir nuevas cooperativas en nuevas regiones, al tiempo que mejoramos el aspecto visual y la funcionalidad del mapa.\n\nEste [Mykomap](https://digitalcommons.coop/mykomaps/) ha sido creado por la [Digital Commons Co-operative](https://digitalcommons.coop/) utilizando datos publicados por [DotCooperation](https://identity. coop/) y muchos [socios cooperativos internacionales](https://worldmap.coop/our-data-partners/) de todo el mundo bajo la licencia Open Data Commons Attribution ([ODC-By v1.0](https://opendatacommons.org/licenses/by/1-0/). Al acceder al conjunto de datos, usted acepta esta licencia.\n\nPara ver la página de inicio de este proyecto, visite [worldmap.coop](https://worldmap.coop/)\n"
+        }
+      },
+      "fr": {
+        "terms": {
+          "about_content": "Bienvenue sur la Carte mondiale des coopératives !\n\nLa Carte mondiale des coopératives (CWM) est une carte numérique interactive et mise à jour régulièrement qui vise à rassembler et à mettre en valeur toutes les entités coopératives du monde entier ; elle constitue la vitrine du [Projet de données mondiales sur les coopératives](https://worldmap.coop/) La CWM est une représentation visuelle de toutes les entreprises coopératives du monde qui ont volontairement partagé leurs données pour faire partie de cette plateforme numérique accessible et ouverte.\n\nAprès une année d'expansion en 2025, Année internationale des coopératives, nous visons encore plus haut en 2026. Cette année, nous explorons de nouvelles façons d'enrichir les données afin d'inclure de nouvelles coopératives dans de nouvelles régions, tout en améliorant l'aspect visuel et les fonctionnalités de la carte.\n\nCette [Mykomap](https://digitalcommons.coop/mykomaps/) a été créée par la [Digital Commons Co-operative](https://digitalcommons.coop/) à partir de données publiées par [DotCooperation](https://identity. coop/) et de nombreux [partenaires coopératifs internationaux](https://worldmap.coop/our-data-partners/) à travers le monde sous la licence Open Data Commons Attribution ([ODC-By v1.0](https://opendatacommons.org/licenses/by/1-0/).) En accédant à l'ensemble de données, vous acceptez cette licence.\n\nPour consulter la page d'accueil du site web de ce projet, rendez-vous sur [worldmap.coop](https://worldmap.coop/)\n"
+        }
+      },
+      "hi": {
+        "terms": {
+          "about_content": "सहकारी विश्व मानचित्र में आपका स्वागत है!\n\nसहकारी विश्व मानचित्र (CWM) एक इंटरैक्टिव और अद्यतित डिजिटल मानचित्र है जो दुनिया भर की सभी सहकारी संस्थाओं को एकजुट करने और प्रदर्शित करने का प्रयास करता है, और यह [सहकारी विश्व डेटा परियोजना](https://worldmap.coop/) का एक अग्रगामी हिस्सा है। सीडब्ल्यूएम दुनिया के उन सभी सहकारी उद्यमों का एक दृश्य प्रतिनिधित्व है, जिन्होंने इस सुलभ और खुले डिजिटल प्लेटफ़ॉर्म का हिस्सा बनने के लिए स्वेच्छा से अपना डेटा साझा किया है।\n\n2025 में, सहकारीों के अंतर्राष्ट्रीय वर्ष में, एक साल के विस्तार के बाद, हम 2026 में और भी अधिक हासिल करने का लक्ष्य रख रहे हैं। इस साल हम नए क्षेत्रों में नए सहकारीों को शामिल करने के लिए डेटा को बढ़ाने के और तरीके खोज रहे हैं, साथ ही नक्शे की दृश्य उपस्थिति और कार्यक्षमता को भी बढ़ा रहे हैं।\n\nयह [मायकोमॅप](https://digitalcommons.coop/mykomaps/) [डिजिटल कॉमन्स को-ऑपरेटिव](https://digitalcommons.coop/) द्वारा [डॉटकोऑपरेशन](https://identity) द्वारा प्रकाशित डेटा का उपयोग करके बनाया गया है।  coop/) और दुनिया भर के कई [अंतर्राष्ट्रीय सहकारी भागीदारों](https://worldmap.coop/our-data-partners/) द्वारा ओपन डेटा कॉमन्स एट्रिब्यूशन लाइसेंस ([ODC-By v1.0](https://opendatacommons.org/licenses/by/1-0/)) के तहत बनाया गया है। डेटासेट तक पहुँचकर आप इस लाइसेंस को स्वीकार करने के लिए सहमत हो रहे हैं।\n\nइस परियोजना का वेबसाइट होम पेज देखने के लिए, कृपया [worldmap.coop](https://worldmap.coop/) पर जाएँ।\n"
+        }
+      }
+    }
+  }
+}

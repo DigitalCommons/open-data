@@ -1,0 +1,24 @@
+{
+  "id": "dc/1KR9eq",
+  "name": "Bluff Country Co-op",
+  "description": "",
+  "website": [
+    "http://www.bluff.coop"
+  ],
+  "dc_domains": [
+    "bluff.coop"
+  ],
+  "country_id": "us",
+  "primary_activity": "ICA240",
+  "organisational_structure": null,
+  "typology": null,
+  "address": "121 West Second Street, Winona, United States",
+  "data_sources": [
+    "DC",
+    "NCBA",
+    "NCG"
+  ],
+  "lat": 44.05364,
+  "lng": -91.63839,
+  "region": "MN"
+}

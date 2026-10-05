@@ -1,0 +1,21 @@
+{
+  "id": "cuk/R009442",
+  "name": "Westmorland Country Markets",
+  "description": "Local markets",
+  "website": [
+    "http://www.country-markets.co.uk"
+  ],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA260",
+  "organisational_structure": "OS130",
+  "typology": "BMT30",
+  "address": "Country Markets Limited\nDunston House\nDunston Road\nSheepbridge, Chesterfield, Derbyshire, S41 9QD, England",
+  "data_sources": [
+    "CUK",
+    "WC"
+  ],
+  "lat": 54.32898,
+  "lng": -2.74718,
+  "region": "Derbyshire"
+}

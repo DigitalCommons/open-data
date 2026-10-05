@@ -1,0 +1,18 @@
+{
+  "id": "ycc/3597",
+  "name": "Ilocano Farmers Multipurpose Cooperative",
+  "description": "",
+  "website": [],
+  "dc_domains": [],
+  "country_id": "ph",
+  "primary_activity": null,
+  "organisational_structure": null,
+  "typology": null,
+  "address": "City of Candon Langlangca Primero, Ilocos Sur, Republic of the Philippines",
+  "data_sources": [
+    "YCC"
+  ],
+  "lat": 14.62245,
+  "lng": 121.1253,
+  "region": "Ilocos Sur"
+}

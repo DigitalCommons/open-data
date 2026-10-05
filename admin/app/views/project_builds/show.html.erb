@@ -22,6 +22,9 @@
     <% if @build.diff_path %>
       <%= link_to "Download diff", diff_project_build_path(@build), class: "btn btn-outline" %>
     <% end %>
+    <% if @build.csv_path %>
+      <%= link_to "Open in dataset builder", "/data-builder/?build=#{@build.id}", class: "btn btn-outline" %>
+    <% end %>
   </div>
 </div>
 

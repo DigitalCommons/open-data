@@ -162,4 +162,48 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   ensure
     FileUtils.remove_entry(dir) if dir
   end
+
+  test "projects with a map config offer a MykoMaps dataset build" do
+    get project_path(projects(:cwm))
+    assert_select "h2", "MykoMaps dataset"
+    assert_select "p", "Built from the latest unified CSV with this project's map config in admin/mykomaps/cwm/."
+    assert_select "td", "No datasets built yet."
+
+    get project_path(projects(:mersey_green))
+    assert_select "h2", text: "MykoMaps dataset", count: 0
+  end
+
+  test "build_dataset needs a unified CSV first, then queues a dataset build" do
+    post build_dataset_project_path(projects(:cwm))
+    follow_redirect!
+    assert_select "div", "Build the unified CSV first."
+
+    dir = Dir.mktmpdir
+    File.write(File.join(dir, "unified.csv"), "Identifier\n1\n")
+    projects(:cwm).project_builds.create!(status: :succeeded, started_at: Time.current, archive_path: dir)
+    assert_enqueued_with(job: ProjectDatasetJob) { post build_dataset_project_path(projects(:cwm)) }
+    follow_redirect!
+    assert_select "div", "Dataset build queued."
+  ensure
+    FileUtils.remove_entry(dir) if dir
+  end
+
+  test "build_dataset is not found for projects without a map config" do
+    post build_dataset_project_path(projects(:mersey_green))
+    assert_response :not_found
+  end
+
+  test "dataset zips download with dated names" do
+    dir = Dir.mktmpdir
+    File.write(File.join(dir, "dataset.zip"), "zip")
+    unified = projects(:cwm).project_builds.create!(status: :succeeded)
+    dataset = projects(:cwm).project_datasets.create!(project_build: unified, status: :succeeded,
+      started_at: Time.utc(2026, 10, 5, 8, 0, 1), archive_path: dir, item_count: 1)
+    get project_path(projects(:cwm))
+    assert_select "a[href=?]", download_project_dataset_path(dataset), "Download dataset"
+    get download_project_dataset_path(dataset)
+    assert_match(/filename="20261005-080001-cwm-dataset\.zip"/, response.headers["Content-Disposition"])
+  ensure
+    FileUtils.remove_entry(dir) if dir
+  end
 end

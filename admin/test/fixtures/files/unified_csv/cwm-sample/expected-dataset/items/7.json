@@ -1,0 +1,21 @@
+{
+  "id": "cuk/R009306",
+  "name": "City Cabs Edinburgh",
+  "description": "City Cabs are Edinburgh’s largest and longest serving taxi association and boast a fleet of over 450 vehicles. Since 1925 City Cabs have been offering a quality service that is backed up by the best technology on the market.\r\n\r\nA lot of people don’t know that City Cabs is a co-operative, owned and operated by its members, this in turn means that our members and drivers are committed to the long term success of City Cabs and to the standard of service we offer.\r\n\r\nAs Edinburgh’s Favourite Taxi Company we pride ourselves on treating our customers as individuals, and provide a range of services to suit all needs.\r\n\r\n•    Local or long distance travel.\r\n•    Edinburgh Airport transfers, including Meet & Greet services.\r\n•    Corporate accounts.\r\n•    Group bookings.\r\n•    Wedding taxis.\r\n•    Online web booking\r\n•    iPhone and Android booking app.",
+  "website": [
+    "http://www.citycabs.co.uk"
+  ],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA220",
+  "organisational_structure": "OS50",
+  "typology": "BMT30",
+  "address": "2 Atholl Place, Edinburgh, City of Edinburgh, EH3 8HP, Scotland",
+  "data_sources": [
+    "CUK",
+    "WC"
+  ],
+  "lat": 55.94752,
+  "lng": -3.21442,
+  "region": "City of Edinburgh"
+}

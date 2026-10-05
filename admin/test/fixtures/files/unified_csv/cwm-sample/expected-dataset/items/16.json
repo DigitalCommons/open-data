@@ -1,0 +1,18 @@
+{
+  "id": "cuk/R006143",
+  "name": "Thornton Conservative Club",
+  "description": "Social club",
+  "website": [],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA280",
+  "organisational_structure": "OS130",
+  "typology": "BMT10",
+  "address": "385 Thornton Road\r\nThornton, Bradford, Bradford, BD13 3JX, England",
+  "data_sources": [
+    "CUK"
+  ],
+  "lat": 53.79047,
+  "lng": -1.85223,
+  "region": "Bradford"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "dc/jl23YW",
+  "name": "Williamson Street Grocery Cooperative",
+  "description": "",
+  "website": [
+    "http://willystreet.coop"
+  ],
+  "dc_domains": [
+    "willystreet.coop"
+  ],
+  "country_id": "us",
+  "primary_activity": "ICA240",
+  "organisational_structure": null,
+  "typology": null,
+  "address": "1457 E. Washington Ave., Madison, Wisconsin, United States",
+  "data_sources": [
+    "DC",
+    "NCBA",
+    "NCG"
+  ],
+  "lat": 43.08941,
+  "lng": -89.36296,
+  "region": "WI"
+}

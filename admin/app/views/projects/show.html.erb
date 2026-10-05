@@ -96,3 +96,53 @@
     </div>
   </section>
 <% end %>
+
+<% if @map_config %>
+  <section class="card" aria-labelledby="dataset_heading">
+    <div class="card-head">
+      <div>
+        <h2 id="dataset_heading">MykoMaps dataset</h2>
+        <p class="note">Built from the latest unified CSV with this project's map config in admin/mykomaps/<%= @project.key %>/.</p>
+      </div>
+      <div class="actions">
+        <% if (latest_dataset = @datasets.find(&:zip_path)) %>
+          <%= link_to "Download dataset", download_project_dataset_path(latest_dataset), class: "btn btn-outline" %>
+        <% end %>
+        <%= button_to "Build dataset", build_dataset_project_path(@project), method: :post, class: "btn btn-primary" %>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="data" style="min-width: 620px">
+        <thead>
+          <tr>
+            <th>Started</th>
+            <th>Status</th>
+            <th class="num">Rows</th>
+            <th>Log</th>
+            <th class="right"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @datasets.each do |dataset| %>
+            <tr>
+              <td title="<%= dataset.started_at&.to_fs(:long) %>">
+                <%= dataset.started_at ? "#{time_ago_in_words(dataset.started_at)} ago" : "queued" %>
+              </td>
+              <td><%= status_badge(dataset) %></td>
+              <td class="num"><%= dataset.item_count&.to_fs(:delimited) || "-" %></td>
+              <td class="note"><%= dataset.log.to_s.lines.last&.strip.presence || "-" %></td>
+              <td class="right">
+                <% if dataset.zip_path %>
+                  <%= link_to "Download dataset", download_project_dataset_path(dataset), class: "link" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @datasets.empty? %>
+            <tr><td colspan="5" class="empty">No datasets built yet.</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+<% end %>

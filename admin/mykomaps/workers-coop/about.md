@@ -1,0 +1,3 @@
+This [Mykomap](https://digitalcommons.coop/mykomaps/) has been created by the [Digital Commons Co-operative](https://digitalcommons.coop/) using data published by [Co-ops UK](https://www.uk.coop/) under the Open Data Commons Attribution Licence ([ODC-By v1.0](https://opendatacommons.org/licenses/by/1-0/)) and further developed by [workers.coop](https://www.workers.coop) Limited. By accessing the dataset you are agreeing to accept this licence.
+
+The original data can be found at [https://www.uk.coop/resources/open-data](https://www.uk.coop/resources/open-data). The licence can be viewed at [https://opendatacommons.org/licenses/by/1-0/](https://opendatacommons.org/licenses/by/1-0/).
