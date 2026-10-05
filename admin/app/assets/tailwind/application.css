@@ -273,3 +273,5 @@ textarea.input { min-height: 120px; resize: vertical; font-family: var(--font-se
 .secret-facts dd { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 560px) { .secret-facts { grid-template-columns: minmax(0, 1fr); } }
 .form-foot.end { justify-content: flex-end; }
+.brand { display: inline-flex; align-items: baseline; gap: var(--s2); }
+.app-version { font-family: var(--font-mono); font-size: var(--t-xs); color: var(--bar-muted); }

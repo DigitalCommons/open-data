@@ -18,4 +18,17 @@ class LayoutTest < ActionDispatch::IntegrationTest
     get project_path(projects(:cwm))
     assert_select "nav a[aria-current=page]", "Projects & Data Sources"
   end
+
+  test "header shows the deployed version from CloudronManifest.json after the name" do
+    version = JSON.parse(File.read(Rails.root.join("../CloudronManifest.json"))).fetch("version")
+    assert_equal version, ApplicationHelper::APP_VERSION
+    get root_path
+    assert_select ".bar-left .app-version", "v#{version}"
+  end
+
+  test "the sign-in page does not show the version" do
+    sign_out
+    get new_session_path
+    assert_select ".app-version", count: 0
+  end
 end

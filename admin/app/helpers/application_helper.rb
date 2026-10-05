@@ -1,6 +1,14 @@
 module ApplicationHelper
   APP_NAME = "MykoMaps OpenData".freeze
 
+  # The release being run: CloudronManifest.json's version, which the
+  # Docker image carries at /app/code. nil if the file cannot be read.
+  APP_VERSION = begin
+    JSON.parse(File.read(Rails.root.join("../CloudronManifest.json"))).fetch("version")
+  rescue StandardError
+    nil
+  end
+
   STATUS_STYLES = {
     "queued" => "run",
     "running" => "run",

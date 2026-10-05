@@ -27,7 +27,12 @@
       <header class="bar">
         <div class="bar-in">
           <div class="bar-left">
-            <%= link_to ApplicationHelper::APP_NAME, root_path, class: "wordmark" %>
+            <span class="brand">
+              <%= link_to ApplicationHelper::APP_NAME, root_path, class: "wordmark" %>
+              <% if ApplicationHelper::APP_VERSION %>
+                <span class="app-version">v<%= ApplicationHelper::APP_VERSION %></span>
+              <% end %>
+            </span>
             <nav aria-label="Main">
               <%= link_to "Projects & Data Sources", root_path, "aria-current": (controller_name == "passwords" ? nil : "page") %>
               <%= link_to "Settings", edit_password_path, "aria-current": (controller_name == "passwords" ? "page" : nil) %>
