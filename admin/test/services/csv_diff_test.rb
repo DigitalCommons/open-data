@@ -54,4 +54,15 @@ class CsvDiffTest < ActiveSupport::TestCase
       assert_operator result.detail.lines.size, :<=, CsvDiff::MAX_DETAIL_LINES + 1
     end
   end
+
+  test "ignores the Created At and Updated At columns" do
+    Dir.mktmpdir do |dir|
+      old_csv = File.join(dir, "old.csv")
+      new_csv = File.join(dir, "new.csv")
+      File.write(old_csv, "Identifier,Name\n1,One\n")
+      File.write(new_csv, "Identifier,Name,Created At,Updated At\n1,One,2026-10-01T00:00:00Z,2026-10-01T00:00:00Z\n")
+      result = CsvDiff.call(old_csv, new_csv)
+      assert_equal [ 0, 0, 0 ], [ result.added, result.removed, result.changed ]
+    end
+  end
 end

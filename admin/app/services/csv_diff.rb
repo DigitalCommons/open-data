@@ -1,7 +1,8 @@
 require "csv"
 
 # Compares two standard.csv files keyed on the Identifier column and reports
-# added, removed and changed rows.
+# added, removed and changed rows. The Created At and Updated At columns
+# (see RowStamps) are ignored.
 class CsvDiff
   KEY = "Identifier".freeze
   MAX_DETAIL_LINES = 500
@@ -44,7 +45,7 @@ class CsvDiff
     rows = {}
     CSV.foreach(path, headers: true) do |row|
       key = row[KEY] || row.fields.first
-      rows[key] = row.to_h
+      rows[key] = RowStamps.strip(row.to_h)
     end
     rows
   end

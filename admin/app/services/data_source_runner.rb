@@ -1,8 +1,8 @@
 require "open3"
 
 # Executes one DownloadRun: fetches (or installs the uploaded file), converts
-# with seod, archives the results into a dated folder and records a diff
-# against the previous download.
+# with seod, dates each row (RowStamps), archives the results into a dated
+# folder and records a diff against the previous download.
 class DataSourceRunner
   NO_CHANGES_EXIT = 100
 
@@ -44,6 +44,7 @@ class DataSourceRunner
       return finish(:failed, "Conversion produced no #{standard_csv}\n")
     end
 
+    stamp_rows(standard_csv, previous_csv)
     run.update!(archive_path: RunArchiver.new(run).call.to_s)
     diff = record_diff(previous_csv)
 
@@ -133,6 +134,13 @@ class DataSourceRunner
       return match if match
     end
     "original.csv"
+  end
+
+  # Created At / Updated At per row, carried over from the previous download.
+  def stamp_rows(standard_csv, previous_csv)
+    result = RowStamps.apply(standard_csv.to_s, previous_path: previous_csv, at: run.started_at)
+    run.append_log("Row dates: #{result[:added]} new, #{result[:changed]} changed, #{result[:unchanged]} unchanged" \
+      "#{", #{result[:untracked]} without a unique Identifier" if result[:untracked].positive?}.\n")
   end
 
   def record_diff(previous_csv)

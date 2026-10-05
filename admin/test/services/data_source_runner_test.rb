@@ -1,4 +1,5 @@
 require "test_helper"
+require "csv"
 
 class DataSourceRunnerTest < ActiveSupport::TestCase
   include OpenDataTestHelper
@@ -50,6 +51,34 @@ class DataSourceRunnerTest < ActiveSupport::TestCase
     assert_equal 0, run.rows_removed
     assert_equal 1, run.rows_changed
     assert_match(/~ 2: Name/, File.read(run.diff_path))
+  end
+
+  test "stamps converted rows with the run's start time" do
+    run = DataSourceRunner.new(new_run).call
+    rows = CSV.read(run.standard_csv_path, headers: true)
+    assert_equal [ "Identifier", "Name", "Website", "Created At", "Updated At" ], rows.headers
+    assert_equal [ run.started_at.utc.iso8601 ] * 2, rows.first.fields.last(2)
+    assert_match(/Row dates: 2 new, 0 changed, 0 unchanged/, run.log)
+  end
+
+  test "later runs keep Created At and date only new and changed rows" do
+    first = DataSourceRunner.new(new_run).call
+    first_at = first.started_at.utc.iso8601
+    travel 1.hour
+
+    File.write(OpenData.root + "alpha/next-download.csv", <<~CSV)
+      Identifier,Name,Website
+      1,One,https://one.example.com
+      2,Two renamed,https://two.example.com
+      3,Three,https://three.example.com
+    CSV
+    run = DataSourceRunner.new(new_run).call
+    at = run.started_at.utc.iso8601
+    stamps = CSV.read(run.standard_csv_path, headers: true).to_h { |row| [ row["Identifier"], row.fields.last(2) ] }
+
+    assert_equal [ first_at, first_at ], stamps["1"]
+    assert_equal [ first_at, at ], stamps["2"]
+    assert_equal [ at, at ], stamps["3"]
   end
 
   test "identical re-download records no_changes and discards the archive" do

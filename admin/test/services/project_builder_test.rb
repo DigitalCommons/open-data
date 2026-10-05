@@ -110,4 +110,31 @@ class ProjectBuilderTest < ActiveSupport::TestCase
     assert_match(/1 added, 1 removed, 1 changed/, second.diff_summary)
     assert File.file?(second.diff_path)
   end
+
+  test "the first build dates merged rows from their sources' row dates" do
+    archive_standard_csv(data_sources(:alpha), "Identifier,Name,Website,Created At,Updated At\n1,One,https://one.coop,2026-08-01T00:00:00Z,2026-09-01T00:00:00Z\n")
+    archive_standard_csv(data_sources(:beta), "Identifier,Name,Website,Created At,Updated At\n9,Uno,https://www.one.coop,2026-07-01T00:00:00Z,2026-07-02T00:00:00Z\n")
+
+    build = build!
+    row = CSV.read(build.csv_path, headers: true).first
+    assert_equal [ "al/1", "2026-07-01T00:00:00Z", "2026-09-01T00:00:00Z" ], row.values_at("Identifier", "Created At", "Updated At")
+  end
+
+  test "later builds keep dates for unchanged rows and carry them over when the merged Identifier changes" do
+    archive_standard_csv(data_sources(:alpha), "Identifier,Name,Website\n5,Five,https://five.coop\n")
+    archive_standard_csv(data_sources(:beta), "Identifier,Name,Website\n9,Nine,https://nine.coop\n")
+    first = build!
+    first_dates = CSV.read(first.csv_path, headers: true).to_h { |r| [ r["Identifier"], r["Created At"] ] }
+
+    travel 1.day
+    archive_standard_csv(data_sources(:alpha), "Identifier,Name,Website\n1,One,https://nine.coop\n5,Five,https://five.coop\n")
+    @build = projects(:cwm).project_builds.create!(status: :queued)
+    second = build!
+    rows = CSV.read(second.csv_path, headers: true).to_h { |r| [ r["Identifier"], r.to_h ] }
+
+    assert_equal first_dates["al/5"], rows["al/5"]["Created At"], "unchanged row keeps its date"
+    assert_equal "al/1", rows.keys.min, "be/9 merged into al/1"
+    assert_equal first_dates["be/9"], rows["al/1"]["Created At"], "merged row keeps its member's Created At"
+    assert_equal second.started_at.utc.iso8601, rows["al/1"]["Updated At"]
+  end
 end

@@ -8,7 +8,8 @@ require "csv"
 #     meta.json     project and the download run behind each input
 #     cleaned/      <code>.cleaned.csv per table and clean-csv-data.tsv,
 #                   the cleaner's log in data-pipelines' format
-#     unified.csv   the cleaned sources merged by UnifiedCsv::Unifier
+#     unified.csv   the cleaned sources merged by UnifiedCsv::Unifier, with
+#                   Created At / Updated At per row (RowStamps)
 #     diff.txt      changes since the previous successful build
 class ProjectBuilder
   attr_reader :build, :project, :settings
@@ -34,6 +35,7 @@ class ProjectBuilder
     cleaned = clean(inputs, dir + "cleaned")
     previous_csv = previous_build&.csv_path
     stats = UnifiedCsv::Unifier.new(settings, cleaned.to_h).unify(dir + "unified.csv")
+    stamp_rows(dir + "unified.csv", previous_csv, cleaned)
     record_diff(previous_csv, dir)
     File.write(dir + "meta.json", JSON.pretty_generate(meta(inputs)))
     build.row_count = stats[:rows]
@@ -82,6 +84,29 @@ class ProjectBuilder
 
   def previous_build
     project.project_builds.succeeded.where.not(id: build.id).order(created_at: :desc).first
+  end
+
+  # A merged row lists its source records as "code=Identifier;..."
+  MEMBERS = ->(row) { row["Identifiers"].to_s.split(";").map { |pair| pair.sub("=", "/") } }
+
+  # Created At / Updated At per merged row: carried over from the previous
+  # build (through member records when the merged Identifier changed), or,
+  # where the previous build has no dates, taken from the member source
+  # rows' own dates.
+  def stamp_rows(path, previous_csv, cleaned)
+    result = RowStamps.apply(path.to_s, previous_path: previous_csv, at: build.started_at,
+      members: MEMBERS, seed: source_row_dates(cleaned))
+    build.append_log("Row dates: #{result[:added]} new, #{result[:changed]} changed, #{result[:unchanged]} unchanged.\n")
+  end
+
+  # "code/Identifier" => [Created At, Updated At] from the cleaned sources.
+  def source_row_dates(cleaned)
+    cleaned.each_with_object({}) do |(code, path), dates|
+      CSV.foreach(path, headers: true, encoding: "UTF-8") do |row|
+        next if row["Identifier"].blank? || row[RowStamps::CREATED].blank?
+        dates["#{code}/#{row['Identifier']}"] = [ row[RowStamps::CREATED], row[RowStamps::UPDATED] ]
+      end
+    end
   end
 
   def record_diff(previous_csv, dir)
