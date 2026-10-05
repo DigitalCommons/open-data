@@ -87,6 +87,67 @@
   </section>
 </div>
 
+<section class="card" id="downloads" aria-labelledby="downloads_heading">
+  <div class="card-head">
+    <h2 id="downloads_heading">Downloads</h2>
+    <% if @downloads_pages > 1 %>
+      <nav class="pager" aria-label="Downloads pages">
+        <% if @downloads_page > 1 %>
+          <%= link_to "Newer", data_source_path(@data_source, downloads_page: @downloads_page - 1, anchor: "downloads"), class: "link" %>
+        <% end %>
+        <span class="note">Page <%= @downloads_page %> of <%= @downloads_pages %></span>
+        <% if @downloads_page < @downloads_pages %>
+          <%= link_to "Older", data_source_path(@data_source, downloads_page: @downloads_page + 1, anchor: "downloads"), class: "link" %>
+        <% end %>
+      </nav>
+    <% end %>
+  </div>
+  <div class="table-wrap">
+    <table class="data" style="min-width: 720px">
+      <thead>
+        <tr>
+          <th>Downloaded</th>
+          <th>Trigger</th>
+          <th class="num">Rows</th>
+          <th>Differences from the previous download</th>
+          <th class="right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @downloads.each do |run| %>
+          <tr class="download">
+            <td class="mono" title="<%= run.started_at&.to_fs(:long) %>"><%= (run.started_at || run.created_at).utc.strftime("%Y-%m-%d %H:%M UTC") %></td>
+            <td><%= run.triggered_by %></td>
+            <td class="num"><%= run.archived_row_count&.to_fs(:delimited) || "-" %></td>
+            <td>
+              <% if run.id == @oldest_download_id %>First download<% else %>
+                <div class="diff-cell">
+                  <%= row_changes(run) %>
+                  <span class="note"><%= run.diff_summary %></span>
+                  <% if run.diff_path %>
+                    <details>
+                      <summary>Changed rows</summary>
+                      <pre class="log"><%= File.read(run.diff_path) %></pre>
+                    </details>
+                  <% end %>
+                </div>
+              <% end %>
+            </td>
+            <td class="right">
+              <% if run.standard_csv_path %>
+                <%= link_to "Download standard.csv", standard_csv_download_run_path(run), class: "btn btn-outline btn-sm" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @downloads.empty? %>
+          <tr><td colspan="5" class="empty">No downloads yet.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
 <% latest_duplicate_id = @download_runs.find(&:no_changes?)&.id %>
 <% hidden_duplicates = @download_runs.count { |r| r.no_changes? && r.id != latest_duplicate_id } %>
 <section class="card" data-controller="run-history" aria-labelledby="history_heading">

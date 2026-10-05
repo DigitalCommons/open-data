@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_120000) do
   create_table "data_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -32,6 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_110000) do
     t.integer "exit_code"
     t.datetime "finished_at"
     t.text "log"
+    t.integer "row_count"
     t.integer "rows_added"
     t.integer "rows_changed"
     t.integer "rows_removed"

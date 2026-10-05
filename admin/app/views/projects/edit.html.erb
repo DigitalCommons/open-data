@@ -14,6 +14,12 @@
     <% end %>
 
     <div class="field">
+      <%= form.label :key, "Identifier" %>
+      <%= form.text_field :key, disabled: true, class: "input mono-in" %>
+      <p class="help">Set in db/projects.yml; used in download filenames.</p>
+    </div>
+
+    <div class="field">
       <%= form.label :name %>
       <%= form.text_field :name, required: true, class: "input" %>
     </div>

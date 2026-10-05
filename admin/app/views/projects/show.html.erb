@@ -19,6 +19,7 @@
     <div class="card-body">
       <dl class="facts">
         <div class="wide"><dt>Description</dt><dd class="prose"><%= @project.description.presence || "-" %></dd></div>
+        <div><dt>Identifier</dt><dd class="mono"><%= @project.key %></dd></div>
         <div><dt>Category</dt><dd><%= @project.category_label %></dd></div>
         <div><dt>Position</dt><dd><%= @project.position %></dd></div>
       </dl>

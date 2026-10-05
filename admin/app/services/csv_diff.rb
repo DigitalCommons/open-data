@@ -7,7 +7,7 @@ class CsvDiff
   KEY = "Identifier".freeze
   MAX_DETAIL_LINES = 500
 
-  Result = Struct.new(:added, :removed, :changed, :summary, :detail, keyword_init: true)
+  Result = Struct.new(:added, :removed, :changed, :rows, :summary, :detail, keyword_init: true)
 
   def self.call(old_path, new_path)
     new(old_path, new_path).call
@@ -21,7 +21,7 @@ class CsvDiff
   def call
     new_rows = index(@new_path)
     if @old_path.nil?
-      return Result.new(added: new_rows.size, removed: 0, changed: 0,
+      return Result.new(added: new_rows.size, removed: 0, changed: 0, rows: new_rows.size,
         summary: "First download: #{new_rows.size} rows.",
         detail: "First download: no previous version to compare against. #{new_rows.size} rows.\n")
     end
@@ -32,7 +32,7 @@ class CsvDiff
     changed = (new_rows.keys & old_rows.keys).select { |k| new_rows[k] != old_rows[k] }
 
     Result.new(
-      added: added.size, removed: removed.size, changed: changed.size,
+      added: added.size, removed: removed.size, changed: changed.size, rows: new_rows.size,
       summary: "#{added.size} added, #{removed.size} removed, #{changed.size} changed " \
                "(#{new_rows.size} rows, was #{old_rows.size}).",
       detail: detail(old_rows, new_rows, added, removed, changed)

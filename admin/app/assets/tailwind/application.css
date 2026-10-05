@@ -261,3 +261,8 @@ textarea.input { min-height: 120px; resize: vertical; font-family: var(--font-se
 .stat dd.diff-figure .diff { font-size: var(--t-lg); font-weight: 700; flex-wrap: wrap; }
 .src-name { display: flex; flex-direction: column; min-width: 0; }
 .src-name .kind { font-weight: 500; }
+.pager { display: flex; align-items: center; gap: var(--s3); }
+.diff-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.diff-cell details summary { cursor: pointer; color: var(--link); font-size: var(--t-xs); font-weight: 600; }
+.diff-cell details pre.log { margin-top: var(--s2); max-height: 16rem; }
+.input:disabled { opacity: .7; cursor: not-allowed; }

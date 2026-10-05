@@ -7,8 +7,11 @@ class DataSourcesController < ApplicationController
     group_sources_by_project
   end
 
+  DOWNLOADS_PER_PAGE = 15
+
   def show
     @download_runs = @data_source.download_runs.order(created_at: :desc).limit(50)
+    load_downloads
   end
 
   def edit
@@ -69,12 +72,24 @@ class DataSourcesController < ApplicationController
 
   # Latest converted output.
   def standard_csv
-    path = @data_source.latest_standard_csv_path
+    run = @data_source.last_succeeded_run
+    path = run&.standard_csv_path
     return redirect_to @data_source, alert: "No converted output available yet." unless path
-    send_file path, filename: "#{@data_source.directory}-standard.csv", type: "text/csv"
+    send_file path, filename: run.download_filename("standard.csv"), type: "text/csv"
   end
 
   private
+
+  # Archived downloads (runs with a standard.csv), newest first, a page at a time.
+  def load_downloads
+    downloads = @data_source.download_runs.succeeded.where.not(archive_path: nil).order(created_at: :desc)
+    @downloads_count = downloads.count
+    @downloads_pages = [ (@downloads_count / DOWNLOADS_PER_PAGE.to_f).ceil, 1 ].max
+    @downloads_page = params[:downloads_page].to_i.clamp(1, @downloads_pages)
+    offset = (@downloads_page - 1) * DOWNLOADS_PER_PAGE
+    @downloads = downloads.offset(offset).limit(DOWNLOADS_PER_PAGE).to_a
+    @oldest_download_id = downloads.last&.id
+  end
 
   # A source is listed under every project it belongs to, in dashboard
   # order; sources in no project are listed under "Other sources".

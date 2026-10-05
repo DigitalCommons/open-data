@@ -216,17 +216,65 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     dir = OpenData.downloads_root + "alpha/2026-01-01_000000"
     FileUtils.mkdir_p(dir)
     File.write(dir + "standard.csv", default_csv)
-    run.update!(archive_path: dir.to_s)
+    run.update!(archive_path: dir.to_s, started_at: Time.utc(2026, 10, 5, 6, 0, 12))
 
     get standard_csv_data_source_path(data_sources(:alpha))
     assert_response :success
     assert_equal default_csv, response.body
-    assert_match(/alpha-standard\.csv/, response.headers["Content-Disposition"])
+    assert_match(/filename="20261005-060012-alpha-standard\.csv"/, response.headers["Content-Disposition"])
   end
 
   test "standard_csv redirects when nothing has been converted" do
     DownloadRun.delete_all
     get standard_csv_data_source_path(data_sources(:alpha))
     assert_redirected_to data_source_path(data_sources(:alpha))
+  end
+
+  def archived_runs(count)
+    source = data_sources(:alpha)
+    source.download_runs.delete_all
+    count.times.map do |i|
+      at = Time.utc(2026, 9, 1) + i.days
+      run = archive_standard_csv(source, "Identifier,Name\n#{(1..i + 1).map { |n| "#{n},Row #{n}" }.join("\n")}\n")
+      run.update!(started_at: at, created_at: at, rows_added: 1, rows_removed: 0, rows_changed: 0,
+        diff_summary: i.zero? ? "First download: 1 rows." : "1 added, 0 removed, 0 changed (#{i + 1} rows, was #{i}).")
+      File.write(File.join(run.archive_path, "diff.txt"), "+ #{i + 1}: Row #{i + 1}\n")
+      run
+    end
+  end
+
+  test "show lists downloaded files newest first with their differences" do
+    runs = archived_runs(3)
+    get data_source_path(data_sources(:alpha))
+
+    assert_select "h2", "Downloads"
+    rows = css_select("#downloads tbody tr.download")
+    assert_equal 3, rows.size
+    assert_match(/2026-09-03/, rows.first.text)
+    assert_select "#downloads a[href=?]", standard_csv_download_run_path(runs.last), "Download standard.csv"
+    assert_select "#downloads td", /1 added, 0 removed, 0 changed \(3 rows, was 2\)/
+    assert_select "#downloads td", "First download"
+    assert_select "#downloads details summary", "Changed rows"
+    assert_select "#downloads details pre", /\+ 3: Row 3/
+    assert_select "#downloads td.num", "3"
+  end
+
+  test "show pages downloads 15 at a time" do
+    archived_runs(16)
+    get data_source_path(data_sources(:alpha))
+    assert_select "#downloads tbody tr.download", 15
+    assert_select "#downloads", /Page 1 of 2/
+    assert_select "#downloads a", "Older"
+
+    get data_source_path(data_sources(:alpha), downloads_page: 2)
+    assert_select "#downloads tbody tr.download", 1
+    assert_select "#downloads a", "Newer"
+    assert_select "#downloads td", "First download"
+  end
+
+  test "show says when there are no downloads" do
+    data_sources(:beta).download_runs.delete_all
+    get data_source_path(data_sources(:beta))
+    assert_select "#downloads td", "No downloads yet."
   end
 end

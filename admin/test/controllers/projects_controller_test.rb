@@ -92,7 +92,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   test "show lists builds and downloads the latest unified CSV" do
     dir = Dir.mktmpdir
     File.write(File.join(dir, "unified.csv"), "Identifier\n1\n")
-    build = projects(:cwm).project_builds.create!(status: :succeeded, started_at: 1.minute.ago,
+    build = projects(:cwm).project_builds.create!(status: :succeeded, started_at: Time.utc(2026, 10, 5, 7, 15, 30),
       finished_at: Time.current, archive_path: dir, row_count: 1, merged_count: 0)
 
     get project_path(projects(:cwm))
@@ -102,7 +102,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
     get csv_project_build_path(build)
     assert_response :success
     assert_equal "Identifier\n1\n", response.body
-    assert_match(/cwm-unified-#{build.id}\.csv/, response.headers["Content-Disposition"])
+    assert_match(/filename="20261005-071530-cwm-unified\.csv"/, response.headers["Content-Disposition"])
 
     get project_build_path(build)
     assert_response :success
@@ -136,5 +136,30 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
     projects(:cwm).data_sources << dotcoop
     get project_path(projects(:cwm))
     assert_select "li", /Dotcoop.*Unification code\s*dc/m
+  end
+
+  test "show and edit give the project's key as a read-only Identifier" do
+    get project_path(projects(:cwm))
+    assert_select "dt", "Identifier"
+    assert_select "dd", "cwm"
+
+    get edit_project_path(projects(:cwm))
+    assert_select "input[disabled][value=?]", "cwm"
+    assert_select "p", "Set in db/projects.yml; used in download filenames."
+  end
+
+  test "update ignores an attempt to change the key" do
+    patch project_path(projects(:cwm)), params: { project: { name: "CWM", key: "other" } }
+    assert_equal "cwm", projects(:cwm).reload.key
+  end
+
+  test "build diff downloads are named by time and identifier" do
+    dir = Dir.mktmpdir
+    File.write(File.join(dir, "diff.txt"), "+ a\n")
+    build = projects(:cwm).project_builds.create!(status: :succeeded, started_at: Time.utc(2026, 10, 5, 7, 15, 30), archive_path: dir)
+    get diff_project_build_path(build)
+    assert_match(/filename="20261005-071530-cwm-diff\.txt"/, response.headers["Content-Disposition"])
+  ensure
+    FileUtils.remove_entry(dir) if dir
   end
 end

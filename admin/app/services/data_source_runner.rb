@@ -153,6 +153,7 @@ class DataSourceRunner
       rows_added: diff.added,
       rows_removed: diff.removed,
       rows_changed: diff.changed,
+      row_count: diff.rows,
       diff_summary: diff.summary
     )
     diff

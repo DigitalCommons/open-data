@@ -36,6 +36,11 @@ class ProjectBuild < ApplicationRecord
     path && JSON.parse(File.read(path)).fetch("inputs", []).size
   end
 
+  # e.g. 20261005-071530-cwm-unified.csv
+  def download_filename(file)
+    DownloadFilename.for(started_at || created_at, project.key, file)
+  end
+
   def append_log(text)
     self.log = [ log, text ].compact.join
   end

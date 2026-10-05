@@ -1,3 +1,5 @@
+require "csv"
+
 class DownloadRun < ApplicationRecord
   belongs_to :data_source
 
@@ -31,6 +33,21 @@ class DownloadRun < ApplicationRecord
 
   def diff_path
     path_in_archive("diff.txt")
+  end
+
+  # e.g. 20261005-060012-workers-coop-standard.csv
+  def download_filename(file)
+    DownloadFilename.for(started_at || created_at, data_source.directory, file)
+  end
+
+  # Rows in the archived standard.csv; counted once for runs recorded
+  # before row_count was stored.
+  def archived_row_count
+    return row_count if row_count
+    path = standard_csv_path or return nil
+    count = CSV.foreach(path, headers: true).count
+    update_column(:row_count, count)
+    count
   end
 
   def append_log(text)

@@ -38,4 +38,20 @@ class DownloadRunTest < ActiveSupport::TestCase
     assert_includes DownloadRun.completed, download_runs(:alpha_success)
     assert_not_includes DownloadRun.completed, download_runs(:alpha_failed)
   end
+
+  test "row_count is counted from the archived standard.csv once and remembered" do
+    Dir.mktmpdir do |dir|
+      File.write(File.join(dir, "standard.csv"), "Identifier,Name\n1,One\n2,\"Two\nlines\"\n")
+      run = download_runs(:alpha_success)
+      run.update!(archive_path: dir, row_count: nil)
+      assert_equal 2, run.archived_row_count
+      assert_equal 2, run.reload.row_count
+    end
+  end
+
+  test "download_filename is the start time in UTC, source and file" do
+    run = download_runs(:alpha_success)
+    run.started_at = Time.utc(2026, 10, 5, 6, 0, 12)
+    assert_equal "20261005-060012-alpha-standard.csv", run.download_filename("standard.csv")
+  end
 end
