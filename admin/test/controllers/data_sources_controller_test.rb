@@ -19,7 +19,7 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
   test "index lists sources with last download age" do
     get data_sources_path
     assert_response :success
-    assert_select "h1", /Data sources/
+    assert_select "h1", /Projects & Data sources/
     assert_select "td", /Alpha Co-ops/
     assert_select "td", /Beta Directory/
   end
@@ -75,7 +75,7 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "index describes the page and ends with a summary" do
     get data_sources_path
-    assert_select "p", "MykoMaps version 4 projects and data sources: download, schedules and unification."
+    assert_select "p", "The MykoMaps data pipeline."
     assert_select "th", "Status"
     assert_select "h2", "Summary"
     assert_operator response.body.index("id=\"other_sources\""), :<, response.body.index(">Summary<")
