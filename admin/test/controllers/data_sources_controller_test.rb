@@ -283,7 +283,7 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     get data_sources_path
     assert_select ".stat dt", "Disk space used"
     assert_select ".stat dd", "1.5 GB"
-    assert_select ".summary .stat", 5
+    assert_select "dl.summary.summary-five .stat", 5
   end
 
   test "summary shows a dash before disk space is first measured" do

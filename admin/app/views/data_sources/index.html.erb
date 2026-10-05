@@ -42,7 +42,7 @@
   <h2 id="summary_heading" class="section-title">Summary</h2>
   <% failing = @data_sources.select { |s| s.last_run&.failed? } %>
   <% overdue = @data_sources.count(&:overdue?) %>
-  <dl class="summary">
+  <dl class="summary summary-five">
     <div class="stat"><dt>Sources</dt><dd><%= @data_sources.size %></dd><small>in <%= @projects.size %> projects</small></div>
     <div class="stat"><dt>Enabled</dt><dd><%= @data_sources.count(&:enabled?) %></dd></div>
     <div class="stat"><dt>Overdue</dt><dd class="<%= "bad" if overdue.positive? %>"><%= overdue %></dd></div>
