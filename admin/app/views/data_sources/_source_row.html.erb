@@ -1,7 +1,7 @@
 <tr>
-  <td><div class="src"><%= link_to source.name, source %><small><%= source.directory %></small></div></td>
+  <td><div class="src"><%= link_to source.name, source %><small title="<%= source.directory %>"><%= source.directory %></small></div></td>
   <td><%= kind_badge(source) %></td>
-  <td class="mono"><%= source.schedule.presence || "-" %></td>
+  <td class="mono schedule"><%= schedule_cell(source.schedule) %></td>
   <td><%= download_age(source) %></td>
   <td><%= status_badge(source.last_run) %></td>
   <td class="tog">

@@ -62,6 +62,15 @@ module ApplicationHelper
     end
   end
 
+  # A cron schedule with any time zone on its own muted line.
+  def schedule_cell(schedule)
+    return "-" if schedule.blank?
+    fields = schedule.split
+    cron = fields.first(5).join(" ")
+    zone = fields.drop(5).join(" ")
+    zone.present? ? safe_join([ cron, content_tag(:small, zone, class: "tz") ]) : cron
+  end
+
   # Escapes text and links any http(s) URLs in it.
   def link_urls(text)
     safe_join(text.to_s.split(%r{(https?://[^\s)]+)}).map.with_index do |part, index|

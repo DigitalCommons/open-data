@@ -290,4 +290,22 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     get data_sources_path
     assert_select ".stat dd", "-"
   end
+
+  test "index shows a schedule's time zone under the cron line" do
+    data_sources(:alpha).update!(schedule: "0 6 * * * Europe/London")
+    get data_sources_path
+    assert_select "td.schedule", /0 6 \* \* \*/
+    assert_select "td.schedule .tz", "Europe/London"
+  end
+
+  test "index shows a schedule without a time zone on one line" do
+    get data_sources_path
+    assert_select "td.schedule", /\*\/10 \* \* \* \*/
+    assert_select "td.schedule .tz", count: 0
+  end
+
+  test "index gives the source directory as a hover title, as it may be cut short" do
+    get data_sources_path
+    assert_select ".src small[title=?]", "alpha", "alpha"
+  end
 end

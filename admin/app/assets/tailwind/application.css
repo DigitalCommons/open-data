@@ -97,7 +97,6 @@ h1.title-sm { margin: 0; font-size: clamp(26px, 4vw, 36px); font-weight: 800; le
 .lede { margin: 0; font-family: var(--font-serif); font-size: var(--t-lg); color: var(--muted); max-width: 62ch; text-wrap: pretty; }
 .title-row { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
 .mono { font-family: var(--font-mono); font-size: var(--t-sm); }
-td.mono { white-space: nowrap; }
 .faint { color: var(--faint); }
 .actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
 .section-title { margin: 0; font-size: var(--t-xl); font-weight: 800; letter-spacing: -0.01em; }
@@ -184,13 +183,19 @@ table.data .num { text-align: right; font-variant-numeric: tabular-nums; }
 .right { text-align: right; }
 .empty { padding: var(--s6) var(--s4); text-align: center; color: var(--faint); font-family: var(--font-serif); }
 table.dash { min-width: 760px; table-layout: fixed; }
-table.dash col.c-src { width: 26%; }
-table.dash col.c-kind { width: 12%; }
-table.dash col.c-sched { width: 12%; }
-table.dash col.c-age { width: 13%; }
-table.dash col.c-status { width: 13%; }
-table.dash col.c-tog { width: 10%; }
+/* Source, Type, Schedule, Last download, Status, Enabled, Actions */
+table.dash col.c-src { width: 14%; }
+table.dash col.c-kind { width: 10%; }
+table.dash col.c-sched { width: 22%; }
+table.dash col.c-age { width: 16%; }
+table.dash col.c-status { width: 12%; }
+table.dash col.c-tog { width: 12%; }
 table.dash col.c-act { width: 14%; }
+/* Headings and text wrap; anything still too wide is cut off at the cell edge */
+table.dash th { white-space: normal; }
+table.dash td { overflow: hidden; }
+table.dash .src small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+td.schedule .tz { display: block; font-size: var(--t-xs); color: var(--muted); }
 .diff { display: inline-flex; gap: var(--s2); font-family: var(--font-mono); font-size: var(--t-xs); font-variant-numeric: tabular-nums; }
 .diff .a { color: var(--ok); } .diff .r { color: var(--bad); } .diff .c { color: var(--warn); }
 
