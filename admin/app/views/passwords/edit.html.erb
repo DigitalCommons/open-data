@@ -19,7 +19,8 @@
         <label for="secrets_<%= definition.key %>_value"><%= definition.name %></label>
         <p class="help"><%= definition.description %></p>
         <input type="password" class="input" id="secrets_<%= definition.key %>_value"
-               name="secrets[<%= definition.key %>][value]" autocomplete="new-password" spellcheck="false">
+               name="secrets[<%= definition.key %>][value]" autocomplete="new-password" spellcheck="false"
+               <% if (ending = Secret.ending(definition.key)) %>placeholder="<%= ending %>"<% end %>>
         <% status = Secret.status(definition.key) %>
         <p class="help secret-status"><%= status %><% if status != "Not set" %>. Leave blank to keep the current value.<% end %></p>
         <dl class="secret-facts">

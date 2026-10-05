@@ -43,15 +43,17 @@ class SecretTest < ActiveSupport::TestCase
     assert_equal({ "PASSWORD__ACCOUNTS_AIRTABLE_COM_DATA_FACTORY_DOWNLOAD_APIKEY" => "pat123" }, Secret.env)
   end
 
-  test "status shows the last four characters and where the value came from" do
+  test "status says where the value came from; ending gives its last four characters" do
     travel_to Time.utc(2026, 10, 5, 12) do
       Secret.create!(key: "geoapify", value: "abcdef1a2b", from_env: true)
       Secret.create!(key: "mapbox", value: "pk.zz9876", updated_at: 3.days.ago)
     end
     travel_to Time.utc(2026, 10, 5, 12) do
-      assert_equal "Set, ends in …1a2b, from environment", Secret.status("geoapify")
-      assert_equal "Set, ends in …9876, saved 3 days ago", Secret.status("mapbox")
+      assert_equal "Set, from environment", Secret.status("geoapify")
+      assert_equal "Set, saved 3 days ago", Secret.status("mapbox")
       assert_equal "Not set", Secret.status("airtable")
+      assert_equal "…1a2b", Secret.ending("geoapify")
+      assert_nil Secret.ending("airtable")
     end
   end
 end

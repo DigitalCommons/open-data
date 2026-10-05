@@ -8,9 +8,10 @@ class SecretsControllerTest < ActionDispatch::IntegrationTest
     get edit_password_path
     assert_select "h2", "Secrets"
     assert_select "label", "Geoapify API key"
-    assert_select "input[type=password][name=?]", "secrets[geoapify][value]"
+    assert_select "input[type=password][name=?][placeholder=?]", "secrets[geoapify][value]", "…1a2b"
+    assert_select "input[type=password][name=?]:not([placeholder])", "secrets[mapbox][value]"
     assert_select "a[href=?]", "https://myprojects.geoapify.com"
-    assert_select "p", /Set, ends in …1a2b, saved/
+    assert_select "p", /Set, saved/
     assert_select "p", /Not set/
     assert_not_includes response.body, "very-secret-geo"
     assert_operator response.body.index(">Secrets<"), :<, response.body.index(">Change password<")

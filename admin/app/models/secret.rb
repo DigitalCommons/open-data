@@ -54,7 +54,12 @@ class Secret < ApplicationRecord
   def self.status(key)
     secret = find_by(key: key)
     return "Not set" unless secret
-    origin = secret.from_env? ? "from environment" : "saved #{ApplicationController.helpers.time_ago_in_words(secret.updated_at)} ago"
-    "Set, ends in …#{secret.value.last(4)}, #{origin}"
+    secret.from_env? ? "Set, from environment" : "Set, saved #{ApplicationController.helpers.time_ago_in_words(secret.updated_at)} ago"
+  end
+
+  # The last four characters, shown as the field's placeholder; nil if unset.
+  def self.ending(key)
+    secret = find_by(key: key)
+    secret && "…#{secret.value.last(4)}"
   end
 end
