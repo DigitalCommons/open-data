@@ -1,0 +1,21 @@
+{
+  "id": "cuk/R002847",
+  "name": "Footprint Workers Co-operative",
+  "description": "Footprint is a workers co-operative based at Cornerstone Resource Centre, Chapeltown in Leeds. Footprint was set up to provide printing services to the highest possible ethical and environmental standards. We have 2 current members who both live in Cornerstone Housing Co-op and have been involved in social and ecological activism for a number of years.",
+  "website": [
+    "http://www.footprinters.co.uk"
+  ],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA280",
+  "organisational_structure": "OS50",
+  "typology": "BMT30",
+  "address": "16 Sholebroke Avenue\r\nChapeltown, Leeds, Leeds, LS7 3HB, England",
+  "data_sources": [
+    "CUK",
+    "WC"
+  ],
+  "lat": 53.81937,
+  "lng": -1.53317,
+  "region": "Leeds"
+}

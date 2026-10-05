@@ -1,0 +1,25 @@
+{
+  "id": "dc/NlDADW",
+  "name": "Moscow Food Co-op",
+  "description": "",
+  "website": [
+    "http://moscowfood.coop"
+  ],
+  "dc_domains": [
+    "moscowfood.coop",
+    "mfc.coop"
+  ],
+  "country_id": "us",
+  "primary_activity": "ICA240",
+  "organisational_structure": null,
+  "typology": null,
+  "address": "P. O. Box 9485, Moscow, United States",
+  "data_sources": [
+    "DC",
+    "NCBA",
+    "NCG"
+  ],
+  "lat": 46.73239,
+  "lng": -117.00016,
+  "region": "ID"
+}

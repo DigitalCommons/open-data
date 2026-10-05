@@ -24,9 +24,16 @@ module Mykomap
       @filtered_props = prop_defs.select { |_n, p| p.filtered? }.keys
     end
 
+    # Number(value.toFixed(5)) as the monolith does: rounds the float's exact
+    # binary value half away from zero, which differs from Float#round(5)
+    # (88.053095 is stored just below the half, so it rounds to 88.05309).
     def round5(value)
       return nil if value.nil?
-      (Coerce.numberify(value, nil)&.to_f&.round(5))
+      float = Coerce.numberify(value, nil)&.to_f
+      return float if float.nil? || !float.finite?
+      scaled = (float.to_r * 100_000).round(half: :up)
+      # parse the decimal text, as Number() does, for the nearest double
+      Float("#{'-' if scaled.negative?}#{scaled.abs / 100_000}.#{(scaled.abs % 100_000).to_s.rjust(5, '0')}")
     end
 
     # Writes the dataset; dir_path must not pre-exist. Returns Stats.
@@ -63,16 +70,16 @@ module Mykomap
               marker = marker_index(item)
               point << [ marker, 0 ].max.floor if marker
             end
-            locations.write(JSON.generate(point))
+            locations.write(JsJson.generate(point))
 
             values = filtered_props.map { |name| item[name] }
             values << item["id"]
             values << text_index(item)
-            searchable.write(JSON.generate(values))
+            searchable.write(JsJson.generate(values))
 
             rounded = item.dup
             %w[lat lng].each { |k| rounded[k] = round5(rounded[k]) if rounded.key?(k) }
-            File.write(File.join(items_dir, "#{stats.written}.json"), JSON.pretty_generate(rounded))
+            File.write(File.join(items_dir, "#{stats.written}.json"), JsJson.pretty_generate(rounded))
 
             stats.counter += 1
             stats.written += 1

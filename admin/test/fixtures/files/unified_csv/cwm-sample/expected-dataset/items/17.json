@@ -1,0 +1,19 @@
+{
+  "id": "cuk/R010782",
+  "name": "Twin Cabs Owner Drivers Association",
+  "description": "Taxi driver owned co-operative",
+  "website": [],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA280",
+  "organisational_structure": "OS130",
+  "typology": "BMT30",
+  "address": "81b Hallcraig Street, Airdrie, North Lanarkshire, ML6 6AW, Scotland",
+  "data_sources": [
+    "CUK",
+    "WC"
+  ],
+  "lat": 55.86699,
+  "lng": -3.97759,
+  "region": "North Lanarkshire"
+}

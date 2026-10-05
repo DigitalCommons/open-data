@@ -1,0 +1,24 @@
+{   "itemProps":
+["name","country_id","primary_activity","organisational_structure","typology","address","data_sources","region","id","searchString"],
+    "values":[
+["Atomised Co-operative","gb","ICA280","OS50","BMT30","2 Millhouse\r\nMillgate, Cupar, Fife, KY15 5EH, Scotland",["CUK","DC","WC"],"Fife","cuk/R004368","atomised co operative http www atomised coop atomised coop"],
+["BADALI ALA SINGH COOP AGRL SER SOCY LTD.","in","ICA10",null,null,"VILL & PO. BADALI ALA SINGH, TEH SIRHIND, FATEHGARH SAHIB, PUNJAB, INDIA",["IFFCO"],"PUNJAB","iffco/19680","badali ala singh coop agrl ser socy ltd  "],
+["BHUILI SAHAKARI SANGH LTD","in","ICA10",null,null,"VILL- BHUILI POST BHUILI DISTT MIRZAPUR, DT MIRZAPUR, MIRZAPUR, UTTAR PRADESH, INDIA",["IFFCO"],"UTTAR PRADESH","iffco/30085","bhuili sahakari sangh ltd  "],
+["Bluff Country Co-op","us","ICA240",null,null,"121 West Second Street, Winona, United States",["DC","NCBA","NCG"],"MN","dc/1KR9eq","bluff country co op http www bluff coop bluff coop"],
+["Bristol Wood Recycling Project","gb","ICA230","OS50","BMT30","Unit 4 William Street\nSt. Philips, Bristol, Bristol, City of, BS2 0RG, England",["CUK","WC"],"Bristol, City of","cuk/R006793","bristol wood recycling project http www bwrp org uk "],
+["Bugallon Entrepreneurs and Farmers Multi Purpose Cooperative","ph",null,null,null,"Bugallon Cayanga, Pangasinan, Republic of the Philippines",["YCC"],"Pangasinan","ycc/3256","bugallon entrepreneurs and farmers multi purpose cooperative  "],
+["Cabian Van Transport Service Cooperative","ph",null,null,null,"Barangay Bianoan, Casiguran, Aurora, Republic of the Philippines",["YCC"],"Aurora","ycc/7460","cabian van transport service cooperative  "],
+["City Cabs Edinburgh","gb","ICA220","OS50","BMT30","2 Atholl Place, Edinburgh, City of Edinburgh, EH3 8HP, Scotland",["CUK","WC"],"City of Edinburgh","cuk/R009306","city cabs edinburgh http www citycabs co uk "],
+["Co-operatives and Mutuals Wales","gb","ICA280","OS160","BMT40","Anderley Lodge\r\n216 Stow Hill, Newport, Newport, NP20 4HA, Wales",["CUK","DC","WC"],"Newport","cuk/R005391","co operatives and mutuals wales http www cooperatives wales coop consultancy coop cooperatives wales coop"],
+["Footprint Workers Co-operative","gb","ICA280","OS50","BMT30","16 Sholebroke Avenue\r\nChapeltown, Leeds, Leeds, LS7 3HB, England",["CUK","WC"],"Leeds","cuk/R002847","footprint workers co operative http www footprinters co uk "],
+["Ilocano Farmers Multipurpose Cooperative","ph",null,null,null,"City of Candon Langlangca Primero, Ilocos Sur, Republic of the Philippines",["YCC"],"Ilocos Sur","ycc/3597","ilocano farmers multipurpose cooperative  "],
+["Instituto Movilizador de Fondos Cooperativos (IMFC)","ar","ICA140","OS240","BMT10","Argentina",["COOPERAR","DC","ICA"],"","cooperar/46","instituto movilizador de fondos cooperativos imfc https www imfc coop imfc coop accion coop centrocultural coop"],
+["Moscow Food Co-op","us","ICA240",null,null,"P. O. Box 9485, Moscow, United States",["DC","NCBA","NCG"],"ID","dc/NlDADW","moscow food co op http moscowfood coop moscowfood coop mfc coop"],
+["Northwest Construction Cooperative","us","ICA70","OS115","BMT30","PO Box 2953, Olympia, WA, United States",["DC","USFWC"],"WA","dc/W64G9K","northwest construction cooperative http northwestconstruction coop northwestconstruction coop"],
+["Pine Tree Housing Co-operative","gb","ICA210","OS130","BMT50","Unit A, Arc House\r\n82 Tanner Street, London, Southwark, SE1 3GN, England",["CUK"],"Southwark","cuk/R006686","pine tree housing co operative http www cds coop for co ops co op pine tree type coop "],
+["Radford Bridge Road Garden Holders Association","gb","ICA280",null,null,"Cawley House\r\n149-155 Canal Street, Nottingham, Nottingham, NG1 7HR, England",["CUK"],"Nottingham","cuk/R013792","radford bridge road garden holders association http rbrgha blogspot co uk "],
+["Thornton Conservative Club","gb","ICA280","OS130","BMT10","385 Thornton Road\r\nThornton, Bradford, Bradford, BD13 3JX, England",["CUK"],"Bradford","cuk/R006143","thornton conservative club  "],
+["Twin Cabs Owner Drivers Association","gb","ICA280","OS130","BMT30","81b Hallcraig Street, Airdrie, North Lanarkshire, ML6 6AW, Scotland",["CUK","WC"],"North Lanarkshire","cuk/R010782","twin cabs owner drivers association  "],
+["Westmorland Country Markets","gb","ICA260","OS130","BMT30","Country Markets Limited\nDunston House\nDunston Road\nSheepbridge, Chesterfield, Derbyshire, S41 9QD, England",["CUK","WC"],"Derbyshire","cuk/R009442","westmorland country markets http www country markets co uk "],
+["Williamson Street Grocery Cooperative","us","ICA240",null,null,"1457 E. Washington Ave., Madison, Wisconsin, United States",["DC","NCBA","NCG"],"WI","dc/jl23YW","williamson street grocery cooperative http willystreet coop willystreet coop"]
+]}

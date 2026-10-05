@@ -209,6 +209,8 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
     get "/data-builder/"
     assert_select "nav a[aria-current=page]", "Dataset builder"
     assert_match "Use a unified CSV", response.body
+    assert_match "Start from a config.json", response.body
+    assert_match "Import config.json", response.body
     assert_match "To publish, unzip it into cwm-test-data/datasets/ as a new dated folder and commit it.", response.body
 
     build = unified_build

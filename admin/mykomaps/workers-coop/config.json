@@ -1,0 +1,185 @@
+{
+  "languages": ["en"],
+  "ui": {
+    "directory_panel_field": "industry",
+    "title": "workers.coop Mykomap",
+    "logo": {
+      "largeLogo": "dataset:assets/logos/workerscoop-logo.png",
+      "smallLogo": "dataset:assets/logos/workerscoop-logo.png",
+      "altText": "Workers.Coop",
+      "smallScreenPosition": { "top": "0", "left": null, "right": "5px" },
+      "largeScreenPosition": { "top": "10px", "bottom": null, "right": "10px" }
+    },
+    "map": {
+      "mapBounds": [
+        [-9, 49],
+        [2, 61]
+      ]
+    }
+  },
+  "vocabs": {
+    "ui": {
+      "en": {
+        "terms": {
+          "reg_status": "Registered Status",
+          "industry": "Industry",
+          "ownership_type": "Ownership Classification",
+          "legal_form": "Legal Form",
+          "reg_no": "Registered Number"
+        }
+      }
+    },
+    "rst": {
+      "en": {
+        "title": "Registered Status",
+        "terms": {
+          "RS1": "Live",
+          "RS2": "Dormant",
+          "RS3": "In liquidation, administration or winding up",
+          "RS4": "Dead",
+          "RS5": "Unknown"
+        }
+      }
+    },
+    "ind": {
+      "en": {
+        "title": "Industry",
+        "terms": {
+          "IND1": "Agriculture",
+          "IND2": "Arts and Culture",
+          "IND3": "Digital, Media and Communication",
+          "IND4": "Education",
+          "IND5": "Energy and Environment",
+          "IND6": "Finance",
+          "IND7": "Food service, Accommodation and Pubs",
+          "IND8": "Health and Social Care",
+          "IND9": "Housing",
+          "IND10": "Manufacturing",
+          "IND11": "Membership associations, social clubs and trade unions",
+          "IND12": "Other",
+          "IND13": "Professional and Legal services",
+          "IND14": "Retail",
+          "IND15": "Sports and Recreation",
+          "IND16": "Transport",
+          "IND17": "Unknown"
+        }
+      }
+    },
+    "ot": {
+      "en": {
+        "title": "Ownership Classification",
+        "terms": {
+          "OT1": "Self-employed",
+          "OT2": "Workers",
+          "OT3": "Unknown"
+        }
+      }
+    },
+    "lf": {
+      "en": {
+        "title": "Legal Form",
+        "terms": {
+          "LF1": "Co-operative Society",
+          "LF2": "Community Benefit Society",
+          "LF3": "Community Interest Company",
+          "LF4": "Company",
+          "LF5": "Company Limited by Guarantee",
+          "LF6": "Company Limited by Shares",
+          "LF7": "LLP",
+          "LF8": "PLC",
+          "LF9": "Society",
+          "LF10": "Unincorporated",
+          "LF11": "Unknown"
+        }
+      }
+    }
+  },
+  "itemProps": {
+    "country_id": null,
+    "primary_activity": null,
+    "organisational_structure": null,
+    "typology": null,
+    "data_sources": null,
+    "dc_domains": null,
+    "name": { "filter": false },
+    "address": { "filter": false },
+    "reg_status": {
+      "type": "vocab",
+      "uri": "rst:",
+      "titleUri": "ui:reg_status",
+      "filter": true,
+      "from": "wc.Registered Status"
+    },
+    "industry": {
+      "type": "vocab",
+      "uri": "ind:",
+      "titleUri": "ui:industry",
+      "filter": true,
+      "from": "wc.Industry"
+    },
+    "ownership_type": {
+      "type": "vocab",
+      "uri": "ot:",
+      "titleUri": "ui:ownership_type",
+      "filter": true,
+      "from": "wc.Ownership Classification"
+    },
+    "legal_form": {
+      "type": "vocab",
+      "uri": "lf:",
+      "titleUri": "ui:legal_form",
+      "from": "wc.Legal Form"
+    },
+    "reg_no": {
+      "type": "value",
+      "from": "wc.Registered Number"
+    }
+  },
+  "popup": {
+    "titleProp": "name",
+    "leftPane": [
+      {
+        "itemProp": "industry",
+        "valueStyle": "text",
+        "showLabel": true
+      },
+      {
+        "itemProp": "description",
+        "valueStyle": "text"
+      }
+    ],
+    "topRightPane": [
+      {
+        "itemProp": "address",
+        "valueStyle": "address"
+      },
+      {
+        "itemProp": "website",
+        "valueStyle": "hyperlink",
+        "multiple": true
+      }
+    ],
+    "bottomRightPane": [
+      {
+        "itemProp": "ownership_type",
+        "valueStyle": "text",
+        "showLabel": true
+      },
+      {
+        "itemProp": "legal_form",
+        "valueStyle": "text",
+        "showLabel": true
+      },
+      {
+        "itemProp": "reg_status",
+        "valueStyle": "text",
+        "showLabel": true
+      },
+      {
+        "itemProp": "reg_no",
+        "valueStyle": "text",
+        "showLabel": true
+      }
+    ]
+  }
+}

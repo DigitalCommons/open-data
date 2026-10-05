@@ -1,0 +1,18 @@
+{
+  "id": "ycc/3256",
+  "name": "Bugallon Entrepreneurs and Farmers Multi Purpose Cooperative",
+  "description": "",
+  "website": [],
+  "dc_domains": [],
+  "country_id": "ph",
+  "primary_activity": null,
+  "organisational_structure": null,
+  "typology": null,
+  "address": "Bugallon Cayanga, Pangasinan, Republic of the Philippines",
+  "data_sources": [
+    "YCC"
+  ],
+  "lat": 16.11708,
+  "lng": 120.39893,
+  "region": "Pangasinan"
+}

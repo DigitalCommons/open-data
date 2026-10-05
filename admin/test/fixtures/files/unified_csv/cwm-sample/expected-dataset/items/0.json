@@ -1,0 +1,24 @@
+{
+  "id": "cuk/R004368",
+  "name": "Atomised Co-operative",
+  "description": "Atomised is a web design agency with a difference. We're a worker's co-operative, which means that everyone who works here owns an equal share in the company. We're not a reseller or a middle-man, and our clients don't have to wade through layers of sales teams and managers. They deal directly with Neil, AL & Morgan: the team of developers who work on perfecting their brands, websites & applications. As an ethical co-operative we are committed to customer care and in working transparently, fully sharing our expertise and insight with our clients in an open and hands-on manner.  Our trio are a well-rounded team of web experts with core expertise in hand-crafted interface design, brand audit & redesign, standards compliant web design, mobile web design and development, content management, online strategy, information architecture, accessibility, email & web marketing, search engine optimization (SEO) and web analysis & usability consulting.",
+  "website": [
+    "http://www.atomised.coop"
+  ],
+  "dc_domains": [
+    "atomised.coop"
+  ],
+  "country_id": "gb",
+  "primary_activity": "ICA280",
+  "organisational_structure": "OS50",
+  "typology": "BMT30",
+  "address": "2 Millhouse\r\nMillgate, Cupar, Fife, KY15 5EH, Scotland",
+  "data_sources": [
+    "CUK",
+    "DC",
+    "WC"
+  ],
+  "lat": 56.31939,
+  "lng": -3.01165,
+  "region": "Fife"
+}

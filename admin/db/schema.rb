@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_05_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_05_160000) do
   create_table "data_builder_builds", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "csv_filename"
@@ -104,6 +104,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_150000) do
     t.index ["project_id"], name: "index_project_builds_on_project_id"
   end
 
+  create_table "project_datasets", force: :cascade do |t|
+    t.string "archive_path"
+    t.datetime "created_at", null: false
+    t.datetime "finished_at"
+    t.integer "item_count"
+    t.text "log"
+    t.integer "project_build_id", null: false
+    t.integer "project_id", null: false
+    t.datetime "started_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_build_id"], name: "index_project_datasets_on_project_build_id"
+    t.index ["project_id"], name: "index_project_datasets_on_project_id"
+  end
+
   create_table "project_sources", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "data_source_id", null: false
@@ -154,6 +169,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_05_150000) do
 
   add_foreign_key "download_runs", "data_sources"
   add_foreign_key "project_builds", "projects", on_delete: :cascade
+  add_foreign_key "project_datasets", "project_builds", on_delete: :cascade
+  add_foreign_key "project_datasets", "projects", on_delete: :cascade
   add_foreign_key "project_sources", "data_sources", on_delete: :cascade
   add_foreign_key "project_sources", "projects", on_delete: :cascade
   add_foreign_key "sessions", "users"

@@ -19,6 +19,13 @@ Rails.application.routes.draw do
   resources :projects, only: %i[ show edit update ] do
     member do
       post :build
+      post :build_dataset
+    end
+  end
+
+  resources :project_datasets, only: [] do
+    member do
+      get :download
     end
   end
 

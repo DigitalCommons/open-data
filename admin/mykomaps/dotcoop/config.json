@@ -1,0 +1,203 @@
+{
+  "languages": ["en", "es", "fr"],
+  "ui": {
+    "title": "DotCoop Mykomap",
+    "logo": {
+      "largeLogo": "dataset:assets/logos/dotcoop-logo.png",
+      "smallLogo": "dataset:assets/logos/dotcoop-logo-small.png",
+      "altText": "DotCoop",
+      "smallScreenPosition": { "top": "0", "left": null, "right": "5px" },
+      "largeScreenPosition": { "top": "10px", "bottom": null, "right": "10px" }
+    }
+  },
+  "vocabs": {
+    "ui": {
+      "en": {
+        "terms": {
+          "economic_sector": "Economic Sector",
+          "organisational_category": "Organisational Category"
+        }
+      },
+      "es": {
+        "terms": {
+          "economic_sector": "Sector económico",
+          "organisational_category": "Categoría organizativa"
+        }
+      },
+      "fr": {
+        "terms": {
+          "economic_sector": "Secteur économique",
+          "organisational_category": "Catégorie organisationnelle"
+        }
+      }
+    },
+    "ecs": {
+      "en": {
+        "title": "Economic Sector",
+        "terms": {
+          "ES12": "Agriculture",
+          "ES13": "Business Services",
+          "ES14": "Consumer goods and services/retail",
+          "ES15": "Cooperative Councils",
+          "ES16": "Credit Union",
+          "ES17": "Credit Union Leagues",
+          "ES18": "Education",
+          "ES19": "Entertainment",
+          "ES20": "Financial Services",
+          "ES21": "Fishing",
+          "ES22": "General Coop and Sector associations",
+          "ES23": "Healthcare",
+          "ES24": "Hospitality",
+          "ES25": "Housing",
+          "ES26": "Industry",
+          "ES27": "Insurance",
+          "ES28": "Purchasing",
+          "ES29": "Research",
+          "ES30": "Transportation",
+          "ES31": "Utilities",
+          "ES32": "Worker Cooperatives",
+          "ES33": "Other",
+          "ES39": "Media",
+          "ES40": "Social services"
+        }
+      },
+      "es": {
+        "title": "Sector económico",
+        "terms": {
+          "ES12": "Agricultura",
+          "ES13": "Servicios de negocios",
+          "ES14": "Bienes y servicios de consumo/minorista",
+          "ES15": "Consejos Cooperativos",
+          "ES16": "Unión de Crédito",
+          "ES17": "Ligas de cooperativas de crédito",
+          "ES18": "Educación",
+          "ES19": "Entretenimiento",
+          "ES20": "Servicios financieros",
+          "ES21": "Pesca",
+          "ES22": "Cooperativas generales y asociaciones sectoriales",
+          "ES23": "Cuidado de la salud",
+          "ES24": "Hospitalidad",
+          "ES25": "Alojamiento",
+          "ES26": "Industria",
+          "ES27": "Seguro",
+          "ES28": "Adquisitivo",
+          "ES29": "Investigación",
+          "ES30": "Transporte",
+          "ES31": "Utilidades",
+          "ES32": "Cooperativas de trabajadores",
+          "ES33": "Otro",
+          "ES39": "Medios de comunicación",
+          "ES40": "Servicios sociales"
+        }
+      },
+      "fr": {
+        "title": "Secteur économique",
+        "terms": {
+          "ES12": "Agriculture",
+          "ES13": "Les services aux entreprises",
+          "ES14": "Biens et services de consommation/vente au détail",
+          "ES15": "Conseils coopératifs",
+          "ES16": "Caisse",
+          "ES17": "Ligues des coopératives de crédit",
+          "ES18": "Éducation",
+          "ES19": "Divertissement",
+          "ES20": "Services financiers",
+          "ES21": "Pêche",
+          "ES22": "Associations Coop Générale et Secteur",
+          "ES23": "Soins de santé",
+          "ES24": "Hospitalité",
+          "ES25": "Logement",
+          "ES26": "Industrie",
+          "ES27": "Assurance",
+          "ES28": "Achat",
+          "ES29": "Recherche",
+          "ES30": "Transport",
+          "ES31": "Utilitaires",
+          "ES32": "Coopératives de Travailleurs",
+          "ES33": "Autre",
+          "ES39": "Médias",
+          "ES40": "Services sociaux"
+        }
+      }
+    },
+    "ocg": {
+      "en": {
+        "title": "Organisational Category",
+        "terms": {
+          "OC42": "Cooperative",
+          "OC43": "Association",
+          "OC44": "Majority controlled",
+          "OC45": "Support organisation"
+        }
+      },
+      "es": {
+        "title": "Categoría organizativa",
+        "terms": {
+          "OC42": "Cooperativa",
+          "OC43": "Asociación",
+          "OC44": "Controlado por la mayoría",
+          "OC45": "Organización de apoyo"
+        }
+      },
+      "fr": {
+        "title": "Catégorie organisationnelle",
+        "terms": {
+          "OC42": "Coopérative",
+          "OC43": "Association",
+          "OC44": "Contrôlé majoritairement",
+          "OC45": "Organisation de soutien"
+        }
+      }
+    }
+  },
+  "itemProps": {
+    "country_id": {
+      "from": "dc.Country ID"
+    },
+    "primary_activity": null,
+    "organisational_structure": null,
+    "typology": null,
+    "data_sources": null,
+    "economic_sector": {
+      "type": "vocab",
+      "uri": "ecs:",
+      "titleUri": "ui:economic_sector",
+      "filter": true,
+      "from": "dc.Economic Sector ID"
+    },
+    "organisational_category": {
+      "type": "vocab",
+      "uri": "ocg:",
+      "titleUri": "ui:organisational_category",
+      "filter": true,
+      "from": "dc.Organisational Category ID"
+    }
+  },
+  "popup": {
+    "leftPane": [
+      {
+        "itemProp": "economic_sector",
+        "valueStyle": "text",
+        "showLabel": true
+      },
+      {
+        "itemProp": "description",
+        "valueStyle": "text"
+      },
+      {
+        "itemProp": "dc_domains",
+        "valueStyle": "hyperlink",
+        "hyperlinkBaseUri": "http://",
+        "showLabel": true,
+        "singleColumnLimit": 10
+      }
+    ],
+    "bottomRightPane": [
+      {
+        "itemProp": "organisational_category",
+        "valueStyle": "text",
+        "showLabel": true
+      }
+    ]
+  }
+}

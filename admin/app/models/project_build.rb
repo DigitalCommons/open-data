@@ -1,6 +1,7 @@
 # One run of a project's unified CSV build (see ProjectBuilder).
 class ProjectBuild < ApplicationRecord
   belongs_to :project
+  has_many :project_datasets, dependent: :destroy
 
   enum :status, { queued: 0, running: 1, succeeded: 2, failed: 4 }
 

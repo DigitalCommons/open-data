@@ -1,0 +1,25 @@
+{
+  "id": "cuk/R005391",
+  "name": "Co-operatives and Mutuals Wales",
+  "description": "Regional Co-operative Council",
+  "website": [
+    "http://www.cooperatives-wales.coop/"
+  ],
+  "dc_domains": [
+    "consultancy.coop",
+    "cooperatives-wales.coop"
+  ],
+  "country_id": "gb",
+  "primary_activity": "ICA280",
+  "organisational_structure": "OS160",
+  "typology": "BMT40",
+  "address": "Anderley Lodge\r\n216 Stow Hill, Newport, Newport, NP20 4HA, Wales",
+  "data_sources": [
+    "CUK",
+    "DC",
+    "WC"
+  ],
+  "lat": 51.43259,
+  "lng": -3.21684,
+  "region": "Newport"
+}

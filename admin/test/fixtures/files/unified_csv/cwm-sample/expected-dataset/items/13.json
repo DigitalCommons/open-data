@@ -1,0 +1,23 @@
+{
+  "id": "dc/W64G9K",
+  "name": "Northwest Construction Cooperative",
+  "description": "",
+  "website": [
+    "http://northwestconstruction.coop"
+  ],
+  "dc_domains": [
+    "northwestconstruction.coop"
+  ],
+  "country_id": "us",
+  "primary_activity": "ICA70",
+  "organisational_structure": "OS115",
+  "typology": "BMT30",
+  "address": "PO Box 2953, Olympia, WA, United States",
+  "data_sources": [
+    "DC",
+    "USFWC"
+  ],
+  "lat": 47,
+  "lng": -122,
+  "region": "WA"
+}

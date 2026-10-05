@@ -41,7 +41,7 @@ module DataBuilder
 
       stats = Mykomap::DatasetBuilder.build_dataset_from_csv(config, build_csv.to_s, tmp_dir.to_s)
 
-      File.write(tmp_dir + "config.json", JSON.pretty_generate(config) + "\n")
+      File.write(tmp_dir + "config.json", Mykomap::JsJson.pretty_generate(config) + "\n")
       # Always written: Mykomap::Dataset (and the monolith) read it
       # unconditionally, so a dataset without it fails to load.
       about = req["about"]
@@ -55,7 +55,7 @@ module DataBuilder
       }.compact))
       FileUtils.cp(staged_csv, tmp_dir + "source.csv")
 
-      zip_dir(tmp_dir, build.zip_path)
+      Mykomap::Zip.zip_dir(tmp_dir, build.zip_path)
 
       skipped = stats.errors.length
       build.update!(
@@ -68,24 +68,6 @@ module DataBuilder
       build.update!(status: :failed, error: "failed to build dataset: #{e.message}")
     ensure
       FileUtils.rm_rf(work_dir) if work_dir
-    end
-
-    private
-
-    # Zips the dataset dir's contents at the zip root (config.json at top
-    # level - the layout the monolith's zip ingest accepts).
-    def zip_dir(dir, zip_path)
-      FileUtils.rm_f(zip_path)
-      Zip::File.open(zip_path, create: true) do |zip|
-        Dir.glob("**/*", base: dir).sort.each do |entry|
-          full = File.join(dir, entry)
-          if File.directory?(full)
-            zip.mkdir(entry)
-          else
-            zip.add(entry, full)
-          end
-        end
-      end
     end
   end
 end

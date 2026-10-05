@@ -1,0 +1,20 @@
+{
+  "id": "cuk/R006686",
+  "name": "Pine Tree Housing Co-operative",
+  "description": "Housing co-operative",
+  "website": [
+    "http://www.cds.coop/for-co-ops/co-op/pine-tree/?type=coop"
+  ],
+  "dc_domains": [],
+  "country_id": "gb",
+  "primary_activity": "ICA210",
+  "organisational_structure": "OS130",
+  "typology": "BMT50",
+  "address": "Unit A, Arc House\r\n82 Tanner Street, London, Southwark, SE1 3GN, England",
+  "data_sources": [
+    "CUK"
+  ],
+  "lat": 51.49965,
+  "lng": -0.07699,
+  "region": "Southwark"
+}

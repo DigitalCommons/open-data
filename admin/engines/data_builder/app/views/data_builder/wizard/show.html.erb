@@ -189,9 +189,30 @@
       tr:last-child td {
         border-bottom: none;
       }
+      input[type="file"] {
+        font: inherit;
+        font-size: 0.85rem;
+        color: var(--db-muted);
+        max-width: 100%;
+      }
+      input[type="file"]::file-selector-button {
+        font: inherit;
+        font-weight: 600;
+        margin-right: 0.6rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        border: 1.5px solid var(--link);
+        background: transparent;
+        color: var(--link);
+        cursor: pointer;
+      }
+      input[type="file"]::file-selector-button:hover {
+        background: var(--link);
+        color: var(--on-link);
+      }
       td input[type="text"] {
         width: 100%;
-        min-width: 6rem;
+        min-width: 11rem;
       }
       td input[type="checkbox"] {
         transform: scale(1.15);
@@ -1075,6 +1096,13 @@
       <div><button id="src-use">Use this source</button></div>
     </div>
 
+    <h3>Start from a config.json</h3>
+    <p class="muted">Fills in the setup from an existing MykoMap config.json, for example cwm-test-data/datasets/cwm-latest/config.json. Your current settings are replaced.</p>
+    <div class="field-row">
+      <div><input type="file" id="cfg-file" accept=".json,application/json"></div>
+      <div><button id="cfg-import">Import config.json</button></div>
+    </div>
+
     <h3>Start from a template</h3>
     <p class="muted">Loads a saved setup (column mappings, vocabs, texts, popup). Your current settings are replaced.</p>
     <div class="field-row">
@@ -1111,25 +1139,6 @@
           if (!S.languages.length) S.languages = ["en"];
           render();
         };
-        const applyStagedCsv = (r, verb) => {
-          S.csvId = r.id;
-          S.csvName = r.filename;
-          S.headers = r.inspection.headers;
-          S.columns = r.inspection.columns;
-          S.sampleRows = r.inspection.sampleRows;
-          S.rowCount = r.inspection.rowCount;
-          initColumns(true);
-          pruneVocabs();
-          clearMessage();
-          showMessage(
-            `CSV ${verb}: ${r.filename} (${fmtInt(r.inspection.rowCount)} rows).` +
-              (r.skippedLeading
-                ? ` Skipped ${r.skippedLeading} leading row(s) above the title row.`
-                : "") +
-              " Press Next to check the column mappings.",
-            false,
-          );
-        };
         $("#csv-upload").onclick = async () => {
           const file = $("#csv-file").files[0];
           if (!file) {
@@ -1149,6 +1158,17 @@
           } finally {
             render();
           }
+        };
+        $("#cfg-import").onclick = async () => {
+          const file = $("#cfg-file").files[0];
+          if (!file) return;
+          try {
+            importConfig(JSON.parse(await file.text()));
+            clearMessage();
+          } catch (e) {
+            showMessage("This file is not a MykoMap config.json: " + e.message, true);
+          }
+          render();
         };
         loadUnifiedList();
         $("#uni-use").onclick = async () => {
@@ -1206,6 +1226,93 @@
           }
           render();
         };
+      }
+
+      /** Takes in a staged CSV (upload, data source or unified CSV) */
+      function applyStagedCsv(r, verb) {
+        S.csvId = r.id;
+        S.csvName = r.filename;
+        S.headers = r.inspection.headers;
+        S.columns = r.inspection.columns;
+        S.sampleRows = r.inspection.sampleRows;
+        S.rowCount = r.inspection.rowCount;
+        initColumns(true);
+        pruneVocabs();
+        clearMessage();
+        showMessage(
+          `CSV ${verb}: ${r.filename} (${fmtInt(r.inspection.rowCount)} rows).` +
+            (r.skippedLeading
+              ? ` Skipped ${r.skippedLeading} leading row(s) above the title row.`
+              : "") +
+            " Press Next to check the column mappings.",
+          false,
+        );
+      }
+
+      /** Fills the setup from a MykoMap config.json: the reverse of
+       * buildConfig. The file itself becomes the config override, so the
+       * build uses it exactly; the steps show its columns, vocabs, titles
+       * and about texts. A staged CSV is kept. */
+      function importConfig(config) {
+        if (!config || typeof config !== "object" || Array.isArray(config))
+          throw new Error("not a JSON object");
+        if (!Array.isArray(config.languages) || !config.languages.length)
+          throw new Error("no languages list");
+        if (!config.itemProps || typeof config.itemProps !== "object")
+          throw new Error("no itemProps");
+
+        const kept = {
+          csvId: S.csvId, csvName: S.csvName, headers: S.headers, columns: S.columns,
+          sampleRows: S.sampleRows, rowCount: S.rowCount, name: S.name, displayName: S.displayName,
+        };
+        S = Object.assign(newState(), kept);
+        S.languages = config.languages.slice();
+        const vocabs = config.vocabs || {};
+        const uiVocab = vocabs.ui || {};
+        const vocabIdOf = (uri) => String(uri || "").replace(/:$/, "");
+
+        for (const [id, byLang] of Object.entries(vocabs)) {
+          if (id === "ui") continue;
+          const title = {};
+          const labels = {};
+          for (const [lang, v] of Object.entries(byLang || {})) {
+            title[lang] = v.title || "";
+            for (const [term, label] of Object.entries(v.terms || {})) {
+              (labels[term] ||= {})[lang] = label;
+            }
+          }
+          S.vocabs[id] = {
+            title,
+            terms: Object.entries(labels).map(([term, l]) => ({ id: term, values: [], labels: l })),
+          };
+        }
+
+        S.cols = Object.entries(config.itemProps).map(([prop, def]) => {
+          def = def || {};
+          const of = def.of || {};
+          let role = "text";
+          let vocabId = null;
+          if (["id", "name", "lat", "lng"].includes(prop)) role = prop;
+          else if (def.type === "vocab") { role = "vocab"; vocabId = vocabIdOf(def.uri); }
+          else if (def.type === "multi" && of.type === "vocab") { role = "multivocab"; vocabId = vocabIdOf(of.uri); }
+          else if (def.type === "multi") role = "multitext";
+          else if (def.as === "number") role = "number";
+          else if (def.as === "boolean") role = "boolean";
+          return {
+            header: def.from || prop, include: true, role, prop, vocabId,
+            filter: !!(def.filter || of.filter), search: !!(def.search || of.search),
+          };
+        });
+        if (!S.headers.length) S.headers = S.cols.map((c) => c.header);
+
+        for (const [lang, v] of Object.entries(uiVocab)) {
+          for (const [term, label] of Object.entries((v && v.terms) || {})) {
+            if (term === "about_content") S.about[lang] = label;
+            else (S.titles[term] ||= {})[lang] = label;
+          }
+        }
+        if (config.ui && config.ui.directory_panel_field) S.ui.dirField = config.ui.directory_panel_field;
+        S.configOverride = JSON.stringify(config, null, 2);
       }
 
       async function stageUnified(id) {
