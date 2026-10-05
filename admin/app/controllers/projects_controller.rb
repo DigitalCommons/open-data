@@ -4,6 +4,7 @@ class ProjectsController < ApplicationController
   def show
     @data_sources = @project.data_sources.order(enabled: :desc, name: :asc)
     @builds = @project.project_builds.order(created_at: :desc).limit(50)
+    @unify_codes = @project.unify_settings&.tables.to_a.to_h { |table| [ table.source, table.code ] }
   end
 
   def edit

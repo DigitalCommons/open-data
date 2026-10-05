@@ -66,6 +66,7 @@
           <dt>Last processed</dt>
           <dd><%= @data_source.last_processed_at ? "#{time_ago_in_words(@data_source.last_processed_at)} ago" : "never" %></dd>
         </div>
+        <div class="wide"><dt>Row ID</dt><dd><%= @data_source.row_id_note || "Not documented" %></dd></div>
         <div class="wide"><dt>Source directory</dt><dd class="mono"><%= @data_source.source_dir %></dd></div>
       </dl>
     </div>

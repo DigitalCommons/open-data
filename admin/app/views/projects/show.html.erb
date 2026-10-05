@@ -34,7 +34,12 @@
         <ul class="list">
           <% @data_sources.each do |source| %>
             <li>
-              <%= link_to source.name, source %>
+              <span class="src-name">
+                <%= link_to source.name, source %>
+                <% if (code = @unify_codes[source.directory]) %>
+                  <small class="kind">Unification code <span class="mono"><%= code %></span></small>
+                <% end %>
+              </span>
               <%= status_badge(source.last_run) %>
             </li>
           <% end %>

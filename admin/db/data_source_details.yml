@@ -9,6 +9,9 @@ acmei:
     assembles a single address string, geocodes it via Geoapify (shared file
     cache) and normalises the website URL; structure, membership type and
     activity values pass through unchanged.
+  row_id: >-
+    The source's ID column, from a hand-kept sheet. Stable only if editors
+    keep it.
 cmc:
   description: >-
     Co-operatives and Mutuals Canada member data, supplied manually as a CSV
@@ -17,6 +20,8 @@ cmc:
     geocodes via cached Geoapify and normalises the website; CMC's own
     activity and membership values are carried through as extra columns in a
     "standard plus" output schema.
+  row_id: >-
+    CMC's own Identifier. Stable.
 comn:
   description: >-
     Co-Minnesota (APEX) sheet, downloaded as CSV and supplied manually. Rows
@@ -24,6 +29,9 @@ comn:
     membership type, country) mapped to codes via vocabs.json. Sheet
     coordinates are used when present, otherwise addresses are geocoded via
     Mapbox with a committed cache. Ported from data-pipelines.
+  row_id: >-
+    The sheet's ID column, trimmed. Stable by design; blank or duplicate IDs
+    stop the conversion.
 cooperar:
   description: >-
     Cooperar (Argentine confederation of co-operatives) data is downloaded as
@@ -32,6 +40,9 @@ cooperar:
     geocode that does not resolve to AR; the website's root domain is emitted
     as an extra column. No vocab mapping or dedup.
   download_url: "https://docs.google.com/spreadsheets/d/1jKe_CGYMGmxrRYVjY3f37UHBcGcDPLvV/export?format=csv&range=A:O"
+  row_id: >-
+    The sheet's Identifier column, from a hand-kept sheet. Stable only if
+    editors keep it.
 coops-uk:
   description: >-
     Co-operatives UK's open data organisations CSV; the downloader scrapes
@@ -42,6 +53,8 @@ coops-uk:
     geocoded with Mapbox. Output adds sector, SIC, ownership and legal form
     columns.
   download_url: https://www.uk.coop/resources/open-data
+  row_id: >-
+    Co-ops UK Organisation ID. Stable.
 covid-mutual-aid:
   description: >-
     COVID-era mutual aid groups downloaded as JSON from the mutualaid.wiki
@@ -50,6 +63,8 @@ covid-mutual-aid:
     regex-extracts UK postcodes, and takes lat/long straight from the source
     with no geocoding or vocab mapping.
   download_url: https://mutualaid.wiki/api/group/get
+  row_id: >-
+    mutualaid.wiki's own id. Stable.
 dc-ica-ncba-cuk:
   description: >-
     An aggregation project, not a primary source: downloads the
@@ -59,6 +74,9 @@ dc-ica-ncba-cuk:
     (dc + ncba + ica + cuk set logic). The unified table becomes its
     standard.csv.
   download_url: https://dev.data.digitalcommons.coop/
+  row_id: >-
+    Built from the first matching dataset and its ID. Changes when the
+    cross-dataset match changes.
 deep-adaptation:
   description: >-
     Deep Adaptation initiative survey responses (LimeSurvey, run by the
@@ -68,6 +86,8 @@ deep-adaptation:
     tick-box columns, geocodes UK addresses when no lat/long supplied, and
     blanks phone/email as sensitive data.
   download_url: https://raw.githubusercontent.com/SolidarityEconomyAssociation/data-capture/deep-adaptation/deep-adaptation/data.csv
+  row_id: >-
+    The ID column of the published survey CSV. Stable only if editors keep it.
 dotcoop:
   description: >-
     The .coop registry's verified registrant directory, a JSON export on Azure
@@ -79,6 +99,8 @@ dotcoop:
     cleaned addresses with Geoapify, and validates OrgID identifiers with a
     duplicate check; output adds sector, category, memberOf and domains
     columns.
+  row_id: >-
+    DotCoop OrgID. Stable; invalid or duplicate IDs stop the conversion.
 eurocoop:
   description: >-
     Euro Coop (European consumer co-operatives) member data downloaded as a
@@ -87,6 +109,9 @@ eurocoop:
     contradict the declared country), and extracts the website's root domain
     as an extra column. No vocab mapping.
   download_url: "https://docs.google.com/spreadsheets/d/1TTvEUv7u3LMAdnVpC3WZj_GxeDBgy_DKwNyWep7kHuw/export?format=csv&range=A:J"
+  row_id: >-
+    The sheet's Identifier column, from a hand-kept sheet. Stable only if
+    editors keep it.
 fca:
   description: >-
     US Farm Credit Administration institutions, supplied manually as a CSV
@@ -94,6 +119,8 @@ fca:
     to the identifier, sets country US and region to the HQ state, hard-codes
     the ICA Financial Services activity, and deliberately skips geocoding
     because only a state-level address is available.
+  row_id: >-
+    FCA UNINUM. Stable.
 ficu:
   description: >-
     US federally insured credit unions, from NCUA call-report/directory
@@ -101,6 +128,8 @@ ficu:
     hard-codes country US and the ICA Financial Services activity, builds a
     cleaned street/city/state/zip address and geocodes it via Geoapify with
     the shared cache; financial statistics columns are read but dropped.
+  row_id: >-
+    NCUA charter number. Stable.
 ica:
   description: >-
     The International Cooperative Alliance's membership database, pulled as
@@ -110,6 +139,8 @@ ica:
     country names to ISO codes with hand-coded exceptions, derives territory
     from the ICA country code, and geocodes assembled addresses via Geoapify.
   download_url: "https://crm.ica.coop/civicrm/ajax/rest?entity=LOD&action=get"
+  row_id: >-
+    ICA CiviCRM contact ID. Stable; a missing ID becomes 0.
 ica-youth-network:
   description: >-
     An older ICA-supplied extract restricted to the ICA Youth Network,
@@ -117,6 +148,9 @@ ica-youth-network:
     plain-label lookup tables (not ESSGLOBAL URIs), validates territory
     consistency, geocodes with the postcode lat/long helper, patches known bad
     country IDs, and emits geocoder confidence reports.
+  row_id: >-
+    ICA Contact ID. A missing ID becomes 0; the committed file lacks this
+    column.
 ics:
   description: >-
     Member organisations of Impuls Cooperatiu de Sants (Barcelona), supplied
@@ -125,6 +159,9 @@ ics:
     activity, structure and typology to ESSGLOBAL identifiers through three
     lookup CSVs. NOTE: those lookup files are referenced but not currently
     committed, so this converter fails until they are restored.
+  row_id: >-
+    Row number in the download. Changes whenever rows are added, removed or
+    reordered.
 iffco:
   description: >-
     IFFCO (Indian Farmers Fertiliser Cooperative) membership list, supplied
@@ -132,6 +169,8 @@ iffco:
     member number, hard-codes country IN and the ICA Agriculture activity,
     builds an address ending in INDIA and geocodes via Geoapify; RDF
     generation is deliberately disabled for this dataset.
+  row_id: >-
+    IFFCO member number. Stable.
 mersey-green:
   description: >-
     A LimeSurvey self-registration survey of green and community organisations
@@ -141,6 +180,9 @@ mersey-green:
     maps the standard SEA question set to the standard schema and geocodes
     addresses via Geoapify.
   download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+  row_id: >-
+    LimeSurvey response ID. Stable unless responses are deleted and
+    re-imported.
 monitor-2022:
   description: >-
     The 2022 World Cooperative Monitor top-300 co-operatives (ICA/EURICSE),
@@ -149,6 +191,8 @@ monitor-2022:
     maps type to ESSGLOBAL membership terms, stores the ISO country as
     territory rather than country (the listed country often mismatches the
     address), and adds coordinates via the postcode lat/long helper.
+  row_id: >-
+    The supplied id column. Stable only if editors keep it.
 mutual-aid:
   description: >-
     A curated spreadsheet of UK COVID-era mutual aid groups on the Digital
@@ -157,6 +201,9 @@ mutual-aid:
     into lat/long (no geocoding needed) and normalises website, Twitter and
     Facebook handles into URLs.
   download_url: https://nextcloud.digitalcommons.coop/s/rbJAyT4S7mcL8rk/download
+  row_id: >-
+    The sheet's id column, from a hand-kept sheet. Stable only if editors keep
+    it.
 ncba:
   description: >-
     NCBA CLUSA (US National Cooperative Business Association) member export,
@@ -165,6 +212,8 @@ ncba:
     maps the NCBA taxonomy through committed lookup tables to an ICA activity
     plus NCBA-specific industry and sector identifiers emitted as extra
     columns.
+  row_id: >-
+    NCBA HubSpot record ID. Stable.
 nfca:
   description: >-
     NFCA (US food co-op network) export, apparently from HubSpot, supplied
@@ -172,6 +221,9 @@ nfca:
     to an ICA activity, slugifies the name as the identifier and geocodes via
     Mapbox with a committed cache; rows that fail to geocode are left out.
     Ported from data-pipelines.
+  row_id: >-
+    Made from the company name. Changes if the co-op is renamed; identical
+    names collide.
 ncg:
   description: >-
     National Co+op Grocers (US food co-ops) store list, supplied manually as
@@ -179,6 +231,9 @@ ncg:
     identifier (the source has no stable key), hard-codes country US and the
     ICA Agriculture activity, normalises websites and geocodes the cleaned
     address via Geoapify with the shared cache.
+  row_id: >-
+    Row number in the download. Changes whenever rows are added, removed or
+    reordered.
 ncui:
   description: >-
     National Cooperative Union of India data, downloaded as a CSV export of a
@@ -187,6 +242,9 @@ ncui:
     geocodes outside India; CWC activity/membership and NCUI category columns
     are read but not yet mapped to vocab terms.
   download_url: "https://docs.google.com/spreadsheets/d/1sgQNwbpihrLikryME3p6K0IxPF_7Tx352qbbHKsM_4Q/export?format=csv&range=A:AE"
+  row_id: >-
+    The sheet's Identifier column, from a hand-kept sheet. Stable only if
+    editors keep it.
 newbridge:
   description: >-
     Solidarity NE (Newbridge) data from a LimeSurvey questionnaire on the
@@ -196,6 +254,9 @@ newbridge:
     structure labels, normalises contact fields, forces country GB and
     geocodes addresses via Geoapify unless the survey supplied lat/long.
   download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+  row_id: >-
+    LimeSurvey response ID. Stable unless responses are deleted and
+    re-imported.
 owned-by-oxford:
   description: >-
     Owned by Oxford's directory, held in an Airtable base and fetched as JSON
@@ -207,6 +268,8 @@ owned-by-oxford:
     index. Removed from the production cron in 2025 because of Airtable API
     throttling.
   download_url: https://api.airtable.com/v0/appr96wyWydb1ryUS/Organisations%20ObO
+  row_id: >-
+    Airtable record ID. Stable.
 oxford:
   description: >-
     Solidarity Oxford data from a LimeSurvey questionnaire on the Solidarity
@@ -216,11 +279,16 @@ oxford:
     addresses via Geoapify; published under lod.coop/sea-lod/oxford and to the
     Murmurations index.
   download_url: https://solidarityeconomyassociation.limequery.com/index.php/admin/remotecontrol
+  row_id: >-
+    LimeSurvey response ID. Stable unless responses are deleted and
+    re-imported.
 powys-cym:
   description: >-
     Powys Food Map in Welsh. Same sheet and converter as powys-eng, using the
     Welsh title and popup text (no English fallback).
   download_url: "https://docs.google.com/spreadsheets/d/1C8SgDAv0axnivbBoXTPEmqJvoudp4L8F2y5Jaoj7wkw/export?format=csv&gid=0"
+  row_id: >-
+    The sheet's ID column. Stable only if editors keep it.
 powys-eng:
   description: >-
     Powys Food Map in English, downloaded as a CSV export of a Google Sheet
@@ -230,6 +298,8 @@ powys-eng:
     bounding box, postcode preferred) with a committed cache shared with
     powys-cym. Ported from data-pipelines.
   download_url: "https://docs.google.com/spreadsheets/d/1C8SgDAv0axnivbBoXTPEmqJvoudp4L8F2y5Jaoj7wkw/export?format=csv&gid=0"
+  row_id: >-
+    The sheet's ID column. Stable only if editors keep it.
 usda:
   description: >-
     US agricultural co-operatives from USDA data, supplied manually as CSV
@@ -238,6 +308,9 @@ usda:
     hard-codes country US and the ICA Agriculture activity, builds a US postal
     address geocoded via cached Geoapify, and passes the co-op type through as
     an extra column.
+  row_id: >-
+    Row number in the download. Changes whenever rows are added, removed or
+    reordered.
 usfwc:
   description: >-
     US Federation of Worker Cooperatives membership, supplied manually as a
@@ -246,6 +319,8 @@ usfwc:
     URIs via a local vocabs.json (raising on unrecognised text), strips the
     inconsistent "usfwc-" id prefix, normalises the country, geocodes the
     composed address via Geoapify and passes supplied lat/long through.
+  row_id: >-
+    USFWC Identifier, with the "usfwc-" prefix removed. Stable.
 workers-coop:
   description: >-
     Workers.coop member data, downloaded as a CSV export from their CiviCRM
@@ -257,6 +332,9 @@ workers-coop:
     duplicate keys and geocodes addresses via Geoapify. Local lookup tables
     build the project-specific vocabularies.
   download_url: "https://www.workers.coop/civicrm/dataprocessor/output/export/?dataprocessor=test&type=export_csv"
+  row_id: >-
+    workers.coop CiviCRM contact ID. Stable; blank or duplicate IDs are
+    dropped.
 ycc:
   description: >-
     A manually supplied CSV of Philippine co-operatives (no download URL
@@ -264,3 +342,6 @@ ycc:
     sanity-checks results by their distance from the centre of the
     Philippines, normalises website URLs, and writes geocode statistics to
     stats.csv alongside the standard output.
+  row_id: >-
+    Row number in the download, although the source has its own Identifier
+    column. Changes whenever rows are added, removed or reordered.

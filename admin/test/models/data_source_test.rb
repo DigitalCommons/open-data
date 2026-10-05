@@ -160,4 +160,16 @@ class DataSourceTest < ActiveSupport::TestCase
     assert ica.enabled?
     assert_equal "*/10 * * * *", ica.schedule
   end
+
+  test "row_id_note comes from the curated details file" do
+    assert_match(/CiviCRM contact ID/, DataSource.new(directory: "ica").row_id_note)
+    assert_nil DataSource.new(directory: "not-a-source").row_id_note
+  end
+
+  test "every source directory in the repo documents its row ID" do
+    details = DataSource.source_details
+    missing = Dir.glob(Rails.root.join("../*/converter")).map { |path| File.basename(File.dirname(path)) }
+      .reject { |dir| details.dig(dir, "row_id").present? }
+    assert_empty missing
+  end
 end

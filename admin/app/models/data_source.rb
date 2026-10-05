@@ -48,6 +48,12 @@ class DataSource < ApplicationRecord
     end
   end
 
+  # How the source's Identifier column is made and how stable it is, from
+  # the curated details file (read-only; edited in code).
+  def row_id_note
+    self.class.source_details.dig(directory, "row_id")
+  end
+
   def source_dir
     OpenData.root + directory
   end

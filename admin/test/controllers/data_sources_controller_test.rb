@@ -103,6 +103,12 @@ class DataSourcesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".crumb a[href=?]", root_path, "Projects & Data Sources"
   end
 
+  test "show displays the row ID note, or says it is not documented" do
+    get data_source_path(data_sources(:alpha))
+    assert_select "dt", "Row ID"
+    assert_select "dd", "Not documented"
+  end
+
   test "show displays details and run history" do
     get data_source_path(data_sources(:alpha))
     assert_response :success

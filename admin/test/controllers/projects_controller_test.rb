@@ -130,4 +130,11 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
   ensure
     FileUtils.remove_entry(dir) if dir
   end
+
+  test "show gives each source's unification code in projects with a unified CSV build" do
+    dotcoop = DataSource.create!(directory: "dotcoop", name: "Dotcoop", kind: :auto)
+    projects(:cwm).data_sources << dotcoop
+    get project_path(projects(:cwm))
+    assert_select "li", /Dotcoop.*Unification code\s*dc/m
+  end
 end

@@ -259,3 +259,5 @@ textarea.input { min-height: 120px; resize: vertical; font-family: var(--font-se
 .auth-main .card { width: 100%; max-width: 400px; }
 @media (max-width: 760px) { .auth { grid-template-columns: minmax(0, 1fr); min-height: 0; } .auth-side { padding: var(--s6) var(--s4); } }
 .stat dd.diff-figure .diff { font-size: var(--t-lg); font-weight: 700; flex-wrap: wrap; }
+.src-name { display: flex; flex-direction: column; min-width: 0; }
+.src-name .kind { font-weight: 500; }
