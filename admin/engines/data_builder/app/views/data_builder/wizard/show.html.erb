@@ -1,87 +1,34 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <title>MykoMap dataset builder</title>
-    <%= csrf_meta_tags %>
-    <style>
-      :root {
-        --bg: #f4f6f5;
-        --card: #ffffff;
-        --text: #1c2321;
-        --muted: #5c6763;
-        --border: #dde3e0;
-        --accent: #22795b;
-        --accent-soft: #e2f2ec;
-        --danger: #b3372e;
-        --danger-soft: #f9e9e7;
-        --warn: #8a6d1a;
-        --warn-soft: #f7efd8;
-        --radius: 10px;
-        --shadow: 0 1px 2px rgba(16, 24, 20, 0.06),
-          0 4px 14px rgba(16, 24, 20, 0.05);
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #141816;
-          --card: #1d2320;
-          --text: #e8ecea;
-          --muted: #98a29d;
-          --border: #313a36;
-          --accent: #4cb08a;
-          --accent-soft: #21362e;
-          --danger: #e07a70;
-          --danger-soft: #3a2523;
-          --warn: #d4b45e;
-          --warn-soft: #35301f;
-          --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
-        }
-      }
+<% content_for :title, page_title("Dataset builder") %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex">
+  <%# The wizard boots from inline script: always load it with a full page load %>
+  <meta name="turbo-visit-control" content="reload">
+<% end %>
+<style>
+    .data-builder {
+      /* The wizard's own tokens, mapped onto the app's palette */
+      --db-bg: var(--bg);
+      --db-card: var(--surface);
+      --db-text: var(--fg);
+      --db-muted: var(--muted);
+      --db-border: var(--line);
+      --db-accent: var(--link);
+      --db-accent-soft: color-mix(in oklch, var(--link) 14%, var(--surface));
+      --db-danger: var(--bad);
+      --db-danger-soft: var(--bad-bg);
+      --db-warn: var(--warn);
+      --db-warn-soft: var(--warn-bg);
+      --db-radius: 10px;
+      --db-shadow: var(--card-edge);
       * {
         box-sizing: border-box;
       }
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        margin: 0;
-        padding: 0 1.25rem 7rem;
+      & {
+        padding-bottom: 7rem;
       }
       .wrap {
         max-width: 72rem;
         margin: 0 auto;
-      }
-      header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.4rem 0 0.6rem;
-        flex-wrap: wrap;
-      }
-      header h1 {
-        font-size: 1.35rem;
-        margin: 0;
-      }
-      header h1 span {
-        color: var(--accent);
-      }
-      header a {
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-      header a:hover {
-        color: var(--accent);
-      }
-      .spacer {
-        flex: 1;
       }
       h2 {
         font-size: 1.05rem;
@@ -92,7 +39,7 @@
         margin: 1.2rem 0 0.4rem;
       }
       .muted {
-        color: var(--muted);
+        color: var(--db-muted);
         font-size: 0.86rem;
       }
       p.muted {
@@ -100,31 +47,38 @@
       }
       button {
         font: inherit;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        font-weight: 600;
         cursor: pointer;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        color: var(--text);
-        padding: 0.45rem 0.9rem;
+        border-radius: 999px;
+        border: 1.5px solid var(--link);
+        background: transparent;
+        color: var(--link);
+        padding: 0.4rem 0.95rem;
+        transition: background 0.2s ease, color 0.2s ease;
       }
       button:hover {
-        border-color: var(--accent);
+        background: var(--link);
+        color: var(--on-link);
       }
       button.primary {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
+        color: var(--accent-ink);
       }
       button.primary:hover {
-        filter: brightness(1.08);
+        background: color-mix(in oklch, var(--accent) 86%, var(--fg));
+        border-color: color-mix(in oklch, var(--accent) 86%, var(--fg));
+        color: var(--accent-ink);
       }
       button.danger {
-        color: var(--danger);
+        color: var(--db-danger);
+        border-color: var(--db-danger);
       }
       button.danger:hover {
-        border-color: var(--danger);
-        background: var(--danger-soft);
+        border-color: var(--db-danger);
+        background: var(--db-danger-soft);
+        color: var(--db-danger);
       }
       button.small {
         padding: 0.24rem 0.6rem;
@@ -142,15 +96,15 @@
         font-size: 0.9rem;
         padding: 0.4rem 0.55rem;
         border-radius: 8px;
-        border: 1px solid var(--border);
-        background: var(--card);
-        color: var(--text);
+        border: 1px solid var(--db-border);
+        background: var(--db-card);
+        color: var(--db-text);
       }
       input:focus,
       select:focus,
       textarea:focus,
       button:focus {
-        outline: 2px solid var(--accent);
+        outline: 2px solid var(--db-accent);
         outline-offset: 1px;
       }
       textarea {
@@ -186,20 +140,20 @@
         font-size: 0.84rem;
         padding: 0.35rem 0.8rem;
         border-radius: 99px;
-        border: 1px solid var(--border);
-        background: var(--card);
+        border: 1px solid var(--db-border);
+        background: var(--db-card);
         cursor: pointer;
-        color: var(--muted);
+        color: var(--db-muted);
         white-space: nowrap;
       }
       .step.active {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
+        background: var(--db-accent);
+        border-color: var(--db-accent);
+        color: var(--on-link);
       }
       .step.done {
-        color: var(--accent);
-        border-color: var(--accent);
+        color: var(--db-accent);
+        border-color: var(--db-accent);
       }
       .step.locked {
         opacity: 0.45;
@@ -207,10 +161,10 @@
       }
 
       .panel {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
+        background: var(--db-card);
+        border: 1px solid var(--db-border);
+        border-radius: var(--db-radius);
+        box-shadow: var(--db-shadow);
         padding: 1.1rem 1.3rem;
         margin-bottom: 1rem;
       }
@@ -222,7 +176,7 @@
       td {
         text-align: left;
         padding: 0.4rem 0.55rem;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid var(--db-border);
         font-size: 0.87rem;
         vertical-align: middle;
       }
@@ -230,7 +184,7 @@
         font-size: 0.74rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--muted);
+        color: var(--db-muted);
       }
       tr:last-child td {
         border-bottom: none;
@@ -241,7 +195,7 @@
       }
       td input[type="checkbox"] {
         transform: scale(1.15);
-        accent-color: var(--accent);
+        accent-color: var(--db-accent);
       }
       .scroll-x {
         overflow-x: auto;
@@ -258,19 +212,19 @@
         display: none;
         margin: 0.8rem 0;
         padding: 0.7rem 0.9rem;
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        background: var(--card);
+        border-radius: var(--db-radius);
+        border: 1px solid var(--db-border);
+        background: var(--db-card);
         white-space: pre-wrap;
-        box-shadow: var(--shadow);
+        box-shadow: var(--db-shadow);
       }
       #message.ok {
-        border-color: var(--accent);
-        background: var(--accent-soft);
+        border-color: var(--db-accent);
+        background: var(--db-accent-soft);
       }
       #message.bad {
-        border-color: var(--danger);
-        background: var(--danger-soft);
+        border-color: var(--db-danger);
+        background: var(--db-danger-soft);
       }
 
       .issue {
@@ -280,28 +234,28 @@
         font-size: 0.88rem;
       }
       .issue.error {
-        background: var(--danger-soft);
-        color: var(--danger);
+        background: var(--db-danger-soft);
+        color: var(--db-danger);
       }
       .issue.warn {
-        background: var(--warn-soft);
-        color: var(--warn);
+        background: var(--db-warn-soft);
+        color: var(--db-warn);
       }
 
-      footer.bar {
+      footer.wizard-bar {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        background: var(--card);
-        border-top: 1px solid var(--border);
+        background: var(--db-card);
+        border-top: 1px solid var(--db-border);
         padding: 0.7rem 1.25rem;
         display: flex;
         gap: 0.6rem;
         align-items: center;
-        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+        box-shadow: 0 -2px 12px color-mix(in oklch, var(--fg) 8%, transparent);
       }
-      footer.bar .inner {
+      footer.wizard-bar .inner {
         max-width: 72rem;
         margin: 0 auto;
         display: flex;
@@ -311,11 +265,11 @@
       }
       .chip-count {
         font-size: 0.82rem;
-        color: var(--muted);
+        color: var(--db-muted);
       }
       .pane-block {
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border: 1px solid var(--db-border);
+        border-radius: var(--db-radius);
         padding: 0.7rem 0.9rem;
         margin-bottom: 0.9rem;
       }
@@ -325,7 +279,7 @@
         align-items: center;
         flex-wrap: wrap;
         padding: 0.4rem 0;
-        border-bottom: 1px dashed var(--border);
+        border-bottom: 1px dashed var(--db-border);
       }
       .popup-item:last-of-type {
         border-bottom: none;
@@ -338,15 +292,15 @@
         font-size: 0.8rem;
       }
       .vocab-block {
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border: 1px solid var(--db-border);
+        border-radius: var(--db-radius);
         padding: 0.8rem 1rem;
         margin-bottom: 1rem;
       }
       td code {
         font-family: ui-monospace, monospace;
         font-size: 0.8rem;
-        color: var(--muted);
+        color: var(--db-muted);
       }
       tr.main-row td {
         border-bottom: none;
@@ -357,25 +311,21 @@
         font-size: 0.8rem;
       }
       .ok-badge {
-        color: var(--accent);
+        color: var(--db-accent);
         font-weight: 600;
       }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <header>
-        <h1><span>MykoMap</span> dataset builder</h1>
-        <div class="spacer"></div>
-        <a href="/">Open Data Admin</a>
-      </header>
+        }
+  </style>
 
+<div class="data-builder">
+    <div class="wrap">
+      <div class="page-head"><div><h1 class="title-sm">Dataset builder</h1></div></div>
       <div class="steps" id="steps"></div>
       <div id="message"></div>
       <div id="step-content"></div>
     </div>
 
-    <footer class="bar">
+    <footer class="wizard-bar">
       <div class="inner">
         <button id="btn-back">Back</button>
         <button id="btn-next" class="primary">Next</button>
@@ -1110,6 +1060,13 @@
       <div><button class="primary" id="csv-upload">Upload CSV</button></div>
     </div>
 
+    <h3>Use a unified CSV</h3>
+    <p class="muted">Builds from a project's latest unified CSV (its sources cleaned and merged) instead of an upload.</p>
+    <div class="field-row">
+      <div><select id="uni-select"><option value="">Choose a unified CSV...</option></select></div>
+      <div><button id="uni-use">Use this CSV</button></div>
+    </div>
+
     <h3>Use an Open Data source</h3>
     <p class="muted">Builds from the latest converted standard.csv of one of this
     site's data sources instead of an upload.</p>
@@ -1193,6 +1150,24 @@
             render();
           }
         };
+        loadUnifiedList();
+        $("#uni-use").onclick = async () => {
+          const id = $("#uni-select").value;
+          if (!id) {
+            showMessage("Choose a unified CSV first.", true);
+            return;
+          }
+          const btn = $("#uni-use");
+          btn.disabled = true;
+          btn.textContent = "Staging...";
+          try {
+            await stageUnified(id);
+          } catch (e) {
+            showMessage("Could not use the unified CSV: " + e.message, true);
+          } finally {
+            render();
+          }
+        };
         loadSourceList();
         $("#src-use").onclick = async () => {
           const id = $("#src-select").value;
@@ -1231,6 +1206,29 @@
           }
           render();
         };
+      }
+
+      async function stageUnified(id) {
+        const r = await api(API + "/csvs/from_build/" + encodeURIComponent(id), { method: "POST" });
+        applyStagedCsv(r, "staged");
+      }
+
+      async function loadUnifiedList() {
+        try {
+          const r = await api(API + "/unified");
+          const sel = $("#uni-select");
+          if (!sel) return;
+          sel.innerHTML =
+            '<option value="">Choose a unified CSV...</option>' +
+            r.builds
+              .map(
+                (b) =>
+                  `<option value="${esc(b.id)}">${esc(b.project)}: ${esc(b.time)} UTC, ${fmtInt(b.rows || 0)} rows</option>`,
+              )
+              .join("");
+        } catch (e) {
+          /* not fatal */
+        }
       }
 
       async function loadSourceList() {
@@ -1946,6 +1944,7 @@
          <a href="/"><button>Back to Open Data Admin</button></a></p>
       <p class="muted">The zip contains the full dataset directory (config.json, items,
       locations, search index) and can be uploaded straight into MykoMaps.</p>
+      <p>To publish, unzip it into cwm-test-data/datasets/ as a new dated folder and commit it.</p>
     </div>`;
         }
 
@@ -2100,6 +2099,14 @@
 
       (async function boot() {
         const params = new URLSearchParams(location.search);
+        const unifiedBuild = params.get("build");
+        if (unifiedBuild) {
+          try {
+            await stageUnified(unifiedBuild);
+          } catch (e) {
+            showMessage("Could not use the unified CSV: " + e.message, true);
+          }
+        }
         const tpl = params.get("template");
         if (tpl) {
           try {
@@ -2121,5 +2128,4 @@
         render();
       })();
     </script>
-  </body>
-</html>
+</div>

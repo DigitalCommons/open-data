@@ -23,7 +23,7 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
   test "the wizard needs a signed-in user" do
     get "/data-builder/"
     assert_response :success
-    assert_match(/dataset builder/, response.body)
+    assert_select "h1", "Dataset builder"
 
     sign_out
     get "/data-builder/"
@@ -57,6 +57,8 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
     get body["downloadUrl"]
     assert_response :success
     assert_equal "application/zip", response.media_type
+    built_at = DataBuilder::Build.find(build_id).created_at.utc.strftime("%Y%m%d-%H%M%S")
+    assert_match(/filename="#{built_at}-dummy-dataset\.zip"/, response.headers["Content-Disposition"])
 
     entries = {}
     Zip::File.open_buffer(response.body) do |zip|
@@ -122,7 +124,7 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
     begin
       source = data_sources(:alpha)
       run = source.download_runs.create!(status: :succeeded, triggered_by: :manual,
-        started_at: Time.current, finished_at: Time.current)
+        started_at: Time.utc(2026, 10, 5, 6, 0, 12), finished_at: Time.current)
       dir = OpenData.downloads_root + "alpha/2026-01-01_000000"
       FileUtils.mkdir_p(dir)
       File.write(dir + "standard.csv", "Identifier,Name\n1,One\n")
@@ -135,7 +137,7 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
       post "/data-builder/csvs/from_source/#{source.id}"
       assert_response :created
       body = response.parsed_body
-      assert_equal "alpha-standard.csv", body["filename"]
+      assert_equal "20261005-060012-alpha-standard.csv", body["filename"]
       assert_equal 1, body["inspection"]["rowCount"]
       assert_equal %w[Identifier Name], body["inspection"]["headers"]
     ensure
@@ -171,5 +173,46 @@ class DataBuilderFlowTest < ActionDispatch::IntegrationTest
 
     put "/data-builder/templates/no-state", params: {}, as: :json
     assert_response :bad_request
+  end
+
+  def unified_build(started_at: Time.utc(2026, 10, 5, 7, 15, 30))
+    dir = File.join(@data_builder_tmp, "unified-#{SecureRandom.hex(3)}")
+    FileUtils.mkdir_p(dir)
+    File.write(File.join(dir, "unified.csv"), "Identifier,Name,Latitude,Longitude\ncwm/1,One,51.5,-0.1\ncwm/2,Two,52.5,-1.1\n")
+    projects(:cwm).project_builds.create!(status: :succeeded, started_at: started_at, finished_at: started_at + 40,
+      archive_path: dir, row_count: 2)
+  end
+
+  test "lists each project's latest unified CSV" do
+    unified_build(started_at: Time.utc(2026, 10, 4))
+    latest = unified_build
+    get "/data-builder/unified"
+    assert_response :success
+    builds = response.parsed_body["builds"]
+    assert_equal 1, builds.size
+    assert_equal({ "id" => latest.id, "project" => "Cooperative World Map (CWM)", "time" => "2026-10-05 07:15", "rows" => 2 }, builds.first)
+  end
+
+  test "stages a project's unified CSV" do
+    build = unified_build
+    post "/data-builder/csvs/from_build/#{build.id}"
+    assert_response :created
+    body = response.parsed_body
+    assert_equal "20261005-071530-cwm-unified.csv", body["filename"]
+    assert_equal 2, body["inspection"]["rowCount"]
+
+    post "/data-builder/csvs/from_build/0"
+    assert_response :not_found
+  end
+
+  test "the wizard offers unified CSVs and opens with one from a build page" do
+    get "/data-builder/"
+    assert_select "nav a[aria-current=page]", "Dataset builder"
+    assert_match "Use a unified CSV", response.body
+    assert_match "To publish, unzip it into cwm-test-data/datasets/ as a new dated folder and commit it.", response.body
+
+    build = unified_build
+    get "/project_builds/#{build.id}"
+    assert_select "a[href=?]", "/data-builder/?build=#{build.id}", "Open in dataset builder"
   end
 end

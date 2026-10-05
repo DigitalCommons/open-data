@@ -1,8 +1,7 @@
 module DataBuilder
   class WizardController < ApplicationController
-    # GET / - the builder wizard (a self-contained page, no host layout)
+    # GET / - the builder wizard, in the app layout
     def show
-      render layout: false
     end
   end
 end

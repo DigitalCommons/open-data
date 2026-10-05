@@ -56,7 +56,7 @@ module DataBuilder
       unless build.succeeded? && File.exist?(build.zip_path)
         return send_message(404, "no built dataset available for this build")
       end
-      send_file build.zip_path, filename: "#{build.name}-mykomap-dataset.zip", type: "application/zip"
+      send_file build.zip_path, filename: DownloadFilename.for(build.created_at, build.name, "dataset.zip"), type: "application/zip"
     end
 
     private

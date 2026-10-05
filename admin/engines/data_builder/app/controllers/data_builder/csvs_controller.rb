@@ -2,7 +2,8 @@ require "securerandom"
 
 module DataBuilder
   # Staging CSVs for the builder: multipart upload, re-inspection, and
-  # staging an admin data source's latest standard.csv.
+  # staging an admin data source's latest standard.csv or a project's
+  # unified CSV.
   class CsvsController < ApplicationController
     # POST /csvs - multipart form with a `file` field
     def create
@@ -55,7 +56,31 @@ module DataBuilder
       id = SecureRandom.hex(8)
       FileUtils.mkdir_p(DataBuilder.uploads_dir)
       FileUtils.cp(path, csv_file(id))
-      stage(id, "#{source.directory}-standard.csv")
+      stage(id, source.last_succeeded_run.download_filename("standard.csv"))
+    end
+
+    # GET /unified - each project's latest unified CSV
+    def unified
+      builds = ::Project.ordered.filter_map do |project|
+        build = project.project_builds.succeeded.order(created_at: :desc).find(&:csv_path)
+        next unless build
+        { id: build.id, project: project.name, time: (build.started_at || build.created_at).utc.strftime("%Y-%m-%d %H:%M"),
+          rows: build.row_count }
+      end
+      render json: { builds: builds }
+    end
+
+    # POST /csvs/from_build/:project_build_id - stage a project build's unified.csv
+    def from_build
+      DataBuilder.sweep_uploads!
+      build = ::ProjectBuild.find_by(id: params[:project_build_id])
+      path = build&.csv_path
+      return send_message(404, "no such unified CSV") unless path
+
+      id = SecureRandom.hex(8)
+      FileUtils.mkdir_p(DataBuilder.uploads_dir)
+      FileUtils.cp(path, csv_file(id))
+      stage(id, build.download_filename("unified.csv"))
     end
 
     private

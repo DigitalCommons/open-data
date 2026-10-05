@@ -28,17 +28,19 @@
         <div class="bar-in">
           <div class="bar-left">
             <span class="brand">
-              <%= link_to ApplicationHelper::APP_NAME, root_path, class: "wordmark" %>
+              <%= link_to ApplicationHelper::APP_NAME, main_app.root_path, class: "wordmark" %>
               <% if ApplicationHelper::APP_VERSION %>
                 <span class="app-version">v<%= ApplicationHelper::APP_VERSION %></span>
               <% end %>
             </span>
             <nav aria-label="Main">
-              <%= link_to "Projects & Data Sources", root_path, "aria-current": (controller_name == "passwords" ? nil : "page") %>
-              <%= link_to "Settings", edit_password_path, "aria-current": (controller_name == "passwords" ? "page" : nil) %>
+              <% section = if controller_path.start_with?("data_builder/") then :builder elsif controller_name == "passwords" then :settings else :projects end %>
+              <%= link_to "Projects & Data Sources", main_app.root_path, "aria-current": ("page" if section == :projects) %>
+              <%= link_to "Dataset builder", "/data-builder/", "aria-current": ("page" if section == :builder) %>
+              <%= link_to "Settings", main_app.edit_password_path, "aria-current": ("page" if section == :settings) %>
             </nav>
           </div>
-          <%= button_to "Sign out", session_path, method: :delete, class: "sign-out" %>
+          <%= button_to "Sign out", main_app.session_path, method: :delete, class: "sign-out" %>
         </div>
       </header>
 
