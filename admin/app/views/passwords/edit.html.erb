@@ -8,6 +8,51 @@
   <div class="flash warn" role="status">You are using the default password. Choose a new one to continue.</div>
 <% end %>
 
+<section class="card" aria-labelledby="username_heading">
+  <div class="band">
+    <h2 id="username_heading">Change username</h2>
+  </div>
+  <%= form_with url: username_path, method: :patch, class: "form-stack" do |form| %>
+    <div class="field">
+      <%= form.label :username %>
+      <%= form.text_field :username, value: @user.username, required: true, autocomplete: "username", class: "input" %>
+    </div>
+    <div class="field">
+      <%= form.label :current_password, for: "username_current_password" %>
+      <%= form.password_field :current_password, id: "username_current_password", required: true, autocomplete: "current-password", class: "input" %>
+    </div>
+    <div class="form-foot end">
+      <%= form.submit "Change username", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</section>
+
+<section class="card" aria-labelledby="password_heading">
+  <div class="band">
+    <h2 id="password_heading">Change password</h2>
+    <p>Change your password</p>
+  </div>
+  <%= form_with url: password_path, method: :patch, class: "form-stack" do |form| %>
+    <div class="field">
+      <%= form.label :current_password %>
+      <%= form.password_field :current_password, required: true, autocomplete: "current-password", class: "input" %>
+    </div>
+    <div class="field">
+      <%= form.label :password, "New password" %>
+      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, minlength: 8, class: "input" %>
+      <p class="help">At least 8 characters.</p>
+    </div>
+    <div class="field">
+      <%= form.label :password_confirmation, "Confirm new password" %>
+      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input" %>
+    </div>
+    <div class="form-foot">
+      <%= link_to "Cancel", root_path, class: "link" %>
+      <%= form.submit "Update password", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</section>
+
 <section class="card" aria-labelledby="secrets_heading">
   <div class="band">
     <h2 id="secrets_heading">Secrets</h2>
@@ -35,32 +80,6 @@
     <% end %>
     <div class="form-foot end">
       <%= form.submit "Save secrets", class: "btn btn-primary" %>
-    </div>
-  <% end %>
-</section>
-
-<section class="card" aria-labelledby="password_heading">
-  <div class="band">
-    <h2 id="password_heading">Change password</h2>
-    <p>Change your password</p>
-  </div>
-  <%= form_with url: password_path, method: :patch, class: "form-stack" do |form| %>
-    <div class="field">
-      <%= form.label :current_password %>
-      <%= form.password_field :current_password, required: true, autofocus: true, autocomplete: "current-password", class: "input" %>
-    </div>
-    <div class="field">
-      <%= form.label :password, "New password" %>
-      <%= form.password_field :password, required: true, autocomplete: "new-password", maxlength: 72, minlength: 8, class: "input" %>
-      <p class="help">At least 8 characters.</p>
-    </div>
-    <div class="field">
-      <%= form.label :password_confirmation, "Confirm new password" %>
-      <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", maxlength: 72, class: "input" %>
-    </div>
-    <div class="form-foot">
-      <%= link_to "Cancel", root_path, class: "link" %>
-      <%= form.submit "Update password", class: "btn btn-primary" %>
     </div>
   <% end %>
 </section>

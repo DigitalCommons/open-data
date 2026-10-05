@@ -31,4 +31,9 @@ class LayoutTest < ActionDispatch::IntegrationTest
     get new_session_path
     assert_select ".app-version", count: 0
   end
+
+  test "sign out names the signed-in user" do
+    get root_path
+    assert_select "form[action=?] button.sign-out", session_path, "Sign out settled"
+  end
 end

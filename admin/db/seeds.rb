@@ -1,8 +1,8 @@
 # Default admin user; password must be changed on first sign-in
 # (password_changed_at stays nil until the user does so).
-User.find_or_create_by!(username: "mykomaps") do |user|
-  user.password = "admin"
-end
+# Only when there are no users, so renaming the account does not bring the
+# default one back on the next start.
+User.create!(username: "mykomaps", password: "admin") if User.none?
 
 # Register every source directory in the repo as a data source.
 DataSource.sync_from_repo!

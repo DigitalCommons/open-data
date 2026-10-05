@@ -14,7 +14,6 @@ class SecretsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", /Set, saved/
     assert_select "p", /Not set/
     assert_not_includes response.body, "very-secret-geo"
-    assert_operator response.body.index(">Secrets<"), :<, response.body.index(">Change password<")
   end
 
   test "update saves filled values, keeps blank ones and removes ticked ones" do

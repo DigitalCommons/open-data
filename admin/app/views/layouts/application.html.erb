@@ -38,7 +38,7 @@
               <%= link_to "Settings", edit_password_path, "aria-current": (controller_name == "passwords" ? "page" : nil) %>
             </nav>
           </div>
-          <%= button_to "Sign out", session_path, method: :delete, class: "sign-out" %>
+          <%= button_to "Sign out #{Current.user.username}", session_path, method: :delete, class: "sign-out" %>
         </div>
       </header>
 
