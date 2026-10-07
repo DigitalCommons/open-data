@@ -14,8 +14,8 @@ class DataSource < ApplicationRecord
 
   scope :enabled, -> { where(enabled: true) }
 
-  # Sources live on prod-2/dev-2 at transition time (see TRANSITION.md); they
-  # are enabled on the default schedule when first seeded.
+  # Sources that were already running on the previous servers; they are
+  # enabled on the default schedule when first seeded.
   LEGACY_LIVE = %w[ ica newbridge mersey-green deep-adaptation dotcoop workers-coop ].freeze
   # Daily at 06:00 UK time (the server runs on UTC).
   DEFAULT_SCHEDULE = "0 6 * * * Europe/London".freeze

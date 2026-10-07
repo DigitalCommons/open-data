@@ -10,8 +10,8 @@ forced on first sign-in.
 ## How it works
 
 - Data sources are the project dirs in the repo root (dirs with a `converter`
-  script). `db:seed` registers new ones; sources found live on the servers at
-  transition time (see ../TRANSITION.md) are enabled on `*/10 * * * *`.
+  script). `db:seed` registers new ones; sources that were already running on
+  the previous servers are enabled on the default schedule.
 - A Solid Queue recurring job (`ScheduleDispatchJob`, every minute) enqueues a
   `DataSourceRunJob` for each enabled source whose cron schedule is due.
 - A run shells out to `bundle exec seod download` and `seod convert` in the
