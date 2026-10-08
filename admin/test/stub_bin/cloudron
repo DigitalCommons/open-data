@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Stub Cloudron CLI for the deploy.sh test. Appends each invocation to
 # CLOUDRON_STUB_LOG; `list` prints CLOUDRON_STUB_APPS so the script can
-# tell an installed app from a new one.
+# tell an installed app from a new one; `builder info` reports the registry
+# in CLOUDRON_STUB_REGISTRY as the real CLI does.
 echo "$*" >> "${CLOUDRON_STUB_LOG:?}"
-for arg in "$@"; do
-  if [ "$arg" = "list" ]; then
-    printf '%s\n' "${CLOUDRON_STUB_APPS:-}"
-  fi
-done
+case "$*" in
+  *" list"|list) printf '%s\n' "${CLOUDRON_STUB_APPS:-}" ;;
+  "builder info") printf 'Registry URL: %s\nUsername: stub\n' "${CLOUDRON_STUB_REGISTRY:-https://registry.example.com}" ;;
+esac
 exit 0

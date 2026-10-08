@@ -47,9 +47,22 @@ It asks for:
 - App location: the domain the app will be served on, `data.example.com`
 - Image tag: defaults to the version in `CloudronManifest.json`
 
-Then it runs the build, checks whether an app already exists at the
-location, and installs or updates it. The answers are saved in
-`.deploy.conf` (git-ignored) and offered as defaults next time.
+Then it checks that the builder is logged in to that registry, runs the
+build, checks whether an app already exists at the location, and installs
+or updates it. The answers are saved in `.deploy.conf` (git-ignored) and
+offered as defaults next time.
+
+The registry check matters when one CLI deploys to more than one Cloudron.
+The builder pushes to whichever registry it was last logged in to, and a
+Cloudron can only pull from a registry it has credentials for, so an image
+built after a login to the wrong registry fails at the pull with a 401.
+The script compares `cloudron builder info` with the registry you gave
+and stops before building if they differ, printing the login command to
+run. Switch registries with:
+
+```
+cloudron builder login registry.example.com
+```
 
 Every answer can be given as an environment variable instead, which skips
 its prompt. With no terminal, unset answers that have a default use it and

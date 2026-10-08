@@ -7,7 +7,9 @@
 # environment variable, which skips the prompt:
 #
 #   DEPLOY_SERVER      Cloudron dashboard domain, e.g. my.example.com
-#   DEPLOY_REGISTRY    container registry the builder pushes to
+#   DEPLOY_REGISTRY    container registry the image must be pushed to; the
+#                      script refuses to build if the builder is logged in
+#                      to a different one
 #   DEPLOY_REPOSITORY  image repository within the registry, e.g. opendata
 #   DEPLOY_LOCATION    app domain, e.g. data.example.com
 #   DEPLOY_TAG         image tag (default: version in CloudronManifest.json)
@@ -78,6 +80,20 @@ run() {
   echo "+ cloudron $*"
   cloudron "$@"
 }
+
+# The builder pushes to whichever registry it is logged in to, and the
+# Cloudron can only pull from a registry it has credentials for. Make sure
+# the two agree before building anything. Registries compare without
+# scheme or trailing slash.
+bare() { local url="${1#*://}"; echo "${url%/}"; }
+wanted="$(bare "$DEPLOY_REGISTRY")"
+logged_in="$(cloudron builder info 2>/dev/null | sed -n 's/^Registry URL: *//p' | head -1)"
+if [[ "$(bare "$logged_in")" != "$wanted" ]]; then
+  echo "The builder is logged in to ${logged_in:-no registry}, but $DEPLOY_LOCATION on $DEPLOY_SERVER pulls from https://$wanted." >&2
+  echo "Building now would push the image where that Cloudron cannot fetch it. Log in to the right registry first:" >&2
+  echo "  cloudron builder login https://$wanted" >&2
+  exit 1
+fi
 
 # --repository every time: the builder remembers the last repository per
 # directory, and a stale one would push to the wrong registry.

@@ -39,6 +39,20 @@ class DeployScriptTest < ActiveSupport::TestCase
     assert_includes calls, "--server my.example.com update --app data.example.com --last-build --no-backup"
   end
 
+  test "refuses to build when the builder is logged in to another registry" do
+    status = run_script(env: { "CLOUDRON_STUB_REGISTRY" => "https://registry.elsewhere.net" })
+    assert_not status.success?
+    assert_includes @output, "registry.elsewhere.net"
+    assert_includes @output, "registry.example.com"
+    assert_includes @output, "cloudron builder login https://registry.example.com"
+    assert_not calls.any? { |c| c.include?("builder build") }
+  end
+
+  test "accepts the registry with or without the scheme" do
+    status = run_script(env: { "DEPLOY_REGISTRY" => "https://registry.example.com/" })
+    assert status.success?, @output
+  end
+
   test "saves the answers for the next run" do
     run_script
     saved = File.read(@config)
