@@ -60,7 +60,11 @@ at a temp dir, so no network or real converters are needed.
 
 ## Deployment
 
-Packaged for Cloudron from the repo root (Dockerfile, CloudronManifest.json,
-start.sh). At runtime the converter projects are synced to `/app/data/open-data`
-(downloads and generated data persist across updates), SQLite databases live
-in `/app/data/storage` and archives in `/app/data/downloads`.
+Packaged as a Cloudron app from the repo root (Dockerfile,
+CloudronManifest.json, start.sh); `deploy.sh` builds and deploys it to a
+Cloudron of your choice. See [docs/deployment.md](docs/deployment.md).
+
+## Documentation
+
+[docs/](docs/README.md) covers the concepts, every page of the interface,
+the configuration files, deployment and development.

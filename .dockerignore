@@ -7,3 +7,5 @@ admin/tmp
 admin/.bundle
 admin/config/master.key
 admin/config/credentials.yml.enc
+.deploy.conf
+deploy.sh

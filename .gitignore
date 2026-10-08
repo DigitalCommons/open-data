@@ -43,3 +43,6 @@ local.conf
 
 # Ignore local Gem installations
 .gems/
+
+# deploy.sh remembers the last Cloudron it deployed to here
+.deploy.conf

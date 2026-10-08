@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Stub Cloudron CLI for the deploy.sh test. Appends each invocation to
+# CLOUDRON_STUB_LOG; `list` prints CLOUDRON_STUB_APPS so the script can
+# tell an installed app from a new one.
+echo "$*" >> "${CLOUDRON_STUB_LOG:?}"
+for arg in "$@"; do
+  if [ "$arg" = "list" ]; then
+    printf '%s\n' "${CLOUDRON_STUB_APPS:-}"
+  fi
+done
+exit 0
